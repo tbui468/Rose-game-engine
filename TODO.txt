@@ -1,0 +1,11 @@
+CMAKE HIERARCHY
+    -do i want multiple levels, or is just the root CMAKE file sufficient??
+
+SDL LIBRARY
+    -need to figure out how to use SDL (either as dynamic (shared) or static library)
+    -currently, I just copied dll into same directory as executable
+    -static will be faster, but I'll need to download SDL source, and build
+    -dynamic, I'm not sure
+
+
+
