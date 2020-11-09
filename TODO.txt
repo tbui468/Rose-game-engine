@@ -1,5 +1,25 @@
-CMAKE HIERARCHY
-    -do i want multiple levels, or is just the root CMAKE file sufficient??
+Set build (x86 or x64) (or should this be a build option???)
+
+SDL2 tutorial easy cleanup
+
+
+Each entity/object on screen IS a quad (inherits from Quad)
+    Make Quad class the contain general functions for all entities
+        Quad()
+        Draw() (but should save a reference to all entities in a list and make a draw call all in a drawing controller)
+        DrawTransformed() "
+        MoveTo
+        ScaleTo
+        FadeTo
+        RotateTo
+        Collision
+        SetBoundingBox
+        SetSprite
+
+Asset sprites Loading
+Access OpenGL from SDL
+Input Queue
+Command Dispatcher
 
 SDL LIBRARY
     -need to figure out how to use SDL (either as dynamic (shared) or static library)
