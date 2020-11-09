@@ -8,17 +8,9 @@ namespace sqs {
 class Button : public Quad {
     public:
         Button() = default;
-        Button(CartCoords pos, uint32_t depth) {
-            SetPosition(pos);
-            SetDepth(depth);
-        }
+        Button(CartCoords pos, uint32_t depth);
         virtual ~Button() {}
-        bool OnClick() {
-            std::cout << "I'm a button " << std::endl;
-            return true;
-        }
-
-    private:
+        bool OnClick();
 };
 
 }

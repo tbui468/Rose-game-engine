@@ -2,18 +2,10 @@
 #define INPUT_QUEUE_H
 
 #include <queue>
+#include "InputType.h"
 
 namespace sqs {
 
-enum class InputType {
-    Close,
-    SingleTap, 
-    DoubleTap, 
-    FlickLeft,
-    FlickRight,
-    FlickUp,
-    FlickDown
-};
 
 class InputQueue {
     public:

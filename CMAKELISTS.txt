@@ -21,7 +21,7 @@ elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
 endif()
 
 
-add_executable(Squares "src/Squares.cpp" "src/Quad.cpp" "src/InputQueue.cpp" "src/CommandDispatcher.cpp")
+add_executable(Squares "src/Squares.cpp" "src/Quad.cpp" "src/InputQueue.cpp" "src/CommandDispatcher.cpp" "src/Button.cpp")
 
 target_include_directories(Squares PRIVATE ${SDL_INCLUDE_DIR})
 target_link_libraries( Squares ${SDL_LIB_DIR}/SDL2main.lib ${SDL_LIB_DIR}/SDL2.lib)

@@ -1,6 +1,13 @@
 #ifndef COMMAND_DISPATCHER_H
 #define COMMAND_DISPATCHER_H
 
+#include <vector>
+#include <memory>
+#include "Button.h"
+#include "InputType.h"
+#include "CommandCode.h"
+
+
 
 namespace sqs {
 
@@ -8,10 +15,14 @@ class CommandDispatcher {
     public:
         CommandDispatcher() = default;
         virtual ~CommandDispatcher(){}
-//        void Dispatch(InputType input);
+        void SetButtonList(std::vector<std::shared_ptr<Button>>* _list);
+        CommandCode Dispatch(const InputType& input);
 
     private:
-        //will include shared pointers to lists of entities (Fractal, PuzzleSet, Buttons, etc)
+        std::vector<std::shared_ptr<Button>>* m_ButtonList;
+        //list of puzzleset
+        //list of puzzles
+        //list of fractals
 };
 
 }

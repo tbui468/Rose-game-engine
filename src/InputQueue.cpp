@@ -9,7 +9,17 @@ void InputQueue::PollEvents() {
     SDL_Event event;
 
     while(SDL_PollEvent(&event)) {
-        if(event.type == SDL_QUIT) m_Inputs.push(InputType::Close);
+        switch(event.type) {
+            case SDL_QUIT: 
+                m_Inputs.push(InputType::Close);
+                break;
+            case SDL_MOUSEBUTTONDOWN: 
+                if(event.button.button == SDL_BUTTON_LEFT)
+                    m_Inputs.push(InputType::LeftTap);
+                else if(event.button.button == SDL_BUTTON_RIGHT)
+                    m_Inputs.push(InputType::RightTap);
+                break;
+        }
     }
 }
 

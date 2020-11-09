@@ -3,6 +3,8 @@
 
 
 #include <iostream>
+#include <vector>
+#include <memory>
 #include <SDL.h>
 
 #include "Utility.h"
@@ -12,6 +14,7 @@
 #include "InputQueue.h"
 #include "CommandDispatcher.h"
 #include "AnimationTimer.h"
+#include "CommandCode.h"
 
 namespace sqs {
 
