@@ -1,5 +1,3 @@
-#include <SDL.h>
-
 #include "Squares.h"
 
 
@@ -11,10 +9,8 @@ uint32_t WINDOW_HEIGHT = 270 * SCALE;
 //event system to get mouse/keyboard input
 
 int main(int, char**) {
-    if(SDL_Init(SDL_INIT_VIDEO) != 0) {
-        std::cout << "SDL_Init error!!!" << SDL_GetError() << std::endl;
-        return 1;
-    }
+
+    sqs::Init();
 
     SDL_Window* window = SDL_CreateWindow("Squares", 100, 100, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
     if(window == nullptr) {
@@ -40,30 +36,97 @@ int main(int, char**) {
         return 1;
     }
 
-    SDL_Event event;
     bool quit = false;
 
     SDL_Rect r;
     r.w = 100;
     r.h = 50;
 
+    sqs::CartCoords coords0;
+    coords0.x = 0;
+    coords0.y = 0;
+
+    sqs::CartCoords coords1;
+    coords1.x = 300;
+    coords1.y = 200;
+
+    sqs::Button button0(coords0, 0);
+    sqs::Button button1(coords1, 0);
+
+    button0.MoveTo(coords1);
+    button1.MoveTo(coords0);
+
+    SDL_Rect r0;
+    SDL_Rect r1;
+
+
+    sqs::AnimationTimer timer;
+    timer.SetSpeed(0.0075f);
+
+    sqs::EntityList<Button> buttonList;
+    buttonList.Add(button0);
+    buttonList.Add(button1);
+
+    sqs::InputQueue inputQueue;
 
     while(!quit) {
-        //events
-        while(SDL_PollEvent(&event)) {
-            if(event.type == SDL_QUIT) quit = true;
+
+        inputQueue.PollEvents();
+
+        if(!inputQueue.Empty()) {
+            sqs::InputType input = inputQueue.NextInput();
+            switch(input) {
+                case sqs::InputType::Close: quit = true; break;
+            }
+          //  commandDispatcher.Dispatch(input);
         }
 
+        timer.Update();
+        float sigmoid = timer.GetSigmoidParameter();
+
+        for(Button& b: buttonList) {
+            b.OnAnimationUpdate(sigmoid);
+            if(timer.EndAnimation()) b.OnAnimationEnd();
+        }
+
+/*
+        button0.OnAnimationUpdate(sigmoid);
+        button1.OnAnimationUpdate(sigmoid);
+
+        if(timer.EndAnimation()) {
+            button0.OnAnimationEnd();
+            button1.OnAnimationEnd();
+        }*/
+
+
+        r0.x = button0.x;
+        r0.y = button0.y;
+        r0.w = 100;
+        r0.h = 50;
+
+
+        r1.x = button1.x;
+        r1.y = button1.y;
+        r1.w = 100;
+        r1.h = 50;
+
         //draw
-        r.x=rand()%500;
-        r.y=rand()%500;
+        //renderer.Clear(color);
+        //renderer.SetShader();
+        //renderer.Draw(button0);
+        //renderer.Draw(fractals);
+        //renderer.
 
         SDL_SetRenderTarget(renderer, texture);
         SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
         SDL_RenderClear(renderer);
-        SDL_RenderDrawRect(renderer,&r);
+
+        SDL_RenderDrawRect(renderer,&r0);
+        SDL_RenderDrawRect(renderer,&r1);
         SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0x00);
-        SDL_RenderFillRect(renderer, &r);
+        SDL_RenderFillRect(renderer, &r0);
+        SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0x00);
+        SDL_RenderFillRect(renderer, &r1);
         SDL_SetRenderTarget(renderer, NULL);
         SDL_RenderCopy(renderer, texture, NULL, NULL);
         SDL_RenderPresent(renderer);
