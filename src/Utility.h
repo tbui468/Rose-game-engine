@@ -16,6 +16,11 @@ static int Init() {
     return 0;
 }
 
+static int Shutdown() {
+    SDL_Quit();
+    return 0;
+}
+
 template<typename T, typename... Args>
 void CleanUp(T* t, Args&&...args) {
     CleanUp(t);
@@ -23,26 +28,26 @@ void CleanUp(T* t, Args&&...args) {
 }
 
 template<>
-inline void CleanUp<SDL_Window>(SDL_Window *win) {
-    if(!win) return;
-    SDL_DestroyWindow(win);
+inline void CleanUp<Window>(Window *window) {
+    if(!window) return;
+    SDL_DestroyWindow(window->GetHandle());
 }
 template<>
-inline void CleanUp<SDL_Renderer>(SDL_Renderer *ren) {
-    if(!ren) return;
-    SDL_DestroyRenderer(ren);
+inline void CleanUp<Renderer>(Renderer *renderer) {
+    if(!renderer) return;
+    SDL_DestroyRenderer(renderer->GetHandle());
 }
 template<>
-inline void CleanUp<SDL_Texture>(SDL_Texture *tex) {
-    if(!tex) return;
-    SDL_DestroyTexture(tex);
+inline void CleanUp<Texture>(Texture *texture) {
+    if(!texture) return;
+    SDL_DestroyTexture(texture->GetHandle());
 }
+/*
 template<>
 inline void CleanUp<SDL_Surface>(SDL_Surface *surf) {
     if(!surf) return;
     SDL_FreeSurface(surf);
-}
-
+}*/
 
 std::string GetAssetsPath(const std::string &subDir = "") {
 

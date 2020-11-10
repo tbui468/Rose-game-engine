@@ -1,50 +1,31 @@
 #include "Squares.h"
 
-extern const int32_t SCALE = 2;
-extern const int32_t WINDOW_WIDTH = 480 * SCALE;
-extern const int32_t WINDOW_HEIGHT = 270 * SCALE;
-
 
 int main(int, char**) {
 
     sqs::Init();
 
-    SDL_Window* window = SDL_CreateWindow("Squares", 100, 100, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
-    if(window == nullptr) {
-        std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
-        return 1;
-    } 
+    sqs::Window* window = new sqs::Window(960, 540, true);
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if( renderer == nullptr) {
-        sqs::CleanUp(window);
-        std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return 1;
-    }
+    sqs::Renderer* renderer = new sqs::Renderer(window);
 
-    //use stb_image to load png and create texture
-    SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
-    if(texture == nullptr) {
-        sqs::CleanUp(renderer, window);
-        std::cout << "SDL_CreateTexture Error: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return 1;
-    }
+    sqs::Texture* texture = new sqs::Texture(renderer, window);
 
 
+    float windowWidth = static_cast<float>(window->GetWidth());
+    float windowHeight = static_cast<float>(window->GetHeight());
 
     sqs::CartCoords startCoords;
-    startCoords.x = WINDOW_WIDTH * .5f;
-    startCoords.y = WINDOW_HEIGHT * .5f - 50.0f;
+    startCoords.x = windowWidth * .5f;
+    startCoords.y = windowHeight * .5f - 50.0f;
 
     sqs::CartCoords quitCoords;
-    quitCoords.x = WINDOW_WIDTH * .5f;
-    quitCoords.y = WINDOW_HEIGHT * .5f + 50.0f;
+    quitCoords.x = windowWidth * .5f;
+    quitCoords.y = windowHeight * .5f + 50.0f;
 
     sqs::CartCoords closeCoords;
-    closeCoords.x = WINDOW_WIDTH + 50;
-    closeCoords.y = 0.0f + 50;
+    closeCoords.x = windowWidth + 50.0f;
+    closeCoords.y = 0.0f + 50.f;
 
     std::shared_ptr<sqs::Entity> startButton = std::make_shared<sqs::Button>(startCoords, 0);
     std::shared_ptr<sqs::Entity> quitButton = std::make_shared<sqs::Button>(quitCoords, 0);
@@ -85,12 +66,13 @@ int main(int, char**) {
                     timer.ResetParameter();
                     break;
                 case sqs::InputType::LeftTap: 
+                    std::cout << mouseCoords.x << ", " << mouseCoords.y << std::endl;
                     if(quitButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y)))
                         quit = true;
                     if(startButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y))) {
-                        startButton->MoveTo({startCoords.x + WINDOW_WIDTH, startCoords.y});
-                        quitButton->MoveTo({quitCoords.x - WINDOW_WIDTH, quitCoords.y});
-                        closeButton->MoveTo({WINDOW_WIDTH - 100, 50});
+                        startButton->MoveTo({startCoords.x + windowWidth, startCoords.y});
+                        quitButton->MoveTo({quitCoords.x - windowWidth, quitCoords.y});
+                        closeButton->MoveTo({windowWidth - 100.0f, 50.f});
                         std::cout << "Clicked start button" << std::endl;
                     }
                     if(closeButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y))) {
@@ -112,14 +94,12 @@ int main(int, char**) {
             }
         }
 
-        //std::cout << timer.GetParameter() << std::endl;
-
         timer.Update();
         float sigmoid = timer.GetSigmoidParameter();
 
-        SDL_SetRenderTarget(renderer, texture);
-        SDL_SetRenderDrawColor(renderer, 0xFD, 0xF6, 0xE3, 0x00);
-        SDL_RenderClear(renderer);
+        SDL_SetRenderTarget(renderer->GetHandle(), texture->GetHandle());
+        SDL_SetRenderDrawColor(renderer->GetHandle(), 0xFD, 0xF6, 0xE3, 0x00);
+        SDL_RenderClear(renderer->GetHandle());
 
 
         for(std::shared_ptr<sqs::Entity> b: entityList) {
@@ -127,18 +107,19 @@ int main(int, char**) {
             if(timer.EndAnimation()) b->OnAnimationEnd();
             r.x = b->x - r.w * .5f;
             r.y = b->y - r.h * .5f;
-            SDL_RenderDrawRect(renderer,&r);
-            SDL_SetRenderDrawColor(renderer, 0x93, 0xA1, 0xA1, 0x00);
-            SDL_RenderFillRect(renderer, &r);
+            SDL_RenderDrawRect(renderer->GetHandle(),&r);
+            SDL_SetRenderDrawColor(renderer->GetHandle(), 0x93, 0xA1, 0xA1, 0x00);
+            SDL_RenderFillRect(renderer->GetHandle(), &r);
         }
 
-        SDL_SetRenderTarget(renderer, NULL);
-        SDL_RenderCopy(renderer, texture, NULL, NULL);
-        SDL_RenderPresent(renderer);
+        SDL_SetRenderTarget(renderer->GetHandle(), NULL);
+        SDL_RenderCopy(renderer->GetHandle(), texture->GetHandle(), NULL, NULL);
+        SDL_RenderPresent(renderer->GetHandle());
     }
 
     sqs::CleanUp(texture, renderer, window);
-    SDL_Quit();
+    sqs::Shutdown();
+
     return 0;
 }
 
