@@ -1,6 +1,7 @@
 #ifndef SQUARES_COMMON_H
 #define SQUARES_COMMON_H
 
+
 namespace sqs {
 
 struct CartCoords {

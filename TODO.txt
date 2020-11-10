@@ -1,20 +1,32 @@
 Set build (x86 or x64) (or should this be a build option???)
 
+SDL2 tutorial properly finding resource paths
 SDL2 tutorial easy cleanup
+Github Actions cmake CI???
 
+CommandDispatcher 
+    problem with Dispatch(InputType input) function
+        compiler warning says issue with const
+        It also seems to be a problem with namespaces
+
+
+Should try to abstract from SDL to make it easier to use this framework later
+    in othe words, have no SDL function calls in Squares.cpp - first step is abstracting window and renderer out (see next item)
+
+    Look at LazyFoo website tutorial for setting up OpenGL with Glew (set up as SDL extension library??)
+        abstract all opengl/SDL functionality to Renderer class
 
 Each entity/object on screen IS a quad (inherits from Quad)
     Make Quad class the contain general functions for all entities
-        Quad()
         Draw() (but should save a reference to all entities in a list and make a draw call all in a drawing controller)
         DrawTransformed() "
-        MoveTo
-        ScaleTo
-        FadeTo
-        RotateTo
-        Collision
-        SetBoundingBox
         SetSprite
+
+
+Rig up event system so button.OnClick() works using an input queue
+    //how to abstract InputQueue away from SDL????
+    //input queue only needs to worry about inputs I want to use for the application
+
 
 Asset sprites Loading
 Access OpenGL from SDL
