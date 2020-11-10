@@ -1,9 +1,14 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-Modern OpenGL using Glad
-    compile glad as a static library and link (using cmake)
+integrate glm for the mathy bits 
+    test by making a simple matrix
 
-Loading assets (Sprites)
+loading sprites stb_image or SDL_image
+    need to use opengl shaders to draw texture to test 
+
+use opengl/glm and sprites and create some sample Fractals in Squares.cpp
+    have them rotate, translate, and reflect
+    once I know how to do it, start thinking about how to abstract into easy-to-use API
 
 SDL tutorial on not putting everything in main (And logging)
 

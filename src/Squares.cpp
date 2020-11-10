@@ -16,13 +16,43 @@ int main(int, char**) {
 
     sqs::Texture* texture = new sqs::Texture(renderer, window);
 
-    //for OpenGL
+    /////////////////OpenGL test////////////////
     SDL_GLContext glContext;
     glContext = SDL_GL_CreateContext(window->GetHandle());
     if(glContext == NULL)
         std::cout << "Could not create OpenGl context" << std::endl;
     else
         std::cout << "OpenGL context created!" << std::endl;
+
+    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+    // Also request a depth buffer
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
+    gladLoadGLLoader(SDL_GL_GetProcAddress);
+    SDL_GL_SetSwapInterval(1);
+    int w,h;
+    SDL_GetWindowSize(window->GetHandle(), &w, &h);
+    glViewport(0, 0, w, h);
+    glClearColor(0.0f, 0.5f, 1.0f, 0.0f);
+
+    GLuint vertexArrayID;
+    glGenVertexArrays(1, &vertexArrayID);
+    glBindVertexArray(vertexArrayID);
+
+    static const GLfloat vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        0.0f, 0.5f, 0.0f
+    };
+
+    GLuint vertexBuffer;
+    glGenBuffers(1, &vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    /////////////////////////////////////////////////////////
 
     float windowWidth = static_cast<float>(window->GetWidth());
     float windowHeight = static_cast<float>(window->GetHeight());
@@ -87,6 +117,7 @@ int main(int, char**) {
                     timer.ResetParameter();
                     break;
                 case sqs::InputType::LeftTap: 
+                    /*
                     std::cout << mouseCoords.x << ", " << mouseCoords.y << std::endl;
                     if(quitButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y)))
                         quit = true;
@@ -101,7 +132,7 @@ int main(int, char**) {
                         quitButton->MoveTo(quitCoords);
                         closeButton->MoveTo(closeCoords);
                         std::cout << "Clicked start button" << std::endl;
-                    }
+                    }*/
                     status = sqs::CommandCode::Success;
                     timer.ResetParameter();
                     break;
@@ -117,6 +148,16 @@ int main(int, char**) {
 
         timer.Update(deltaTime);
         float sigmoid = timer.GetSigmoidParameter();
+
+        //opengl stuff
+        glClear(GL_COLOR_BUFFER_BIT);
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDisableVertexAttribArray(0);
+        SDL_GL_SwapWindow(window->GetHandle());
+/*
 
         SDL_SetRenderTarget(renderer->GetHandle(), texture->GetHandle());
         SDL_SetRenderDrawColor(renderer->GetHandle(), 0xFD, 0xF6, 0xE3, 0x00);
@@ -135,7 +176,7 @@ int main(int, char**) {
 
         SDL_SetRenderTarget(renderer->GetHandle(), NULL);
         SDL_RenderCopy(renderer->GetHandle(), texture->GetHandle(), NULL, NULL);
-        SDL_RenderPresent(renderer->GetHandle());
+        SDL_RenderPresent(renderer->GetHandle());*/
     }
 
     sqs::CleanUp(texture, renderer, window);

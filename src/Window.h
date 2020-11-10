@@ -8,7 +8,7 @@ namespace sqs {
 class Window {
     public:
         Window(int32_t width, int32_t height, bool fullscreen): m_Width(width), m_Height(height) {
-            m_Handle = SDL_CreateWindow("Squares", 100, 100, width, height, SDL_WINDOW_OPENGL);
+            m_Handle = SDL_CreateWindow("Squares", 100, 100, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
             if(m_Handle == nullptr) {
                 std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
                 SDL_Quit();
