@@ -7,8 +7,10 @@ namespace sqs {
 
 class Renderer {
     public:
-        Renderer(Window* window) {
-            m_Handle = SDL_CreateRenderer(window->GetHandle(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        Renderer(Window* window, bool vsync) {
+            if(vsync) m_Handle = SDL_CreateRenderer(window->GetHandle(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+            else m_Handle = SDL_CreateRenderer(window->GetHandle(), -1, SDL_RENDERER_ACCELERATED);
+
             if( m_Handle == nullptr) {
                 std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
                 SDL_DestroyWindow(window->GetHandle());

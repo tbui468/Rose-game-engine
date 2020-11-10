@@ -20,13 +20,13 @@ class AnimationTimer {
         float GetParameter() const {return m_Parameter;}
         float GetSigmoidParameter() const {return Sigmoid(m_Parameter);}
         float GetSpeed() const {return m_Speed;}
-        void Update() {
+        void Update(double deltaTime) {
             if(m_Parameter >= 1.0f) {
                 m_EndAnimation = false;
                 return;
             }
             else {
-                m_Parameter += m_Speed;
+                m_Parameter += m_Speed * deltaTime;
                 if(m_Parameter >= 1.0f) m_EndAnimation = true;
                 else m_EndAnimation = false;
             }

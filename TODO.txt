@@ -1,43 +1,18 @@
+REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
+
+Modern OpenGL using Glad
+    compile glad as a static library and link (using cmake)
+
+Loading assets (Sprites)
+
+SDL tutorial on not putting everything in main (And logging)
+
+Display FPS (on screen)
+    look at Lazy Foo tutorial for basic and advanced timers
+
+
+Look at LazyFoo website tutorial for setting up OpenGL with Glew (set up as SDL extension library??)
+    abstract all opengl/SDL functionality to Renderer class
+
 Set build (x86 or x64) (or should this be a build option???)
-
-SDL tutorial on not putting everything in main
-Github Actions cmake CI???
-
-Abstract renderer 
-
-Abstract Texture??? (or will I replace this later??)
-
-Implement sprites for Entities (so that I can start making Puzzlesets, puzzles, fractals, and make buttons not use SDL_Rect)
-    look at tutorials online for this - can SDL do transformations without me needing to use OpenGL?? (and Shaders)
-
-Should try to abstract from SDL to make it easier to use this framework later
-    in othe words, have no SDL function calls in Squares.cpp - first step is abstracting window and renderer out (see next item)
-
-    Look at LazyFoo website tutorial for setting up OpenGL with Glew (set up as SDL extension library??)
-        abstract all opengl/SDL functionality to Renderer class
-
-Each entity/object on screen IS a quad (inherits from Quad)
-    Make Quad class the contain general functions for all entities
-        Draw() (but should save a reference to all entities in a list and make a draw call all in a drawing controller)
-        DrawTransformed() "
-        SetSprite
-
-
-Rig up event system so button.OnClick() works using an input queue
-    //how to abstract InputQueue away from SDL????
-    //input queue only needs to worry about inputs I want to use for the application
-
-
-Asset sprites Loading
-Access OpenGL from SDL
-Input Queue
-Command Dispatcher
-
-SDL LIBRARY
-    -need to figure out how to use SDL (either as dynamic (shared) or static library)
-    -currently, I just copied dll into same directory as executable
-    -static will be faster, but I'll need to download SDL source, and build
-    -dynamic, I'm not sure
-
-
 

@@ -1,16 +1,28 @@
 #include "Squares.h"
 
+#include "glad/glad.h"
+
 
 int main(int, char**) {
 
+
+
     sqs::Init();
+    bool fullScreen = false;
+    sqs::Window* window = new sqs::Window(960, 540, fullScreen);
 
-    sqs::Window* window = new sqs::Window(960, 540, true);
-
-    sqs::Renderer* renderer = new sqs::Renderer(window);
+    bool vsync = false;
+    sqs::Renderer* renderer = new sqs::Renderer(window, vsync);
 
     sqs::Texture* texture = new sqs::Texture(renderer, window);
 
+    //for OpenGL
+    SDL_GLContext glContext;
+    glContext = SDL_GL_CreateContext(window->GetHandle());
+    if(glContext == NULL)
+        std::cout << "Could not create OpenGl context" << std::endl;
+    else
+        std::cout << "OpenGL context created!" << std::endl;
 
     float windowWidth = static_cast<float>(window->GetWidth());
     float windowHeight = static_cast<float>(window->GetHeight());
@@ -24,7 +36,7 @@ int main(int, char**) {
     quitCoords.y = windowHeight * .5f + 50.0f;
 
     sqs::CartCoords closeCoords;
-    closeCoords.x = windowWidth + 50.0f;
+    closeCoords.x = windowWidth + 100.0f;
     closeCoords.y = 0.0f + 50.f;
 
     std::shared_ptr<sqs::Entity> startButton = std::make_shared<sqs::Button>(startCoords, 0);
@@ -41,7 +53,7 @@ int main(int, char**) {
 
 
     sqs::AnimationTimer timer;
-    timer.SetSpeed(0.02f);
+    timer.SetSpeed(0.001f);
 
     std::vector<std::shared_ptr<sqs::Entity>> entityList;
     entityList.push_back(quitButton);
@@ -50,8 +62,17 @@ int main(int, char**) {
 
     sqs::InputQueue inputQueue;
 
+    //delta time
+    uint64_t now = SDL_GetPerformanceCounter();
+    uint64_t last = 0;
+    double deltaTime = 0.0;
+
+
     bool quit = false;
     while(!quit) {
+        last = now;
+        now = SDL_GetPerformanceCounter();
+        deltaTime = static_cast<double>((now - last) * 1000) / static_cast<double>(SDL_GetPerformanceFrequency());
 
         inputQueue.PollEvents();
 
@@ -94,7 +115,7 @@ int main(int, char**) {
             }
         }
 
-        timer.Update();
+        timer.Update(deltaTime);
         float sigmoid = timer.GetSigmoidParameter();
 
         SDL_SetRenderTarget(renderer->GetHandle(), texture->GetHandle());
