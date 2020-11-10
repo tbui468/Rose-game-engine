@@ -1,12 +1,12 @@
 Set build (x86 or x64) (or should this be a build option???)
 
-SDL2 tutorial properly finding resource paths
-SDL2 tutorial easy cleanup
+SDL tutorial on not putting everything in main
 Github Actions cmake CI???
 
-Get collisions in commmand dispatcher working
+Bounding box in Entity needs to be updated when entity moves around too
+    currently it doesn't do that
 
-
+Implement events for window resizing/fullscreen
 
 Should try to abstract from SDL to make it easier to use this framework later
     in othe words, have no SDL function calls in Squares.cpp - first step is abstracting window and renderer out (see next item)

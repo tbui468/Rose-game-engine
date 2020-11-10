@@ -7,9 +7,9 @@
 #include <memory>
 #include <SDL.h>
 
-#include "Utility.h"
 #include "SquaresCommon.h"
-#include "Quad.h"
+#include "Utility.h"
+#include "Entity.h"
 #include "Button.h"
 #include "InputQueue.h"
 #include "CommandDispatcher.h"

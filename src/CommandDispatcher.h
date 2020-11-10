@@ -15,14 +15,11 @@ class CommandDispatcher {
     public:
         CommandDispatcher() = default;
         virtual ~CommandDispatcher(){}
-        void SetButtonList(std::vector<std::shared_ptr<Button>>* _list);
+        void SetEntityList(std::vector<std::shared_ptr<Entity>>* entityList);
         CommandCode Dispatch(const InputType& input, int mouseX, int mouseY);
 
     private:
-        std::vector<std::shared_ptr<Button>>* m_ButtonList;
-        //list of puzzleset
-        //list of puzzles
-        //list of fractals
+        std::vector<std::shared_ptr<Entity>>* m_EntityList;
 };
 
 }

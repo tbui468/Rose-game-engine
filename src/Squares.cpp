@@ -1,13 +1,11 @@
 #include "Squares.h"
 
+extern const int32_t SCALE = 2;
+extern const int32_t WINDOW_WIDTH = 480 * SCALE;
+extern const int32_t WINDOW_HEIGHT = 270 * SCALE;
 
-uint32_t SCALE = 2;
-uint32_t WINDOW_WIDTH = 480 * SCALE;
-uint32_t WINDOW_HEIGHT = 270 * SCALE;
 
 int main(int, char**) {
-
-    std::cout << sqs::GetAssetsPath() << std::endl;
 
     sqs::Init();
 
@@ -36,19 +34,25 @@ int main(int, char**) {
 
 
 
-    sqs::CartCoords coords0;
-    coords0.x = 0;
-    coords0.y = 0;
+    sqs::CartCoords startCoords;
+    startCoords.x = WINDOW_WIDTH * .5f;
+    startCoords.y = WINDOW_HEIGHT * .5f - 50.0f;
 
-    sqs::CartCoords coords1;
-    coords1.x = 300;
-    coords1.y = 200;
+    sqs::CartCoords quitCoords;
+    quitCoords.x = WINDOW_WIDTH * .5f;
+    quitCoords.y = WINDOW_HEIGHT * .5f + 50.0f;
 
-    std::shared_ptr<sqs::Button> button0 = std::make_shared<sqs::Button>(coords0, 0);
-    std::shared_ptr<sqs::Button> button1 = std::make_shared<sqs::Button>(coords1, 0);
+    sqs::CartCoords closeCoords;
+    closeCoords.x = WINDOW_WIDTH + 50;
+    closeCoords.y = 0.0f + 50;
 
-    button0->MoveTo(coords1);
-    button1->MoveTo(coords0);
+    std::shared_ptr<sqs::Entity> startButton = std::make_shared<sqs::Button>(startCoords, 0);
+    std::shared_ptr<sqs::Entity> quitButton = std::make_shared<sqs::Button>(quitCoords, 0);
+    std::shared_ptr<sqs::Entity> closeButton = std::make_shared<sqs::Button>(closeCoords, 0);
+
+    startButton->SetBoundingBox(0.0f, 0.0f, 100, 50);
+    quitButton->SetBoundingBox(0.0f, 0.0f, 100, 50);
+    closeButton->SetBoundingBox(0.0f, 0.0f, 100, 50);
 
     SDL_Rect r;
     r.w = 100;
@@ -56,14 +60,12 @@ int main(int, char**) {
 
 
     sqs::AnimationTimer timer;
-    timer.SetSpeed(0.01f);
+    timer.SetSpeed(0.02f);
 
-    std::vector<std::shared_ptr<sqs::Button>> buttonList;
-    buttonList.push_back(button0);
-    buttonList.push_back(button1);
-
-    sqs::CommandDispatcher commandDispatcher;
-    commandDispatcher.SetButtonList(&buttonList);
+    std::vector<std::shared_ptr<sqs::Entity>> entityList;
+    entityList.push_back(quitButton);
+    entityList.push_back(startButton);
+    entityList.push_back(closeButton);
 
     sqs::InputQueue inputQueue;
 
@@ -72,37 +74,61 @@ int main(int, char**) {
 
         inputQueue.PollEvents();
 
-        if(!inputQueue.Empty()) {
-            sqs::InputType input = inputQueue.NextInput();
+        sqs::CommandCode status = sqs::CommandCode::Failed;
+        while(!inputQueue.Empty() && status == sqs::CommandCode::Failed) {
             sqs::CartCoordsi mouseCoords = inputQueue.GetMouseCoords();
-            timer.ResetParameter();            
-            sqs::CommandCode status = sqs::CommandCode::Failed;
-            while(status == sqs::CommandCode::Failed) {
-                status = commandDispatcher.Dispatch(input, mouseCoords.x, mouseCoords.y);
+            sqs::InputType input = inputQueue.NextInput();
+            switch(input) {
+                case sqs::InputType::Close: 
+                    quit = true;
+                    status = sqs::CommandCode::Success;
+                    timer.ResetParameter();
+                    break;
+                case sqs::InputType::LeftTap: 
+                    if(quitButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y)))
+                        quit = true;
+                    if(startButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y))) {
+                        startButton->MoveTo({startCoords.x + WINDOW_WIDTH, startCoords.y});
+                        quitButton->MoveTo({quitCoords.x - WINDOW_WIDTH, quitCoords.y});
+                        closeButton->MoveTo({WINDOW_WIDTH - 100, 50});
+                        std::cout << "Clicked start button" << std::endl;
+                    }
+                    if(closeButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y))) {
+                        startButton->MoveTo(startCoords);
+                        quitButton->MoveTo(quitCoords);
+                        closeButton->MoveTo(closeCoords);
+                        std::cout << "Clicked start button" << std::endl;
+                    }
+                    status = sqs::CommandCode::Success;
+                    timer.ResetParameter();
+                    break;
+                case sqs::InputType::RightTap: 
+                    status = sqs::CommandCode::Success;
+                    timer.ResetParameter();
+                    break;
+                default:
+                    status = sqs::CommandCode::Failed;
+                    break;
             }
-
-            std::cout << mouseCoords.x << ", " << mouseCoords.y << std::endl;
-
-            if(status == sqs::CommandCode::Quit) quit = true;
         }
+
+        //std::cout << timer.GetParameter() << std::endl;
 
         timer.Update();
         float sigmoid = timer.GetSigmoidParameter();
 
-
-
         SDL_SetRenderTarget(renderer, texture);
-        SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x00);
+        SDL_SetRenderDrawColor(renderer, 0xFD, 0xF6, 0xE3, 0x00);
         SDL_RenderClear(renderer);
 
 
-        for(std::shared_ptr<sqs::Button> b: buttonList) {
+        for(std::shared_ptr<sqs::Entity> b: entityList) {
             b->OnAnimationUpdate(sigmoid);
             if(timer.EndAnimation()) b->OnAnimationEnd();
-            r.x = b->x;
-            r.y = b->y;
+            r.x = b->x - r.w * .5f;
+            r.y = b->y - r.h * .5f;
             SDL_RenderDrawRect(renderer,&r);
-            SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0x00);
+            SDL_SetRenderDrawColor(renderer, 0x93, 0xA1, 0xA1, 0x00);
             SDL_RenderFillRect(renderer, &r);
         }
 
