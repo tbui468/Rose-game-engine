@@ -20,7 +20,7 @@ class Quad {
         virtual void OnAnimationUpdate(float t);
         virtual void OnAnimationEnd();
     public:
-        bool Collision(float x, float y) const;
+        bool PointCollision(int pointX, int pointY) const;
         void SetBoundingCoords(float x, float y, float w, float h);
 
     public:

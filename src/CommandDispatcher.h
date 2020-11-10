@@ -16,7 +16,7 @@ class CommandDispatcher {
         CommandDispatcher() = default;
         virtual ~CommandDispatcher(){}
         void SetButtonList(std::vector<std::shared_ptr<Button>>* _list);
-        CommandCode Dispatch(const InputType& input);
+        CommandCode Dispatch(const InputType& input, int mouseX, int mouseY);
 
     private:
         std::vector<std::shared_ptr<Button>>* m_ButtonList;

@@ -31,5 +31,10 @@ InputType InputQueue::NextInput(){
 }
 
 
+CartCoordsi InputQueue::GetMouseCoords() {
+    CartCoordsi mouseCoords;
+    SDL_GetMouseState(&mouseCoords.x, &mouseCoords.y);
+    return mouseCoords;
+}
 
 }

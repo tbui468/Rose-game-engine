@@ -10,7 +10,6 @@ class Button : public Quad {
         Button() = default;
         Button(CartCoords pos, uint32_t depth);
         virtual ~Button() {}
-        bool OnClick();
 };
 
 }

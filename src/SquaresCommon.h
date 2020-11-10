@@ -9,6 +9,11 @@ struct CartCoords {
     float y = 0.0f;
 };
 
+struct CartCoordsi {
+    int x = 0;
+    int y = 0;
+};
+
 using Scale = CartCoords;
 
 struct PolarCoords {

@@ -4,10 +4,8 @@ SDL2 tutorial properly finding resource paths
 SDL2 tutorial easy cleanup
 Github Actions cmake CI???
 
-CommandDispatcher 
-    problem with Dispatch(InputType input) function
-        compiler warning says issue with const
-        It also seems to be a problem with namespaces
+Get collisions in commmand dispatcher working
+
 
 
 Should try to abstract from SDL to make it easier to use this framework later

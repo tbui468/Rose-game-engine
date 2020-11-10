@@ -36,7 +36,9 @@ void Quad::OnAnimationEnd() {
 }
 
 
-bool Quad::Collision(float _x, float _y) const {
+bool Quad::PointCollision(int pointX, int pointY) const {
+    float _x = static_cast<float>(pointX);
+    float _y = static_cast<float>(pointY);
     if(_x < m_BoundingBox.x) return false;
     if(_y < m_BoundingBox.y) return false;
     if(_x > m_BoundingBox.x + m_BoundingBox.w) return false;

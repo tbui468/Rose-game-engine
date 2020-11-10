@@ -7,6 +7,8 @@ uint32_t WINDOW_HEIGHT = 270 * SCALE;
 
 int main(int, char**) {
 
+    std::cout << sqs::GetAssetsPath() << std::endl;
+
     sqs::Init();
 
     SDL_Window* window = SDL_CreateWindow("Squares", 100, 100, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
@@ -17,7 +19,7 @@ int main(int, char**) {
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if( renderer == nullptr) {
-        SDL_DestroyWindow(window);
+        sqs::CleanUp(window);
         std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
         SDL_Quit();
         return 1;
@@ -26,8 +28,7 @@ int main(int, char**) {
     //use stb_image to load png and create texture
     SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
     if(texture == nullptr) {
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
+        sqs::CleanUp(renderer, window);
         std::cout << "SDL_CreateTexture Error: " << SDL_GetError() << std::endl;
         SDL_Quit();
         return 1;
@@ -73,11 +74,14 @@ int main(int, char**) {
 
         if(!inputQueue.Empty()) {
             sqs::InputType input = inputQueue.NextInput();
+            sqs::CartCoordsi mouseCoords = inputQueue.GetMouseCoords();
             timer.ResetParameter();            
             sqs::CommandCode status = sqs::CommandCode::Failed;
             while(status == sqs::CommandCode::Failed) {
-                status = commandDispatcher.Dispatch(input);
+                status = commandDispatcher.Dispatch(input, mouseCoords.x, mouseCoords.y);
             }
+
+            std::cout << mouseCoords.x << ", " << mouseCoords.y << std::endl;
 
             if(status == sqs::CommandCode::Quit) quit = true;
         }
@@ -107,10 +111,7 @@ int main(int, char**) {
         SDL_RenderPresent(renderer);
     }
 
-
-    SDL_DestroyTexture(texture);
-    SDL_DestroyRenderer(renderer);    
-    SDL_DestroyWindow(window);
+    sqs::CleanUp(texture, renderer, window);
     SDL_Quit();
     return 0;
 }

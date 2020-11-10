@@ -7,8 +7,4 @@ Button::Button(CartCoords pos, uint32_t depth) {
     SetDepth(depth);
 }
 
-bool Button::OnClick() {
-    return true;
-}
-
 }
