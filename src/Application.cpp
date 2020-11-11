@@ -10,25 +10,21 @@
 #include "InputQueue.h"
 #include "Utility.h"
 
-namespace rse {
+namespace rose {
 
-    void Application::Init() {
+    Application::Application() {
         if(SDL_Init(SDL_INIT_VIDEO) != 0) {
             std::cout << "SDL_Init error!!!" << SDL_GetError() << std::endl;
         }
 
-        bool fullScreen = false;
-        m_Window = new Window(960, 540, fullScreen);
+        bool fullScreen = true;
+        m_Window = std::make_shared<Window>(960, 540, fullScreen);
 
         bool vsync = true;
-        m_Renderer = new Renderer(m_Window, vsync);
-
-
-
+        m_Renderer = std::make_shared<Renderer>(m_Window, vsync);
     }
 
-
-    void Application::SetLayer(Layer* layer) {
+    void Application::SetLayer(std::shared_ptr<Layer> layer) {
         m_Layer = layer;
     }
 
@@ -75,24 +71,6 @@ namespace rse {
 
 
 
-        /////////////////OpenGL: setting up data test////////////////
-        //temp: just to test open gl
-
-        GLuint vertexArrayID;
-        glGenVertexArrays(1, &vertexArrayID);
-        glBindVertexArray(vertexArrayID);
-
-        static const GLfloat vertices[] = {
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            0.0f, 0.5f, 0.0f
-        };
-
-        GLuint vertexBuffer;
-        glGenBuffers(1, &vertexBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        /////////////////////////////////////////////////////////
         //temp:
         AnimationTimer timer;
         timer.SetSpeed(0.001f);
@@ -104,6 +82,9 @@ namespace rse {
             m_Last = m_Now;
             m_Now = SDL_GetPerformanceCounter();
             m_DeltaTime = static_cast<double>((m_Now - m_Last) * 1000) / static_cast<double>(SDL_GetPerformanceFrequency());
+
+            m_Layer->Update();
+            m_Layer->Draw();
 
             inputQueue.PollEvents();
 
@@ -150,15 +131,10 @@ namespace rse {
             timer.Update(m_DeltaTime);
             float sigmoid = timer.GetSigmoidParameter();
 
-            //opengl stuff
-            glClear(GL_COLOR_BUFFER_BIT);
-            glEnableVertexAttribArray(0);
-            glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-            glDrawArrays(GL_TRIANGLES, 0, 3);
-            glDisableVertexAttribArray(0);
-            SDL_GL_SwapWindow(m_Window->GetHandle());
+            m_Renderer->DrawScene();
 
+
+            SDL_GL_SwapWindow(m_Window->GetHandle());
 
         }
     }

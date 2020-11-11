@@ -1,7 +1,7 @@
 #ifndef COMMAND_CODE_H
 #define COMMAND_CODE_H
 
-namespace rse {
+namespace rose {
 
 enum class CommandCode {
     Success,

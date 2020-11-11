@@ -1,31 +1,42 @@
 #include "Rose.h"
-#include "glad/glad.h"
 
-class MainLayer: public rse::Layer{
+class MainLayer: public rose::Layer{
     public:
         MainLayer() {
-            //initialize all game state/objects
+            //m_StartButton = new Ref<Button>();
+            //
+            //create a bunch of instances
+            //m_EntityList->Push(instances);
         }
-        virtual ~MainLayer() {}
+        virtual ~MainLayer() {
+        }
         virtual void Update() override {
-
+            //if InputQueue.Next() == Input::LeftClick
+                //startButton->MoveTo(....)
+            //if InputQueue.Next() == Input::RightClick
+                //for(Entity& e: m_EntityList)
+                    //e->MoveTo(offscreen)
         }
         virtual void Draw() override {
-
+            //m_startButton.Draw(); //Draw calls should call the renderer in application (how to do this???)
+            //
+            //for(Entity& e: m_EntityList)
+                //e->Draw();
         }
     private:
-        //game objects/states
+        //Ref<Button> m_StartButton;
+        //Ref<EntityList> m_EntityList;
 };
 
 
-
 int main(int, char**) {
-    rse::Application* squaresApp = new rse::Application;
-    rse::Layer* layer = new MainLayer();
-    squaresApp->Init();
+    std::unique_ptr<rose::Application> squaresApp = std::make_unique<rose::Application>();
+    std::shared_ptr<rose::Layer> layer = std::make_shared<MainLayer>();
+
     squaresApp->SetLayer(layer);
     squaresApp->Run();
     squaresApp->Shutdown();
+
     return 0;
 }
 

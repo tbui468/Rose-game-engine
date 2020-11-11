@@ -3,7 +3,7 @@
 
 #include "Entity.h"
 
-namespace rse {
+namespace rose {
 
 class Button : public Entity {
     public:

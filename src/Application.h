@@ -2,24 +2,23 @@
 #define APPLICATION_H
 
 #include "Window.h"
-#include "Renderer.h"
+#include "renderer/Renderer.h"
 #include "Layer.h"
 
-namespace rse {
+namespace rose {
 
 class Application {
     public:
-        Application() = default;
+        Application();
         virtual ~Application() {}
-        void Init();
-        void SetLayer(Layer* layer);
+        void SetLayer(std::shared_ptr<Layer> layer);
         void Run();
         void Shutdown();
     private:
         bool m_Quit = false;
-        Window* m_Window;
-        Renderer* m_Renderer;
-        Layer* m_Layer;
+        std::shared_ptr<Window> m_Window;
+        std::shared_ptr<Renderer> m_Renderer;
+        std::shared_ptr<Layer> m_Layer;
     private: //delta time
         double m_DeltaTime;
         uint64_t m_Now = 0;

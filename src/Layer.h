@@ -1,7 +1,7 @@
 #ifndef LAYER_H
 #define LAYER_H
 
-namespace rse {
+namespace rose {
 
 class Layer {
     public:

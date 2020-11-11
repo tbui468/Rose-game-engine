@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "Utility.h"
 
-namespace rse {
+namespace rose {
 
 class Entity {
     public:

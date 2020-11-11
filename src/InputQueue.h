@@ -5,7 +5,7 @@
 #include "InputType.h"
 #include "Utility.h"
 
-namespace rse {
+namespace rose {
 
 
 class InputQueue {

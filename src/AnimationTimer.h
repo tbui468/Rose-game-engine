@@ -4,7 +4,7 @@
 #include <math.h>
 
 
-namespace rse {
+namespace rose {
 
 class AnimationTimer {
     public:

@@ -4,7 +4,7 @@
 #include <iostream>
 #include <SDL.h>
 
-namespace rse {
+namespace rose {
 
 class Window {
     public:

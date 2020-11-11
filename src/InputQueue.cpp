@@ -2,7 +2,7 @@
 
 #include <SDL_events.h>
 
-namespace rse {
+namespace rose {
 
 
 void InputQueue::PollEvents() {

@@ -1,7 +1,8 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
+integrate glm (since i need a vector of 4 floats to Add() a vertex to VertexBuffer)
 
-start abstracting opengl out into renderer class (remove SDL renderer)
+abstract quad drawing (stick to basic white for now, shaders and rotations, etc can come later)
 
 integrate glm for the mathy bits 
     test by making a simple matrix

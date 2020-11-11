@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-namespace rse {
+namespace rose {
 
 Entity::Entity(CartCoords pos, uint32_t depth) {
     SetPosition(pos);

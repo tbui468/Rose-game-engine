@@ -2,9 +2,10 @@
 #define UTILITY_H
 
 #include <utility>
+#include <memory>
 #include <SDL.h>
 
-namespace rse{
+namespace rose{
 
 
 struct CartCoords {
@@ -12,12 +13,13 @@ struct CartCoords {
     float y = 0.0f;
 };
 
+using Scale = CartCoords;
+
 struct CartCoordsi {
     int x = 0;
     int y = 0;
 };
 
-using Scale = CartCoords;
 
 struct PolarCoords {
     float r = 0.0f;

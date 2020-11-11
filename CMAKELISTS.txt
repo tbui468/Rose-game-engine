@@ -21,10 +21,11 @@ endif()
 set (SDL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendor/sdl/SDL2-2.0.12/include)
 set (SDL_LIB_DIR ${CMAKE_SOURCE_DIR}/vendor/sdl/SDL2-2.0.12/lib/x64)
 set (GLAD_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendor/glad/include)
+set (SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 
 
-add_library(Rose STATIC "src/InputQueue.cpp" "src/Entity.cpp" "src/Application.cpp")
-target_include_directories(Rose PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR})
+add_library(Rose STATIC "src/InputQueue.cpp" "src/Entity.cpp" "src/Application.cpp" "src/renderer/Renderer.cpp")
+target_include_directories(Rose PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${SRC_DIR})
 target_link_libraries(Rose ${SDL_LIB_DIR}/SDL2main.lib ${SDL_LIB_DIR}/SDL2.lib Glad)
 
 add_library(Glad STATIC "vendor/glad/src/glad.c")

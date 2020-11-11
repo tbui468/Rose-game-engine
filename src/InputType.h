@@ -1,7 +1,7 @@
 #ifndef INPUT_TYPE_H
 #define INPUT_TYPE_H
 
-namespace rse {
+namespace rose {
 
 enum class InputType {
     Close,
