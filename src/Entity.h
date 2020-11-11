@@ -2,9 +2,9 @@
 #define ENTITY_H
 
 #include <stdint.h>
-#include "SquaresCommon.h"
+#include "Utility.h"
 
-namespace sqs {
+namespace rse {
 
 class Entity {
     public:

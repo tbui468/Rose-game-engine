@@ -1,9 +1,10 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <iostream>
 #include <SDL.h>
 
-namespace sqs {
+namespace rse {
 
 class Window {
     public:

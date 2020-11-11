@@ -3,9 +3,9 @@
 
 #include <queue>
 #include "InputType.h"
-#include "SquaresCommon.h"
+#include "Utility.h"
 
-namespace sqs {
+namespace rse {
 
 
 class InputQueue {

@@ -1,8 +1,10 @@
 #ifndef ANIMATION_TIMER_H
 #define ANIMATION_TIMER_H
 
+#include <math.h>
 
-namespace sqs {
+
+namespace rse {
 
 class AnimationTimer {
     public:
@@ -33,6 +35,9 @@ class AnimationTimer {
         }
         bool EndAnimation() const {
             return m_EndAnimation;
+        }
+        float Sigmoid(float _t) const {
+            return 1.0f / (1.0f + exp(-15.0f * (_t - 0.5f)));
         }
     private:
         float m_Parameter;

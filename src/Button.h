@@ -3,7 +3,7 @@
 
 #include "Entity.h"
 
-namespace sqs {
+namespace rse {
 
 class Button : public Entity {
     public:

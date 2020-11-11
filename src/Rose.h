@@ -1,5 +1,5 @@
-#ifndef SQUARES_H
-#define SQUARES_H
+#ifndef ROSE_H
+#define ROSE_H
 
 
 #include <iostream>
@@ -7,10 +7,10 @@
 #include <memory>
 #include <SDL.h>
 
-#include "SquaresCommon.h"
+#include "Application.h"
+#include "Layer.h"
 #include "Window.h"
 #include "Renderer.h"
-#include "Texture.h"
 #include "Utility.h"
 #include "Entity.h"
 #include "Button.h"
@@ -19,4 +19,4 @@
 #include "CommandCode.h"
 
 
-#endif //SQUARES_H
+#endif //ROSE

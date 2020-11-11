@@ -2,25 +2,36 @@
 #define RENDERER_H
 
 #include <SDL.h>
+#include "glad/glad.h"
 
-namespace sqs {
+namespace rse {
 
 class Renderer {
     public:
         Renderer(Window* window, bool vsync) {
-            if(vsync) m_Handle = SDL_CreateRenderer(window->GetHandle(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-            else m_Handle = SDL_CreateRenderer(window->GetHandle(), -1, SDL_RENDERER_ACCELERATED);
+            SDL_GLContext glContext;
+            glContext = SDL_GL_CreateContext(window->GetHandle());
+            if(glContext == NULL)
+                std::cout << "Could not create OpenGl context" << std::endl;
+            else
+                std::cout << "OpenGL context created!" << std::endl;
 
-            if( m_Handle == nullptr) {
-                std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
-                SDL_DestroyWindow(window->GetHandle());
-                SDL_Quit();
-            }
+            SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+            SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+            // Also request a depth buffer
+            SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+            SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+
+            gladLoadGLLoader(SDL_GL_GetProcAddress);
+            SDL_GL_SetSwapInterval(vsync);
+            int w,h;
+            SDL_GetWindowSize(window->GetHandle(), &w, &h);
+            glViewport(0, 0, w, h);
+            glClearColor(0.0f, 0.5f, 1.0f, 0.0f);
         }
         virtual ~Renderer() {}
-        SDL_Renderer* GetHandle() const { return m_Handle; }
     private:
-        SDL_Renderer* m_Handle;
 };   
 
 }

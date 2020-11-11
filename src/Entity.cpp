@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-namespace sqs {
+namespace rse {
 
 Entity::Entity(CartCoords pos, uint32_t depth) {
     SetPosition(pos);

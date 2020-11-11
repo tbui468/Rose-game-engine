@@ -1,5 +1,8 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
+
+start abstracting opengl out into renderer class (remove SDL renderer)
+
 integrate glm for the mathy bits 
     test by making a simple matrix
 

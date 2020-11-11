@@ -2,7 +2,7 @@
 
 #include <SDL_events.h>
 
-namespace sqs {
+namespace rse {
 
 
 void InputQueue::PollEvents() {
