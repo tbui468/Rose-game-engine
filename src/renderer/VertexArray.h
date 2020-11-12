@@ -7,13 +7,9 @@ namespace rose {
 
     class VertexArray {
         public:
-            VertexArray() {
-                glGenVertexArrays(1, &m_OpenGLID);
-            }
-            void Bind() {
-                glBindVertexArray(m_OpenGLID);
-            }
+            VertexArray();
             virtual ~VertexArray() {}
+            void Bind();
         private:
             GLuint m_OpenGLID;
     };

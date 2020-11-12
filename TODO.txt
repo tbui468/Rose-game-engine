@@ -1,8 +1,23 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-integrate glm (since i need a vector of 4 floats to Add() a vertex to VertexBuffer)
+should move Squares.cpp to own directory, and reoraganize Rose to own directory
 
-abstract quad drawing (stick to basic white for now, shaders and rotations, etc can come later)
+transform OpenGL coordinates from -1 to 1, to room coordinates
+    I think I need a camera for this (and basic shader)
+    Camera class
+
+need to take screen aspect ratio into account
+    currently, I see a rectangle on the screen, not a square like I want
+
+DrawQuad function in renderer
+    need to transform to room coordinates (since i don't want to use -1 to 1 coordinate system)
+    keep in mind that this needs to integrate shaders (for transformations and textures) in the near future
+
+Check if animation using Entity, and DrawQuad works (only for 1, because need transformations to do more)
+
+basic textures and transformations using shaders for Quads
+
+abstract all shader stuff into easy-to-use API for my purposes
 
 integrate glm for the mathy bits 
     test by making a simple matrix

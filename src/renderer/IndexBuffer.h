@@ -2,33 +2,22 @@
 #define INDEX_BUFFER_H
 
 #include <vector>
+#include <glad/glad.h>
+#include <glm/vec3.hpp>
 
 namespace rose {
 
 
     class IndexBuffer {
         public:
-            IndexBuffer() {
-                glGenBuffers(1, &m_OpenGLID);
-                //temp:
-                m_Indices.push_back(0);
-                m_Indices.push_back(1);
-                m_Indices.push_back(2);
-                m_Indices.push_back(0);
-                m_Indices.push_back(2);
-                m_Indices.push_back(3);
-            }
+            IndexBuffer();
             virtual ~IndexBuffer() {}
-            void AddIndex(unsigned int index) {
-                m_Indices.push_back(index);
-            }
-            void Bind() {
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_OpenGLID);
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * m_Indices.size(), m_Indices.data(), GL_STATIC_DRAW);
-            }
+            void AddIndex(const glm::ivec3& vec);
+            void Bind() const;
+            size_t Size() const;
         private:
             GLuint m_OpenGLID;
-            std::vector<unsigned int> m_Indices;
+            std::vector<glm::ivec3> m_Indices;
     };
 
 
