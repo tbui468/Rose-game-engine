@@ -73,9 +73,6 @@ namespace rose {
         m_Last = 0;
         m_DeltaTime = 0.0;
 
-
-
-
         //temp:
         AnimationTimer timer;
         timer.SetSpeed(0.001f);
@@ -99,6 +96,11 @@ namespace rose {
         float halfWidth = static_cast<float>(m_Window->GetWidth()) / 2.0f;
         float halfHeight = static_cast<float>(m_Window->GetHeight()) / 2.0f;
         glm::mat4 projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1.0f, 1.0f);
+        //view not necessary now since i have no camera
+        //transformations for models
+        glm::mat4 scaling = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 1.0f));
+        glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), -1.57f, glm::vec3(0.0f, 0.0f, 1.0f));
+        glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(100.0f, 100.0f, 0.0f));
 
         GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
         GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
@@ -108,9 +110,10 @@ namespace rose {
             "layout(location = 0) in vec3 vertexPos;"
             "layout(location = 1) in vec2 texCoords;"
             "uniform mat4 projection;"
+            "uniform mat4 model;"
             "out vec2 v_texCoords;"
             "void main() {"
-            "   gl_Position = projection * vec4(vertexPos, 1.0);"
+            "   gl_Position = projection * model * vec4(vertexPos, 1.0);"
             "   v_texCoords = texCoords;"
             "}";
 
@@ -228,8 +231,10 @@ namespace rose {
             float sigmoid = timer.GetSigmoidParameter();
 
             glUseProgram(programID);
-            GLint uniform = glGetUniformLocation(programID, "projection");
-            glUniformMatrix4fv(uniform, 1, GL_FALSE, (const float*)glm::value_ptr(projection));
+            GLint projUniform = glGetUniformLocation(programID, "projection");
+            glUniformMatrix4fv(projUniform, 1, GL_FALSE, (const float*)glm::value_ptr(projection));
+            GLint modelUniform = glGetUniformLocation(programID, "model");
+            glUniformMatrix4fv(modelUniform, 1, GL_FALSE, (const float*)glm::value_ptr(translation * rotation * scaling));
             m_Renderer->DrawScene();
 
 
