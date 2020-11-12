@@ -4,10 +4,6 @@ project(Squares VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set (SDL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendor/sdl/SDL2-2.0.12/include)
-set (SDL_LIB_DIR ${CMAKE_SOURCE_DIR}/vendor/sdl/SDL2-2.0.12/lib/x64)
-
-
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -std=c++11")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} -g")
@@ -21,10 +17,24 @@ elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
 endif()
 
 
-add_executable(Squares "src/Squares.cpp" "src/Quad.cpp" "src/InputQueue.cpp" "src/CommandDispatcher.cpp" "src/Button.cpp")
 
-target_include_directories(Squares PRIVATE ${SDL_INCLUDE_DIR})
-target_link_libraries( Squares ${SDL_LIB_DIR}/SDL2main.lib ${SDL_LIB_DIR}/SDL2.lib)
+set (SDL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendor/sdl/SDL2-2.0.12/include)
+set (SDL_LIB_DIR ${CMAKE_SOURCE_DIR}/vendor/sdl/SDL2-2.0.12/lib/x64)
+set (GLAD_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendor/glad/include)
+set (SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+
+
+add_library(Rose STATIC "src/InputQueue.cpp" "src/Entity.cpp" "src/Application.cpp" "src/renderer/Renderer.cpp")
+target_include_directories(Rose PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${SRC_DIR})
+target_link_libraries(Rose ${SDL_LIB_DIR}/SDL2main.lib ${SDL_LIB_DIR}/SDL2.lib Glad)
+
+add_library(Glad STATIC "vendor/glad/src/glad.c")
+target_include_directories(Glad PRIVATE ${GLAD_INCLUDE_DIR})
+
+add_executable(Squares "src/Squares.cpp")
+target_include_directories(Squares PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR})
+target_link_libraries(Squares Rose)
+
 
 add_custom_command(TARGET Squares POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different

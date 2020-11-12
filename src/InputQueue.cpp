@@ -2,7 +2,7 @@
 
 #include <SDL_events.h>
 
-namespace sqs {
+namespace rose {
 
 
 void InputQueue::PollEvents() {
@@ -31,5 +31,10 @@ InputType InputQueue::NextInput(){
 }
 
 
+CartCoordsi InputQueue::GetMouseCoords() {
+    CartCoordsi mouseCoords;
+    SDL_GetMouseState(&mouseCoords.x, &mouseCoords.y);
+    return mouseCoords;
+}
 
 }
