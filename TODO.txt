@@ -1,42 +1,18 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-should move Squares.cpp to own directory, and reoraganize Rose to own directory
+transformations - shouldn't need to load multiple quads
+    one quad should be saved in renderer, and then different shaders can be bound to transform/set textures/etc to
+    draw any 2-d object we will need anywhere on screen
 
-transform OpenGL coordinates from -1 to 1, to room coordinates
-    I think I need a camera for this (and basic shader)
-    Camera class
-
-need to take screen aspect ratio into account
-    currently, I see a rectangle on the screen, not a square like I want
-
-DrawQuad function in renderer
-    need to transform to room coordinates (since i don't want to use -1 to 1 coordinate system)
-    keep in mind that this needs to integrate shaders (for transformations and textures) in the near future
-
-Check if animation using Entity, and DrawQuad works (only for 1, because need transformations to do more)
-
-basic textures and transformations using shaders for Quads
-
-abstract all shader stuff into easy-to-use API for my purposes
-
-integrate glm for the mathy bits 
-    test by making a simple matrix
-
-loading sprites stb_image or SDL_image
-    need to use opengl shaders to draw texture to test 
-
-use opengl/glm and sprites and create some sample Fractals in Squares.cpp
-    have them rotate, translate, and reflect
-    once I know how to do it, start thinking about how to abstract into easy-to-use API
+create sample Entities (two buttons) and test 
 
 SDL tutorial on not putting everything in main (And logging)
+
+should move Squares.cpp to own directory, and reoraganize Rose to own directory
 
 Display FPS (on screen)
     look at Lazy Foo tutorial for basic and advanced timers
 
-
-Look at LazyFoo website tutorial for setting up OpenGL with Glew (set up as SDL extension library??)
-    abstract all opengl/SDL functionality to Renderer class
 
 Set build (x86 or x64) (or should this be a build option???)
 

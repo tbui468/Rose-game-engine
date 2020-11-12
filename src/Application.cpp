@@ -1,7 +1,11 @@
 #include <vector>
 
 #include <SDL.h>
-#include "glad/glad.h"
+#include <glad/glad.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 
 #include "Application.h"
 #include "Button.h"
@@ -22,6 +26,7 @@ namespace rose {
 
         bool vsync = true;
         m_Renderer = std::make_shared<Renderer>(m_Window, vsync);
+
     }
 
     void Application::SetLayer(std::shared_ptr<Layer> layer) {
@@ -77,6 +82,97 @@ namespace rose {
 
         InputQueue inputQueue;
 
+        /////////////OPENGL STUFF/////////////////////////////////
+        ////////////////TEXTURES//////////////////////////////////
+        int32_t width, height, channels;
+        stbi_set_flip_vertically_on_load(true);
+        uint8_t *data = stbi_load("./../assets/Untitled.png", &width, &height, &channels, 0);
+
+        if(stbi_failure_reason()) std::cout << stbi_failure_reason() << std::endl;
+        std::cout << "width: " << width << std::endl;
+        std::cout << "height: " << height << std::endl;
+        std::cout << "channels: " << channels << std::endl;
+
+
+
+        //////////////SHADERS//////////////////////////
+        float halfWidth = static_cast<float>(m_Window->GetWidth()) / 2.0f;
+        float halfHeight = static_cast<float>(m_Window->GetHeight()) / 2.0f;
+        glm::mat4 projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1.0f, 1.0f);
+
+        GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+        GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+        const char* vertexShaderCode = 
+            "#version 330 core\n"
+            "layout(location = 0) in vec3 vertexPos;"
+            "layout(location = 1) in vec2 texCoords;"
+            "uniform mat4 projection;"
+            "out vec2 v_texCoords;"
+            "void main() {"
+            "   gl_Position = projection * vec4(vertexPos, 1.0);"
+            "   v_texCoords = texCoords;"
+            "}";
+
+        const char* fragmentShaderCode = 
+            "#version 330 core\n"
+            "in vec2 v_texCoords;"
+            "out vec4 color;"
+            "uniform sampler2D texSampler;"
+            "void main() {"
+            "   color = texture(texSampler, v_texCoords);"
+            "}";
+
+        GLint result = GL_FALSE;
+        int infoLogLength;
+
+        glShaderSource(vertexShaderID, 1, &vertexShaderCode, NULL);
+        glCompileShader(vertexShaderID);
+
+        glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &result);
+        glGetShaderiv(vertexShaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
+        if(infoLogLength > 0) {
+            std::vector<char> vertexShaderError(infoLogLength + 1);
+            glGetShaderInfoLog(vertexShaderID, infoLogLength, NULL, vertexShaderError.data());
+            printf("%s\n", vertexShaderError.data());
+        }else{
+            std::cout << "Vertex shader compiled!" << std::endl;
+        }
+
+
+        glShaderSource(fragmentShaderID, 1, &fragmentShaderCode, NULL);
+        glCompileShader(fragmentShaderID);
+
+        glGetShaderiv(fragmentShaderID, GL_COMPILE_STATUS, &result);
+        glGetShaderiv(fragmentShaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
+        if(infoLogLength > 0) {
+            std::vector<char> fragmentShaderError(infoLogLength + 1);
+            glGetShaderInfoLog(fragmentShaderID, infoLogLength, NULL, fragmentShaderError.data());
+            printf("%s\n", fragmentShaderError.data());
+        }else{
+            std::cout << "Fragment shader compiled!" << std::endl;
+        }
+
+        GLuint programID = glCreateProgram();
+        glAttachShader(programID, vertexShaderID);
+        glAttachShader(programID, fragmentShaderID);
+        glLinkProgram(programID);
+        //clean up (since we only need the compiled and linked program)
+        glDetachShader(programID, vertexShaderID);
+        glDetachShader(programID, fragmentShaderID);
+        glDeleteShader(vertexShaderID);
+        glDeleteShader(fragmentShaderID);
+
+
+        GLuint textureID;
+        glGenTextures(1, &textureID);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glUniform1i(glGetUniformLocation(programID, "texSampler"), GL_TEXTURE0);
+
 
         while(!m_Quit) {
             m_Last = m_Now;
@@ -131,12 +227,17 @@ namespace rose {
             timer.Update(m_DeltaTime);
             float sigmoid = timer.GetSigmoidParameter();
 
+            glUseProgram(programID);
+            GLint uniform = glGetUniformLocation(programID, "projection");
+            glUniformMatrix4fv(uniform, 1, GL_FALSE, (const float*)glm::value_ptr(projection));
             m_Renderer->DrawScene();
 
 
             SDL_GL_SwapWindow(m_Window->GetHandle());
 
         }
+
+        stbi_image_free(data);
     }
 
     void Application::Shutdown() {

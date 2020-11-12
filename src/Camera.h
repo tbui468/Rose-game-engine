@@ -6,7 +6,7 @@ namespace rose {
     class Camera {
         public:
         private:
-    }
+    };
 
 }
 
