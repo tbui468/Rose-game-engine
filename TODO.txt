@@ -2,8 +2,17 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 currently system is set up fine! :)  Now, pull all common elements out to make a simple API for client to use
     first step could be to pull OpenGL stuff to Renderer class (all of it: don't really need to split it into vertex/index buffers etc)
-    
 
+    how should sprites be stored?  Sprite sheet would be the most efficient way
+        store data in sprite sheet. and have each sprite be a pair of uv coordinates on that sprite sheet (start and end or start and dimensions)
+
+        if i go with the sprite sheet options, will also need to keep track of sprite sheet size (since uv coordinates are from 0 to 1)
+
+        each Entity can also store id of a sprite sheet.
+
+    Have a sprite sheet class that is initialized on creating an app, and loads all assets
+
+        
 
 Abstract things away as needed based on how the last step went to prepare for the next step
 

@@ -76,4 +76,13 @@ void Entity::SetPosition(CartCoords _coords) {
     m_ToPos = {_coords.x, _coords.y};
 }
 
+glm::mat4 Entity::GetModelMatrix() const {
+    glm::mat4 rotated = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 0.0f, 1.0f));
+    glm::mat4 scaled = glm::scale(glm::mat4(1.0f), glm::vec3(xScale, yScale, 1.0f));
+    glm::mat4 translated = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
+    return translated * scaled * rotated;
+}
+
+
+
 }

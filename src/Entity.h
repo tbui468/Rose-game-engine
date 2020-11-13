@@ -2,9 +2,18 @@
 #define ENTITY_H
 
 #include <stdint.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "Utility.h"
 
 namespace rose {
+
+struct Sprite {
+    glm::mat4 Model;
+    //sprite sheet id
+    //texture coords (start and end)
+};
 
 class Entity {
     public:
@@ -23,6 +32,7 @@ class Entity {
     public:
         virtual bool PointCollision(float pointX, float pointY) const;
         virtual void SetBoundingBox(float x, float y, float w, float h);
+        virtual glm::mat4 GetModelMatrix() const;
 
     public:
         float x {0.0f};
