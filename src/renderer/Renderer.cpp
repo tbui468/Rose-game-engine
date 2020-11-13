@@ -32,52 +32,6 @@ namespace rose {
         m_VertexArray = std::make_shared<VertexArray>();
         m_VertexArray->Bind();
 
-        //temp: testing AddVertex and AddIndex functions
-        GLuint vertexBuffer;
-        glGenBuffers(1, &vertexBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        const float vertices[]= {
-            -100.0f, -100.0f, 0.0f, 0.0f, 0.0f,
-            100.0f, -100.0f, 0.0f, 1.0f, 0.0f,
-            100.0f, 100.0f, 0.0f, 1.0f, 1.0f,
-            -100.0f, 100.0f, 0.0f, 0.0f, 1.0f
-        };
-/*        const float vertices[]= {
-            -100.0f, -100.0f, 0.0f,
-            100.0f, -100.0f, 0.0f,
-            100.0f, 100.0f, 0.0f,
-            -100.0f, 100.0f, 0.0f
-        };*/
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 5, &vertices[0], GL_STATIC_DRAW);
-
-        GLuint indexBuffer;
-        glGenBuffers(1, &indexBuffer);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-        const uint32_t indices[]={
-            0, 1, 2, 0, 2, 3
-        };
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * 6, &indices[0], GL_STATIC_DRAW);
-        /*
-        m_VertexBuffer = std::make_shared<VertexBuffer>();
-
-        m_VertexBuffer->AddVertex(glm::vec3(-100.0f, -100.0f, 0.0f));
-        m_VertexBuffer->AddVertex(glm::vec3(100.0f, -100.0f, 0.0f));
-        m_VertexBuffer->AddVertex(glm::vec3(100.0f, 100.0f, 0.0f));
-        m_VertexBuffer->AddVertex(glm::vec3(-100.0f, 100.0f, 0.0f));
-
-        m_VertexBuffer->AddVertex(glm::vec3(100.0f, 100.0f, 0.0f));
-        m_VertexBuffer->AddVertex(glm::vec3(300.0f, 100.0f, 0.0f));
-        m_VertexBuffer->AddVertex(glm::vec3(300.0f, 300.0f, 0.0f));
-        m_VertexBuffer->AddVertex(glm::vec3(100.0f, 300.0f, 0.0f));
-
-        m_VertexBuffer->Bind();*/
-/*
-        m_IndexBuffer = std::make_shared<IndexBuffer>();
-        m_IndexBuffer->AddIndex(glm::ivec3(0, 1, 2));
-        m_IndexBuffer->AddIndex(glm::ivec3(0, 2, 3));
-        //m_IndexBuffer->AddIndex(glm::ivec3(4, 5, 6));
-        //m_IndexBuffer->AddIndex(glm::ivec3(4, 6, 7));
-        m_IndexBuffer->Bind();*/
     }
 
 

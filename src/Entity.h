@@ -25,27 +25,27 @@ class Entity {
         virtual void SetBoundingBox(float x, float y, float w, float h);
 
     public:
-        float x;
-        float y;
-        float xScale;
-        float yScale;
-        float angle;
-        float alpha;
-        uint32_t depth;
+        float x {0.0f};
+        float y {0.0f};
+        float xScale {1.0f};
+        float yScale {1.0f};
+        float angle {0.0f};
+        float alpha {1.0f};
+        uint32_t depth {0};
 
     //animation parameters
     private:
-        CartCoords m_FromPos;
-        CartCoords m_ToPos;
+        CartCoords m_FromPos {0.0f, 0.0f};
+        CartCoords m_ToPos {0.0f, 0.0f};
 
-        Scale m_FromScale;
-        Scale m_ToScale;
+        Scale m_FromScale {1.0f, 1.0f};
+        Scale m_ToScale {1.0f, 1.0f};
 
-        float m_ToAngle;
-        float m_FromAngle;
+        float m_ToAngle {0.0f};
+        float m_FromAngle {0.0f};
 
-        float m_FromAlpha;
-        float m_ToAlpha;
+        float m_FromAlpha {1.0f};
+        float m_ToAlpha {1.0f};
 
      //collisions
      private:

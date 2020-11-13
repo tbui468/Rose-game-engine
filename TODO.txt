@@ -1,18 +1,25 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-transformations - shouldn't need to load multiple quads
-    one quad should be saved in renderer, and then different shaders can be bound to transform/set textures/etc to
-    draw any 2-d object we will need anywhere on screen
+Button y-axis is flipped (SDL and OpenGL coordinates are different)
+    need a basis transform to go from (0, 0) at top left corner to (0, 0) at center of screen
+    need a basis transform to flip y-axis (OpenGL coordinates label 'up' as positive y, and SDL coordinates label up as negative y)
 
-create sample Entities (two buttons) and test 
+create sample Entities (three buttons) and test 
+    should only have one quad array saved (don't need to use the classes - will need to rewrite them anyway)
+        it also may be beneficial to simplify vertex array, vertex buffer and index buffer into one class (into Renderer, for example)
+            then have AddQuad(with shader/transformations), and DrawAllQuads() for the final draw call
+    draw one quad with texture, and one quad with solid color (will need two shaders), and third anyway I want
+    set it up so that they transform when you click them (using the event/input system set up now) 
+        screen starts with start and quit buttons
+            clicking quit closes application
+            clicking start animates start and quit button offscreen, and close button onscreen
+            clicking close button animates it offscreen, and animates start and quit button onscreen
+        essentially creating the start, quit and close buttons
+    clean up Input and input processing as needed
 
-SDL tutorial on not putting everything in main (And logging)
+Abstract things away as needed based on how the last step went to prepare for the next step
 
-should move Squares.cpp to own directory, and reoraganize Rose to own directory
-
-Display FPS (on screen)
-    look at Lazy Foo tutorial for basic and advanced timers
-
+Make puzzlesets, puzzles and fractals (the most complex class) - abstract or refactor as needed
 
 Set build (x86 or x64) (or should this be a build option???)
 

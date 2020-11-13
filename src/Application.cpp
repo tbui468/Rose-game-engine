@@ -40,16 +40,16 @@ namespace rose {
         float windowHeight = static_cast<float>(m_Window->GetHeight());
 
         CartCoords startCoords;
-        startCoords.x = windowWidth * .5f;
-        startCoords.y = windowHeight * .5f - 50.0f;
+        startCoords.x = 0.0f;
+        startCoords.y = -100.0f;
 
         CartCoords quitCoords;
-        quitCoords.x = windowWidth * .5f;
-        quitCoords.y = windowHeight * .5f + 50.0f;
+        quitCoords.x = 0.0f;
+        quitCoords.y = 100.0f;
 
         CartCoords closeCoords;
-        closeCoords.x = windowWidth + 100.0f;
-        closeCoords.y = 0.0f + 50.f;
+        closeCoords.x = 1200.0f;
+        closeCoords.y = 0.0f;
 
         std::shared_ptr<Entity> startButton = std::make_shared<Button>(startCoords, 0);
         std::shared_ptr<Entity> quitButton = std::make_shared<Button>(quitCoords, 0);
@@ -75,11 +75,31 @@ namespace rose {
 
         //temp:
         AnimationTimer timer;
-        timer.SetSpeed(0.001f);
+        timer.SetSpeed(0.0005f);
 
         InputQueue inputQueue;
 
         /////////////OPENGL STUFF/////////////////////////////////
+        //temp: testing AddVertex and AddIndex functions
+        GLuint vertexBuffer;
+        glGenBuffers(1, &vertexBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+        const float vertices[]= {
+            -32.0f, -32.0f, 0.0f, 0.0f, 0.0f,
+            32.0f, -32.0f, 0.0f, 1.0f, 0.0f,
+            32.0f, 32.0f, 0.0f, 1.0f, 1.0f,
+            -32.0f, 32.0f, 0.0f, 0.0f, 1.0f
+        };
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 5, &vertices[0], GL_STATIC_DRAW);
+
+        GLuint indexBuffer;
+        glGenBuffers(1, &indexBuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+        const uint32_t indices[]={
+            0, 1, 2, 0, 2, 3
+        };
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * 6, &indices[0], GL_STATIC_DRAW);
+
         ////////////////TEXTURES//////////////////////////////////
         int32_t width, height, channels;
         stbi_set_flip_vertically_on_load(true);
@@ -96,11 +116,6 @@ namespace rose {
         float halfWidth = static_cast<float>(m_Window->GetWidth()) / 2.0f;
         float halfHeight = static_cast<float>(m_Window->GetHeight()) / 2.0f;
         glm::mat4 projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1.0f, 1.0f);
-        //view not necessary now since i have no camera
-        //transformations for models
-        glm::mat4 scaling = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f, 2.0f, 1.0f));
-        glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), -1.57f, glm::vec3(0.0f, 0.0f, 1.0f));
-        glm::mat4 translation = glm::translate(glm::mat4(1.0f), glm::vec3(100.0f, 100.0f, 0.0f));
 
         GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
         GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
@@ -174,6 +189,8 @@ namespace rose {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glUniform1i(glGetUniformLocation(programID, "texSampler"), GL_TEXTURE0);
 
 
@@ -190,6 +207,8 @@ namespace rose {
             CommandCode status = CommandCode::Failed;
             while(!inputQueue.Empty() && status == CommandCode::Failed) {
                 CartCoordsi mouseCoords = inputQueue.GetMouseCoords();
+                mouseCoords.x -= windowWidth / 2.0f;
+                mouseCoords.y -= windowHeight / 2.0f;
                 InputType input = inputQueue.NextInput();
                 switch(input) {
                     case InputType::Close: 
@@ -198,22 +217,27 @@ namespace rose {
                         timer.ResetParameter();
                         break;
                     case InputType::LeftTap: 
-                        /*
-                           std::cout << mouseCoords.x << ", " << mouseCoords.y << std::endl;
-                           if(quitButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y)))
-                           quit = true;
-                           if(startButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y))) {
-                           startButton->MoveTo({startCoords.x + windowWidth, startCoords.y});
-                           quitButton->MoveTo({quitCoords.x - windowWidth, quitCoords.y});
-                           closeButton->MoveTo({windowWidth - 100.0f, 50.f});
-                           std::cout << "Clicked start button" << std::endl;
-                           }
-                           if(closeButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y))) {
-                           startButton->MoveTo(startCoords);
-                           quitButton->MoveTo(quitCoords);
-                           closeButton->MoveTo(closeCoords);
-                           std::cout << "Clicked start button" << std::endl;
-                           }*/
+
+                        std::cout << mouseCoords.x << ", " << mouseCoords.y << std::endl;
+                        if(quitButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y)))
+                            m_Quit = true;
+                        if(startButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y))) {
+                            
+                            startButton->MoveTo({startCoords.x + windowWidth * .6f, startCoords.y});
+                            quitButton->MoveTo({quitCoords.x - windowWidth * .6f, quitCoords.y});
+                            startButton->ScaleTo({4.0f, 1.0f});
+                            quitButton->ScaleTo({1.0f, 4.0f});
+                            closeButton->MoveTo({800.0f, 0.0f});
+                            std::cout << "Clicked start button" << std::endl;
+                        }
+                        if(closeButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y))) {
+                            startButton->MoveTo(startCoords);
+                            quitButton->MoveTo(quitCoords);
+                            startButton->ScaleTo({1.0f, 1.0f});
+                            quitButton->ScaleTo({1.0f, 1.0f});
+                            closeButton->MoveTo(closeCoords);
+                            std::cout << "Clicked start close" << std::endl;
+                        }
                         status = CommandCode::Success;
                         timer.ResetParameter();
                         break;
@@ -227,15 +251,63 @@ namespace rose {
                 }
             }
 
+            //start button
+            glm::mat4 scaling0 = glm::scale(glm::mat4(1.0f), glm::vec3(startButton->xScale, startButton->yScale, 1.0f));
+            glm::mat4 rotation0 = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+            glm::mat4 translation0 = glm::translate(glm::mat4(1.0f), glm::vec3(startButton->x, startButton->y, 0.0f));
+
+            //quit button
+            glm::mat4 scaling1 = glm::scale(glm::mat4(1.0f), glm::vec3(quitButton->xScale, quitButton->yScale, 1.0f));
+            glm::mat4 rotation1 = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+            glm::mat4 translation1 = glm::translate(glm::mat4(1.0f), glm::vec3(quitButton->x, quitButton->y, 0.0f));
+
+            //close button
+            glm::mat4 scaling2 = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+            glm::mat4 rotation2 = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+            glm::mat4 translation2 = glm::translate(glm::mat4(1.0f), glm::vec3(closeButton->x, closeButton->y, 0.0f));
+
+
+            //update entites here (position and such)
+            //apply these transformations to the transformations matrices
+
             timer.Update(m_DeltaTime);
             float sigmoid = timer.GetSigmoidParameter();
+
+            startButton->OnAnimationUpdate(sigmoid);
+            quitButton->OnAnimationUpdate(sigmoid);
+            closeButton->OnAnimationUpdate(sigmoid);
+
+            if(timer.EndAnimation()) {
+                startButton->OnAnimationEnd();
+                quitButton->OnAnimationEnd();
+                closeButton->OnAnimationEnd();
+            }
 
             glUseProgram(programID);
             GLint projUniform = glGetUniformLocation(programID, "projection");
             glUniformMatrix4fv(projUniform, 1, GL_FALSE, (const float*)glm::value_ptr(projection));
+            //m_Renderer->DrawScene();
+            //
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0); //this is the vertex positions
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); //this is the tex coords
+
             GLint modelUniform = glGetUniformLocation(programID, "model");
-            glUniformMatrix4fv(modelUniform, 1, GL_FALSE, (const float*)glm::value_ptr(translation * rotation * scaling));
-            m_Renderer->DrawScene();
+            glUniformMatrix4fv(modelUniform, 1, GL_FALSE, (const float*)glm::value_ptr(translation0 * rotation0 * scaling0));
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+
+            modelUniform = glGetUniformLocation(programID, "model");
+            glUniformMatrix4fv(modelUniform, 1, GL_FALSE, (const float*)glm::value_ptr(translation1 * rotation1 * scaling1));
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+
+            modelUniform = glGetUniformLocation(programID, "model");
+            glUniformMatrix4fv(modelUniform, 1, GL_FALSE, (const float*)glm::value_ptr(translation2 * rotation2 * scaling2));
+            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+
+
+            glDisableVertexAttribArray(0);
 
 
             SDL_GL_SwapWindow(m_Window->GetHandle());
