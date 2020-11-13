@@ -1,8 +1,6 @@
 #include "renderer/Renderer.h"
 
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
 
 namespace rose {
 
@@ -30,9 +28,9 @@ namespace rose {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-
-        m_VertexArray = std::make_shared<VertexArray>();
-        m_VertexArray->Bind();
+        GLuint vertexArray;
+        glGenVertexArrays(1, &vertexArray);
+        glBindVertexArray(vertexArray);
 
 
         /////////////OPENGL STUFF/////////////////////////////////
@@ -40,10 +38,10 @@ namespace rose {
         GLuint vertexBuffer;
         glGenBuffers(1, &vertexBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        const float vertices[]= {
-            -32.0f, -32.0f, 0.0f, 0.0f, 0.0f,
-            32.0f, -32.0f, 0.0f, 1.0f, 0.0f,
-            32.0f, 32.0f, 0.0f, 1.0f, 1.0f,
+        const float vertices[]= { 
+            -32.0f, -32.0f, 0.0f, 0.0f, 0.75f, //(0, 0) is the lower left corner, (1, 1) is the upper right
+            32.0f, -32.0f, 0.0f, 0.5f, 0.75f,
+            32.0f, 32.0f, 0.0f, 0.5f, 1.0f,
             -32.0f, 32.0f, 0.0f, 0.0f, 1.0f
         };
         glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 5, &vertices[0], GL_STATIC_DRAW);
@@ -129,47 +127,8 @@ namespace rose {
         glDeleteShader(fragmentShaderID);
 
 
-        ////////////////TEXTURES//////////////////////////////////
-        stbi_set_flip_vertically_on_load(true);
-
-        //texture 0
-        int32_t width, height, channels;
-        uint8_t *data = stbi_load("./../assets/start.png", &width, &height, &channels, 0);
-
-        if(stbi_failure_reason()) std::cout << stbi_failure_reason() << std::endl;
-
-        GLuint textureID;
-        glGenTextures(1, &textureID);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        //glUniform1i(glGetUniformLocation(programID, "texSampler"), GL_TEXTURE0);
-
-        stbi_image_free(data);
-
-        int32_t width1, height1, channels1;
-        uint8_t *data1 = stbi_load("./../assets/quit.png", &width1, &height1, &channels1, 0);
-
-        if(stbi_failure_reason()) std::cout << stbi_failure_reason() << std::endl;
-
-        GLuint textureID1;
-        glGenTextures(1, &textureID1);
-        glActiveTexture(GL_TEXTURE0 + 1);
-        glBindTexture(GL_TEXTURE_2D, textureID1);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width1, height1, 0, GL_RGBA, GL_UNSIGNED_BYTE, data1);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        //glUniform1i(glGetUniformLocation(programID, "texSampler"), GL_TEXTURE1);
-
-        stbi_image_free(data1);
-
-        //texture 1
+        m_Texture = std::make_shared<Texture>();
+        m_Texture->LoadTexture("./../assets/textureSheet.png");
 
     }
 
@@ -199,7 +158,7 @@ namespace rose {
 //            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             GLint modelUniform = glGetUniformLocation(m_ShaderID, "model");
             glUniformMatrix4fv(modelUniform, 1, GL_FALSE, (const float*)glm::value_ptr(model));
-            glUniform1i(glGetUniformLocation(m_ShaderID, "texSampler"), 1);
+            glUniform1i(glGetUniformLocation(m_ShaderID, "texSampler"), 0);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
         }
 

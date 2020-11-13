@@ -32,9 +32,7 @@ add_library(Rose STATIC
     "src/Application.cpp"
     "src/Camera.cpp"
     "src/renderer/Renderer.cpp"
-    "src/renderer/VertexArray.cpp"
-    "src/renderer/VertexBuffer.cpp"
-    "src/renderer/IndexBuffer.cpp")
+    "src/renderer/Texture.cpp")
 target_include_directories(Rose PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${STB_INCLUDE_DIR} ${SRC_DIR} ${GLM_INCLUDE_DIR})
 target_link_libraries(Rose ${SDL_LIB_DIR}/SDL2main.lib ${SDL_LIB_DIR}/SDL2.lib Glad)
 

@@ -9,11 +9,6 @@
 
 namespace rose {
 
-struct Sprite {
-    glm::mat4 Model;
-    //sprite sheet id
-    //texture coords (start and end)
-};
 
 class Entity {
     public:
@@ -30,6 +25,11 @@ class Entity {
         virtual void OnAnimationUpdate(float t);
         virtual void OnAnimationEnd();
     public:
+        virtual void SetTexture(CartCoords texCoords, uint32_t texWidth, uint32_t texHeight);
+        virtual CartCoords GetTexCoords() const { return m_TexCoords; }
+        virtual uint32_t GetTexWidth() const { return m_TexWidth; }
+        virtual uint32_t GetTexHeight() const { return m_TexHeight; }
+    public:
         virtual bool PointCollision(float pointX, float pointY) const;
         virtual void SetBoundingBox(float x, float y, float w, float h);
         virtual glm::mat4 GetModelMatrix() const;
@@ -42,6 +42,12 @@ class Entity {
         float angle {0.0f};
         float alpha {1.0f};
         uint32_t depth {0};
+
+    //sprite data
+    private: 
+        CartCoords m_TexCoords;
+        uint32_t m_TexWidth;
+        uint32_t m_TexHeight;
 
     //animation parameters
     private:
@@ -59,7 +65,6 @@ class Entity {
 
      //collisions
      private:
-        //Quad m_Sprite;
         Rectangle m_BoundingBox; //x and y of bounding box are relative to x/y of entity, ege (0, 0) to center on entity center
 };
 

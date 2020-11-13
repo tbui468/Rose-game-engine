@@ -83,6 +83,12 @@ glm::mat4 Entity::GetModelMatrix() const {
     return translated * scaled * rotated;
 }
 
+void Entity::SetTexture(CartCoords texCoords, uint32_t texWidth, uint32_t texHeight) {
+    m_TexCoords = texCoords;
+    m_TexWidth = texWidth;
+    m_TexHeight = texHeight;
+}
+
 
 
 }

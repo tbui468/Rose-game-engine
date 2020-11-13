@@ -25,6 +25,7 @@ namespace rose {
         bool vsync = true;
         m_Renderer = std::make_shared<Renderer>(m_Window, vsync);
 
+
     }
 
     void Application::SetLayer(std::shared_ptr<Layer> layer) {
@@ -56,8 +57,11 @@ namespace rose {
         std::shared_ptr<Entity> closeButton = std::make_shared<Button>(closeCoords, 0);
 
         startButton->SetBoundingBox(0.0f, 0.0f, 64, 64);
+        startButton->SetTexture({0.0f, 0.75f}, 64, 32);
         quitButton->SetBoundingBox(0.0f, 0.0f, 64, 64);
+        quitButton->SetTexture({0.5f, 0.0f}, 64, 32);
         closeButton->SetBoundingBox(0.0f, 0.0f, 64, 64);
+        closeButton->SetTexture({0.75f, 0.75f}, 32, 32);
 
 
 
