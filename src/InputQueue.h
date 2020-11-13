@@ -4,13 +4,14 @@
 #include <queue>
 #include "InputType.h"
 #include "Utility.h"
+#include "Window.h"
 
 namespace rose {
 
 
 class InputQueue {
     public:
-        InputQueue() = default;
+        InputQueue(std::shared_ptr<Window> window) : m_Window(window) {}
         virtual ~InputQueue(){}
         void PollEvents();
         InputType NextInput();
@@ -22,6 +23,7 @@ class InputQueue {
     private:
         std::queue<InputType> m_Inputs;
         uint32_t m_Decay;
+        std::shared_ptr<Window> m_Window;
 };
 
 }

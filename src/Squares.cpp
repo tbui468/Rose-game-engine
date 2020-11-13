@@ -1,4 +1,4 @@
-#include "Rose.h"
+#include "Rose.h" //by any other name would have just as many memory leaks, and break as many cups
 
 class MainLayer: public rose::Layer{
     public:

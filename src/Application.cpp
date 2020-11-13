@@ -41,11 +41,11 @@ namespace rose {
 
         CartCoords startCoords;
         startCoords.x = 0.0f;
-        startCoords.y = -100.0f;
+        startCoords.y = 100.0f;
 
         CartCoords quitCoords;
         quitCoords.x = 0.0f;
-        quitCoords.y = 100.0f;
+        quitCoords.y = -100.0f;
 
         CartCoords closeCoords;
         closeCoords.x = 1200.0f;
@@ -55,9 +55,9 @@ namespace rose {
         std::shared_ptr<Entity> quitButton = std::make_shared<Button>(quitCoords, 0);
         std::shared_ptr<Entity> closeButton = std::make_shared<Button>(closeCoords, 0);
 
-        startButton->SetBoundingBox(0.0f, 0.0f, 100, 50);
-        quitButton->SetBoundingBox(0.0f, 0.0f, 100, 50);
-        closeButton->SetBoundingBox(0.0f, 0.0f, 100, 50);
+        startButton->SetBoundingBox(0.0f, 0.0f, 64, 64);
+        quitButton->SetBoundingBox(0.0f, 0.0f, 64, 64);
+        closeButton->SetBoundingBox(0.0f, 0.0f, 64, 64);
 
 
 
@@ -75,9 +75,9 @@ namespace rose {
 
         //temp:
         AnimationTimer timer;
-        timer.SetSpeed(0.0005f);
+        timer.SetSpeed(0.001f);
 
-        InputQueue inputQueue;
+        InputQueue inputQueue(m_Window);
 
         /////////////OPENGL STUFF/////////////////////////////////
         //temp: testing AddVertex and AddIndex functions
@@ -100,15 +100,6 @@ namespace rose {
         };
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * 6, &indices[0], GL_STATIC_DRAW);
 
-        ////////////////TEXTURES//////////////////////////////////
-        int32_t width, height, channels;
-        stbi_set_flip_vertically_on_load(true);
-        uint8_t *data = stbi_load("./../assets/Untitled.png", &width, &height, &channels, 0);
-
-        if(stbi_failure_reason()) std::cout << stbi_failure_reason() << std::endl;
-        std::cout << "width: " << width << std::endl;
-        std::cout << "height: " << height << std::endl;
-        std::cout << "channels: " << channels << std::endl;
 
 
 
@@ -182,6 +173,15 @@ namespace rose {
         glDeleteShader(fragmentShaderID);
 
 
+        ////////////////TEXTURES//////////////////////////////////
+        stbi_set_flip_vertically_on_load(true);
+
+        //texture 0
+        int32_t width, height, channels;
+        uint8_t *data = stbi_load("./../assets/start.png", &width, &height, &channels, 0);
+
+        if(stbi_failure_reason()) std::cout << stbi_failure_reason() << std::endl;
+
         GLuint textureID;
         glGenTextures(1, &textureID);
         glActiveTexture(GL_TEXTURE0);
@@ -191,7 +191,29 @@ namespace rose {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glUniform1i(glGetUniformLocation(programID, "texSampler"), GL_TEXTURE0);
+        //glUniform1i(glGetUniformLocation(programID, "texSampler"), GL_TEXTURE0);
+
+        stbi_image_free(data);
+
+        int32_t width1, height1, channels1;
+        uint8_t *data1 = stbi_load("./../assets/quit.png", &width1, &height1, &channels1, 0);
+
+        if(stbi_failure_reason()) std::cout << stbi_failure_reason() << std::endl;
+
+        GLuint textureID1;
+        glGenTextures(1, &textureID1);
+        glActiveTexture(GL_TEXTURE0 + 1);
+        glBindTexture(GL_TEXTURE_2D, textureID1);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width1, height1, 0, GL_RGBA, GL_UNSIGNED_BYTE, data1);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        //glUniform1i(glGetUniformLocation(programID, "texSampler"), GL_TEXTURE1);
+
+        stbi_image_free(data1);
+
+        //texture 1
 
 
         while(!m_Quit) {
@@ -207,8 +229,6 @@ namespace rose {
             CommandCode status = CommandCode::Failed;
             while(!inputQueue.Empty() && status == CommandCode::Failed) {
                 CartCoordsi mouseCoords = inputQueue.GetMouseCoords();
-                mouseCoords.x -= windowWidth / 2.0f;
-                mouseCoords.y -= windowHeight / 2.0f;
                 InputType input = inputQueue.NextInput();
                 switch(input) {
                     case InputType::Close: 
@@ -294,12 +314,18 @@ namespace rose {
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0); //this is the vertex positions
             glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); //this is the tex coords
 
+            //start button
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             GLint modelUniform = glGetUniformLocation(programID, "model");
             glUniformMatrix4fv(modelUniform, 1, GL_FALSE, (const float*)glm::value_ptr(translation0 * rotation0 * scaling0));
+            glUniform1i(glGetUniformLocation(programID, "texSampler"), 0);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
 
+            //quit button
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
             modelUniform = glGetUniformLocation(programID, "model");
             glUniformMatrix4fv(modelUniform, 1, GL_FALSE, (const float*)glm::value_ptr(translation1 * rotation1 * scaling1));
+            glUniform1i(glGetUniformLocation(programID, "texSampler"), 1);
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
 
             modelUniform = glGetUniformLocation(programID, "model");
@@ -314,7 +340,6 @@ namespace rose {
 
         }
 
-        stbi_image_free(data);
     }
 
     void Application::Shutdown() {

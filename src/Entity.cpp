@@ -9,7 +9,7 @@ Entity::Entity(CartCoords pos, uint32_t depth) {
 
 void Entity::MoveTo(CartCoords _pos) {
     m_FromPos = {x, y};
-    m_ToPos = _pos;
+    m_ToPos = {_pos.x, _pos.y};
 }
 void Entity::FadeTo(float _alpha) {
     m_FromAlpha = alpha;
@@ -72,8 +72,8 @@ void Entity::SetDepth(uint32_t _depth) {
 void Entity::SetPosition(CartCoords _coords) {
     x = _coords.x;
     y = _coords.y;
-    m_FromPos = _coords;
-    m_ToPos = _coords;
+    m_FromPos = {_coords.x, _coords.y};
+    m_ToPos = {_coords.x, _coords.y};
 }
 
 }
