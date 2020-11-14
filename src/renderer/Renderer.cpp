@@ -38,6 +38,12 @@ namespace rose {
         GLuint vertexBuffer;
         glGenBuffers(1, &vertexBuffer);
         glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+        /*const float vertices[]= {  //start sprite
+            -32.0f, -32.0f, 0.0f, 0.0f, 0.75f, //(0, 0) is the lower left corner, (1, 1) is the upper right
+            32.0f, -32.0f, 0.0f, 0.5f, 0.75f,
+            32.0f, 32.0f, 0.0f, 0.5f, 1.0f,
+            -32.0f, 32.0f, 0.0f, 0.0f, 1.0f
+        };*/
         const float vertices[]= { 
             -32.0f, -32.0f, 0.0f, 0.0f, 0.75f, //(0, 0) is the lower left corner, (1, 1) is the upper right
             32.0f, -32.0f, 0.0f, 0.5f, 0.75f,

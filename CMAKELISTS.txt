@@ -4,6 +4,7 @@ project(Squares VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
+
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -std=c++11")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} -g")
@@ -33,6 +34,7 @@ add_library(Rose STATIC
     "src/Camera.cpp"
     "src/renderer/Renderer.cpp"
     "src/renderer/Texture.cpp")
+target_compile_options(Rose PRIVATE "/analyze")
 target_include_directories(Rose PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${STB_INCLUDE_DIR} ${SRC_DIR} ${GLM_INCLUDE_DIR})
 target_link_libraries(Rose ${SDL_LIB_DIR}/SDL2main.lib ${SDL_LIB_DIR}/SDL2.lib Glad)
 
@@ -42,6 +44,7 @@ target_include_directories(Glad PRIVATE ${GLAD_INCLUDE_DIR})
 add_executable(Squares "src/Squares.cpp")
 target_include_directories(Squares PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${GLM_INCLUDE_DIR})
 target_link_libraries(Squares Rose)
+target_compile_options(Squares PRIVATE "/analyze")
 
 
 add_custom_command(TARGET Squares POST_BUILD

@@ -45,9 +45,9 @@ class Entity {
 
     //sprite data
     private: 
-        CartCoords m_TexCoords;
-        uint32_t m_TexWidth;
-        uint32_t m_TexHeight;
+        CartCoords m_TexCoords {0.0f, 0.0f};
+        uint32_t m_TexWidth {0};
+        uint32_t m_TexHeight {0};
 
     //animation parameters
     private:
@@ -65,7 +65,8 @@ class Entity {
 
      //collisions
      private:
-        Rectangle m_BoundingBox; //x and y of bounding box are relative to x/y of entity, ege (0, 0) to center on entity center
+        //x and y of bounding box are relative to x/y of entity, ege (0, 0) to center on entity center
+        Rectangle m_BoundingBox {0.0f, 0.0f, 0.0f, 0.0f};
 };
 
 }

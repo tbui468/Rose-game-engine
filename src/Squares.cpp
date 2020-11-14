@@ -29,6 +29,7 @@ class MainLayer: public rose::Layer{
 };
 
 
+
 int main(int, char**) {
     std::unique_ptr<rose::Application> squaresApp = std::make_unique<rose::Application>();
     std::shared_ptr<rose::Layer> layer = std::make_shared<MainLayer>();
