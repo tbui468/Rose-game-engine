@@ -5,8 +5,14 @@
 #include <string>
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 
 namespace rose {
+
+struct Sprite {
+    glm::ivec2 TexCoords;
+    glm::ivec2 TexDimensions;
+};
 
 
 class Texture {

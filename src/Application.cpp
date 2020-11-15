@@ -40,37 +40,28 @@ namespace rose {
         float windowWidth = static_cast<float>(m_Window->GetWidth());
         float windowHeight = static_cast<float>(m_Window->GetHeight());
 
-        CartCoords startCoords;
+        glm::vec2 startCoords;
         startCoords.x = 0.0f;
         startCoords.y = 100.0f;
 
-        CartCoords quitCoords;
+        glm::vec2 quitCoords;
         quitCoords.x = 0.0f;
         quitCoords.y = -100.0f;
 
-        CartCoords closeCoords;
+        glm::vec2 closeCoords;
         closeCoords.x = 1200.0f;
         closeCoords.y = 0.0f;
 
-        std::shared_ptr<Entity> startButton = std::make_shared<Button>(startCoords, 0);
-        std::shared_ptr<Entity> quitButton = std::make_shared<Button>(quitCoords, 0);
-        std::shared_ptr<Entity> closeButton = std::make_shared<Button>(closeCoords, 0);
+        //should add sprites to a dictionary, and then assign them to entities 
+        //this will also allow easy way to load multiple textures, and entities won't need to know about them
+        Sprite startButtonSprite = { glm::ivec2(0, 96), glm::ivec2(64, 32) };
+        Sprite quitButtonSprite = { glm::ivec2(64, 0), glm::ivec2(64, 32) };
+        Sprite closeButtonSprite = { glm::ivec2(96, 96), glm::ivec2(64, 32) };
 
-        startButton->SetBoundingBox(0.0f, 0.0f, 64, 64);
-        startButton->SetTexture({0.0f, 0.75f}, 64, 32);
-        quitButton->SetBoundingBox(0.0f, 0.0f, 64, 64);
-        quitButton->SetTexture({0.5f, 0.0f}, 64, 32);
-        closeButton->SetBoundingBox(0.0f, 0.0f, 64, 64);
-        closeButton->SetTexture({0.75f, 0.75f}, 32, 32);
-
-
-
-        std::vector<std::shared_ptr<Entity>> entityList;
-        entityList.push_back(quitButton);
-        entityList.push_back(startButton);
-        entityList.push_back(closeButton);
-
-
+        //don't worry about layers for now.  Set bounding box to sprite size for now
+        std::shared_ptr<Entity> startButton = std::make_shared<Button>(startButtonSprite, startCoords);
+        std::shared_ptr<Entity> quitButton = std::make_shared<Button>(quitButtonSprite, quitCoords);
+        std::shared_ptr<Entity> closeButton = std::make_shared<Button>(closeButtonSprite, closeCoords);
 
         //delta time
         m_Now = SDL_GetPerformanceCounter();
@@ -97,7 +88,7 @@ namespace rose {
 
             CommandCode status = CommandCode::Failed;
             while(!inputQueue.Empty() && status == CommandCode::Failed) {
-                CartCoordsi mouseCoords = inputQueue.GetMouseCoords();
+                glm::ivec2 mouseCoords = inputQueue.GetMouseCoords();
                 InputType input = inputQueue.NextInput();
                 switch(input) {
                     case InputType::Close: 
@@ -115,15 +106,15 @@ namespace rose {
                             startButton->MoveTo({startCoords.x + windowWidth * .6f, startCoords.y});
                             quitButton->MoveTo({quitCoords.x - windowWidth * .6f, quitCoords.y});
                             startButton->ScaleTo({4.0f, 1.0f});
-                            quitButton->ScaleTo({1.0f, 4.0f});
+                            quitButton->ScaleTo({2.0f, 4.0f});
                             closeButton->MoveTo({800.0f, 0.0f});
                             std::cout << "Clicked start button" << std::endl;
                         }
                         if(closeButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y))) {
                             startButton->MoveTo(startCoords);
                             quitButton->MoveTo(quitCoords);
-                            startButton->ScaleTo({1.0f, 1.0f});
-                            quitButton->ScaleTo({1.0f, 1.0f});
+                            startButton->ScaleTo({2.0f, 1.0f});
+                            quitButton->ScaleTo({2.0f, 1.0f});
                             closeButton->MoveTo(closeCoords);
                             std::cout << "Clicked start close" << std::endl;
                         }
@@ -155,9 +146,10 @@ namespace rose {
             }
 
             m_Renderer->ClearQuads();
-            m_Renderer->AddQuad(startButton->GetModelMatrix());
-            m_Renderer->AddQuad(quitButton->GetModelMatrix());
-            m_Renderer->AddQuad(closeButton->GetModelMatrix());
+
+            m_Renderer->AddEntity(startButton);
+            m_Renderer->AddEntity(quitButton);
+            m_Renderer->AddEntity(closeButton);
 
             m_Renderer->DrawScene();
 

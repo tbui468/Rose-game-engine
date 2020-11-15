@@ -2,12 +2,14 @@
 
 namespace rose {
 
-Entity::Entity(CartCoords pos, uint32_t depth) {
+
+Entity::Entity(const Sprite& sprite, const glm::vec2& pos) {
+    m_Sprite = sprite;
+    SetBoundingBox(0.0f, 0.0f, static_cast<float>(sprite.TexDimensions.x), static_cast<float>(sprite.TexDimensions.y));
     SetPosition(pos);
-    SetDepth(depth);
 }
 
-void Entity::MoveTo(CartCoords _pos) {
+void Entity::MoveTo(const glm::vec2& _pos) {
     m_FromPos = {x, y};
     m_ToPos = {_pos.x, _pos.y};
 }
@@ -15,7 +17,7 @@ void Entity::FadeTo(float _alpha) {
     m_FromAlpha = alpha;
     m_ToAlpha = _alpha;
 }
-void Entity::ScaleTo(CartCoords _scale) {
+void Entity::ScaleTo(const glm::vec2& _scale) {
     m_FromScale = {xScale, yScale};
     m_ToScale = _scale;
 }
@@ -48,10 +50,10 @@ void Entity::OnAnimationEnd() {
 
 
 bool Entity::PointCollision(float pointX, float pointY) const {
-    float left = x + m_BoundingBox.x - m_BoundingBox.w * .5f;
-    float right = x + m_BoundingBox.x + m_BoundingBox.w * .5f;
-    float upper = y + m_BoundingBox.y - m_BoundingBox.h * .5f;
-    float lower = y + m_BoundingBox.y + m_BoundingBox.h * .5f;
+    float left = x + m_BoundingBox.x - m_BoundingBox.z * .5f;
+    float right = x + m_BoundingBox.x + m_BoundingBox.z * .5f;
+    float upper = y + m_BoundingBox.y - m_BoundingBox.w * .5f;
+    float lower = y + m_BoundingBox.y + m_BoundingBox.w * .5f;
     if(pointX < left) return false;
     if(pointY < upper) return false;
     if(pointX > right) return false;
@@ -62,14 +64,11 @@ bool Entity::PointCollision(float pointX, float pointY) const {
 void Entity::SetBoundingBox(float _x, float _y, float _w, float _h) {
     m_BoundingBox.x = _x;
     m_BoundingBox.y = _y;
-    m_BoundingBox.w = _w;
-    m_BoundingBox.h = _h;
+    m_BoundingBox.z = _w;
+    m_BoundingBox.w = _h;
 }
 
-void Entity::SetDepth(uint32_t _depth) {
-    depth = _depth;
-}
-void Entity::SetPosition(CartCoords _coords) {
+void Entity::SetPosition(const glm::vec2& _coords) {
     x = _coords.x;
     y = _coords.y;
     m_FromPos = {_coords.x, _coords.y};
@@ -82,13 +81,6 @@ glm::mat4 Entity::GetModelMatrix() const {
     glm::mat4 translated = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
     return translated * scaled * rotated;
 }
-
-void Entity::SetTexture(CartCoords texCoords, uint32_t texWidth, uint32_t texHeight) {
-    m_TexCoords = texCoords;
-    m_TexWidth = texWidth;
-    m_TexHeight = texHeight;
-}
-
 
 
 }

@@ -1,5 +1,7 @@
 #include "renderer/Renderer.h"
 
+#include "glm/gtx/string_cast.hpp"
+
 
 
 namespace rose {
@@ -32,36 +34,25 @@ namespace rose {
         glGenVertexArrays(1, &vertexArray);
         glBindVertexArray(vertexArray);
 
-
         /////////////OPENGL STUFF/////////////////////////////////
-        //temp: testing AddVertex and AddIndex functions
-        GLuint vertexBuffer;
-        glGenBuffers(1, &vertexBuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-        /*const float vertices[]= {  //start sprite
-            -32.0f, -32.0f, 0.0f, 0.0f, 0.75f, //(0, 0) is the lower left corner, (1, 1) is the upper right
-            32.0f, -32.0f, 0.0f, 0.5f, 0.75f,
-            32.0f, 32.0f, 0.0f, 0.5f, 1.0f,
-            -32.0f, 32.0f, 0.0f, 0.0f, 1.0f
-        };*/
-        const float vertices[]= { 
-            -32.0f, -32.0f, 0.0f, 0.0f, 0.75f, //(0, 0) is the lower left corner, (1, 1) is the upper right
-            32.0f, -32.0f, 0.0f, 0.5f, 0.75f,
-            32.0f, 32.0f, 0.0f, 0.5f, 1.0f,
+        m_VertexBuffer = std::make_shared<VertexBuffer>();
+        m_VertexBuffer->Bind();
+/*
+        const float vertices[]= {  //3 vertex positions, 2 tex coordinates, 1 model index
+            -32.0f, -32.0f, 0.0f, 0.0f, 0.0f, 
+            32.0f, -32.0f, 0.0f, 1.0f, 0.0f, 
+            32.0f, 32.0f, 0.0f, 1.0f, 1.0f, 
             -32.0f, 32.0f, 0.0f, 0.0f, 1.0f
         };
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 5, &vertices[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5 * 4, &vertices[0], GL_STATIC_DRAW);*/
 
-        GLuint indexBuffer;
-        glGenBuffers(1, &indexBuffer);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-        const uint32_t indices[]={
+        m_IndexBuffer = std::make_shared<IndexBuffer>();
+        m_IndexBuffer->Bind();
+
+        /*const uint32_t indices[]={
             0, 1, 2, 0, 2, 3
         };
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * 6, &indices[0], GL_STATIC_DRAW);
-
-
-
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * 6, &indices[0], GL_STATIC_DRAW);*/
 
         //////////////SHADERS//////////////////////////
         float halfWidth = static_cast<float>(window->GetWidth()) / 2.0f;
@@ -75,11 +66,12 @@ namespace rose {
             "#version 330 core\n"
             "layout(location = 0) in vec3 vertexPos;"
             "layout(location = 1) in vec2 texCoords;"
+            "layout(location = 2) in int modelIndex;"
             "uniform mat4 projection;"
-            "uniform mat4 model;"
+            "uniform mat4 models[64];"
             "out vec2 v_texCoords;"
             "void main() {"
-            "   gl_Position = projection * model * vec4(vertexPos, 1.0);"
+            "   gl_Position = projection * models[modelIndex] * vec4(vertexPos, 1.0);"
             "   v_texCoords = texCoords;"
             "}";
 
@@ -136,15 +128,37 @@ namespace rose {
         m_Texture = std::make_shared<Texture>();
         m_Texture->LoadTexture("./../assets/textureSheet.png");
 
+
     }
 
 
-    void Renderer::AddQuad(const glm::mat4& model) {
-        m_Models.emplace_back(model);
+    void Renderer::AddEntity(std::shared_ptr<Entity> entity) {
+        float texWidth = static_cast<float>(m_Texture->GetWidth());
+        float texHeight = static_cast<float>(m_Texture->GetHeight());
+
+        glm::mat4 model = entity->GetModelMatrix();
+        glm::vec2 texCoordsStart = { entity->GetSpriteCoords().x / texWidth, entity->GetSpriteCoords().y / texHeight };
+        glm::vec2 texCoordsEnd = {texCoordsStart.x + entity->GetSpriteDimensions().x / texWidth, texCoordsStart.y + entity->GetSpriteDimensions().y / texHeight};
+
+        m_VertexBuffer->AddVertex(glm::vec3(-32.0f, -32.0f, 0.0f), texCoordsStart, QuadCount());
+        m_VertexBuffer->AddVertex(glm::vec3(32.0f, -32.0f, 0.0f), {texCoordsEnd.x, texCoordsStart.y}, QuadCount());
+        m_VertexBuffer->AddVertex(glm::vec3(32.0f, 32.0f, 0.0f), texCoordsEnd, QuadCount());
+        m_VertexBuffer->AddVertex(glm::vec3(-32.0f, 32.0f, 0.0f), {texCoordsStart.x, texCoordsEnd.y}, QuadCount());
+
+        size_t indexPos = 4 * QuadCount();
+        m_IndexBuffer->AddIndex(indexPos);
+        m_IndexBuffer->AddIndex(indexPos + 1);
+        m_IndexBuffer->AddIndex(indexPos + 2);
+        m_IndexBuffer->AddIndex(indexPos);
+        m_IndexBuffer->AddIndex(indexPos + 2);
+        m_IndexBuffer->AddIndex(indexPos + 3);
+        m_Models.push_back(model); 
     }
 
     void Renderer::ClearQuads() {
         m_Models.clear();
+        m_VertexBuffer->Clear();
+        m_IndexBuffer->Clear();
     }
 
     void Renderer::DrawScene() {
@@ -152,24 +166,31 @@ namespace rose {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0); //this is the vertex positions
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); //this is the tex coords
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0); //this is the vertex positions
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float))); //this is the tex coords
+        glVertexAttribIPointer(2, 1, GL_INT, sizeof(Vertex), (void*)(5 * sizeof(float))); //this is the tex coords
 
-        //set shader and set uniform for orthographic projection
         glUseProgram(m_ShaderID);
+        //projection
         GLint projUniform = glGetUniformLocation(m_ShaderID, "projection");
         glUniformMatrix4fv(projUniform, 1, GL_FALSE, (const float*)glm::value_ptr(m_Projection));
+        //model array
+        GLint modelUniform = glGetUniformLocation(m_ShaderID, "models");
+        glUniformMatrix4fv(modelUniform, QuadCount(), GL_FALSE, (const float*)glm::value_ptr(m_Models.at(0)));
+        //texture
+        glUniform1i(glGetUniformLocation(m_ShaderID, "texSampler"), 0);
 
-        for(glm::mat4& model: m_Models) {
-//            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            GLint modelUniform = glGetUniformLocation(m_ShaderID, "model");
-            glUniformMatrix4fv(modelUniform, 1, GL_FALSE, (const float*)glm::value_ptr(model));
-            glUniform1i(glGetUniformLocation(m_ShaderID, "texSampler"), 0);
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
-        }
+        m_VertexBuffer->Bind();
+        m_VertexBuffer->SetData();
+        m_IndexBuffer->Bind();
+        m_IndexBuffer->SetData();
+
+        glDrawElements(GL_TRIANGLES, m_IndexBuffer->Count(), GL_UNSIGNED_INT, (void*)0); //this should draw from index buffer (and corresponding vertex buffer)
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
 
     }
 

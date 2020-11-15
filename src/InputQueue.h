@@ -2,6 +2,9 @@
 #define INPUT_QUEUE_H
 
 #include <queue>
+
+#include <glm/glm.hpp>
+
 #include "InputType.h"
 #include "Utility.h"
 #include "Window.h"
@@ -18,7 +21,7 @@ class InputQueue {
         size_t Size() const {return m_Inputs.size(); }
         bool Empty() const {return m_Inputs.empty(); }
         void Clear() {while(!m_Inputs.empty()) m_Inputs.pop();}
-        CartCoordsi GetMouseCoords();
+        glm::ivec2 GetMouseCoords();
     private:
     private:
         std::queue<InputType> m_Inputs;

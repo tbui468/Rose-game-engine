@@ -33,8 +33,10 @@ add_library(Rose STATIC
     "src/Application.cpp"
     "src/Camera.cpp"
     "src/renderer/Renderer.cpp"
+    "src/renderer/VertexBuffer.cpp"
+    "src/renderer/IndexBuffer.cpp"
     "src/renderer/Texture.cpp")
-target_compile_options(Rose PRIVATE "/analyze")
+#target_compile_options(Rose PRIVATE "/analyze")
 target_include_directories(Rose PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${STB_INCLUDE_DIR} ${SRC_DIR} ${GLM_INCLUDE_DIR})
 target_link_libraries(Rose ${SDL_LIB_DIR}/SDL2main.lib ${SDL_LIB_DIR}/SDL2.lib Glad)
 
@@ -44,7 +46,7 @@ target_include_directories(Glad PRIVATE ${GLAD_INCLUDE_DIR})
 add_executable(Squares "src/Squares.cpp")
 target_include_directories(Squares PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${GLM_INCLUDE_DIR})
 target_link_libraries(Squares Rose)
-target_compile_options(Squares PRIVATE "/analyze")
+#target_compile_options(Squares PRIVATE "/analyze")
 
 
 add_custom_command(TARGET Squares POST_BUILD

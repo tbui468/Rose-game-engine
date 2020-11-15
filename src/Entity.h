@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Utility.h"
+#include "renderer/Texture.h"
 
 namespace rose {
 
@@ -13,22 +14,19 @@ namespace rose {
 class Entity {
     public:
         Entity() = default;
-        Entity(CartCoords pos, uint32_t depth);
+        Entity(const Sprite& sprite, const glm::vec2& pos);
         virtual ~Entity() {}
-        virtual void SetPosition(CartCoords coords);
-        virtual void SetDepth(uint32_t depth);
+        virtual void SetPosition(const glm::vec2& coords);
     public:
-        virtual void MoveTo(CartCoords pos);
+        virtual void MoveTo(const glm::vec2& pos);
         virtual void FadeTo(float alpha);
-        virtual void ScaleTo(CartCoords scale);
+        virtual void ScaleTo(const glm::vec2& scale);
         virtual void RotateTo(float angle);
         virtual void OnAnimationUpdate(float t);
         virtual void OnAnimationEnd();
     public:
-        virtual void SetTexture(CartCoords texCoords, uint32_t texWidth, uint32_t texHeight);
-        virtual CartCoords GetTexCoords() const { return m_TexCoords; }
-        virtual uint32_t GetTexWidth() const { return m_TexWidth; }
-        virtual uint32_t GetTexHeight() const { return m_TexHeight; }
+        virtual const glm::ivec2& GetSpriteCoords() const { return m_Sprite.TexCoords; }
+        virtual const glm::ivec2& GetSpriteDimensions() const { return m_Sprite.TexDimensions; }
     public:
         virtual bool PointCollision(float pointX, float pointY) const;
         virtual void SetBoundingBox(float x, float y, float w, float h);
@@ -41,21 +39,18 @@ class Entity {
         float yScale {1.0f};
         float angle {0.0f};
         float alpha {1.0f};
-        uint32_t depth {0};
 
     //sprite data
     private: 
-        CartCoords m_TexCoords {0.0f, 0.0f};
-        uint32_t m_TexWidth {0};
-        uint32_t m_TexHeight {0};
+        Sprite m_Sprite;
 
     //animation parameters
     private:
-        CartCoords m_FromPos {0.0f, 0.0f};
-        CartCoords m_ToPos {0.0f, 0.0f};
+        glm::vec2 m_FromPos {0.0f, 0.0f};
+        glm::vec2 m_ToPos {0.0f, 0.0f};
 
-        Scale m_FromScale {1.0f, 1.0f};
-        Scale m_ToScale {1.0f, 1.0f};
+        glm::vec2 m_FromScale {1.0f, 1.0f};
+        glm::vec2 m_ToScale {1.0f, 1.0f};
 
         float m_ToAngle {0.0f};
         float m_FromAngle {0.0f};
@@ -66,7 +61,7 @@ class Entity {
      //collisions
      private:
         //x and y of bounding box are relative to x/y of entity, ege (0, 0) to center on entity center
-        Rectangle m_BoundingBox {0.0f, 0.0f, 0.0f, 0.0f};
+        glm::vec4 m_BoundingBox {0.0f, 0.0f, 0.0f, 0.0f};
 };
 
 }

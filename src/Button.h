@@ -2,13 +2,14 @@
 #define BUTTON_H
 
 #include "Entity.h"
+#include "renderer/Texture.h"
 
 namespace rose {
 
 class Button : public Entity {
     public:
         Button() = default;
-        Button(CartCoords pos, uint32_t depth) : Entity(pos, depth) {}
+        Button(const Sprite& sprite, const glm::vec2& pos) : Entity(sprite, pos) {}
         virtual ~Button() {}
     private:
 };

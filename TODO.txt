@@ -1,15 +1,14 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-Textures:
-    tex coords need to correspond to each vertex
-    so i need to keep the 5 float vertex setup
-    will need to make a list of vertices and indices (like what i had before - have to create VertexBuffer and IndexBuffer class - vertex array is not needed)
-        each quad in the list will also need a corresponding model matrix that needs to be set as the model uniform in shader
-        can use static const array of vertices corners (default), but need to assign them different texcoords
-        AddQuad(width, height, texcoordsStart, texCOordsEnd)
+Get SDL to allow window resizing and toggle window/fullscreen
+    how does this affect collision and so forth???
+    maybe have a way to display coordinates on mouse position???
 
-Everything breaks when switching off fullscreen
-    think about how I want to do this and togglefull screen often to check (maybe should make a key for this??? so I can change it during runtime)
+Have a way to set size of entity (eg, 64 x 32), so that sprite can vary in size
+    bounding boxes are buggy (smaller than they should be)
+    seems to be an issue with screen resolution and window size (related to below)
+    Everything breaks when switching off fullscreen
+        think about how I want to do this and togglefull screen often to check (maybe should make a key for this??? so I can change it during runtime)
 
 Abstract things away as needed based on how the last step went to prepare for the next step
 

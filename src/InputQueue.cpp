@@ -31,8 +31,8 @@ InputType InputQueue::NextInput(){
 }
 
 
-CartCoordsi InputQueue::GetMouseCoords() {
-    CartCoordsi mouseCoords;
+glm::ivec2 InputQueue::GetMouseCoords() {
+    glm::ivec2 mouseCoords;
     SDL_GetMouseState(&mouseCoords.x, &mouseCoords.y);
     mouseCoords.x -= m_Window->GetWidth() / 2.0f;
     mouseCoords.y -= m_Window->GetHeight() / 2.0f;
