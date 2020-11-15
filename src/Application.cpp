@@ -26,6 +26,7 @@ namespace rose {
         m_Renderer = std::make_shared<Renderer>(m_Window, vsync);
 
 
+
     }
 
     void Application::SetLayer(std::shared_ptr<Layer> layer) {
@@ -40,6 +41,7 @@ namespace rose {
         float windowWidth = static_cast<float>(m_Window->GetWidth());
         float windowHeight = static_cast<float>(m_Window->GetHeight());
 
+
         glm::vec2 startCoords;
         startCoords.x = 0.0f;
         startCoords.y = 100.0f;
@@ -52,16 +54,10 @@ namespace rose {
         closeCoords.x = 1200.0f;
         closeCoords.y = 0.0f;
 
-        //should add sprites to a dictionary, and then assign them to entities 
-        //this will also allow easy way to load multiple textures, and entities won't need to know about them
-        Sprite startButtonSprite = { glm::ivec2(0, 96), glm::ivec2(64, 32) };
-        Sprite quitButtonSprite = { glm::ivec2(64, 0), glm::ivec2(64, 32) };
-        Sprite closeButtonSprite = { glm::ivec2(96, 96), glm::ivec2(64, 32) };
+        std::shared_ptr<Entity> startButton = std::make_shared<Button>("StartButton", startCoords);
+        std::shared_ptr<Entity> quitButton = std::make_shared<Button>("QuitButton", quitCoords);
+        std::shared_ptr<Entity> closeButton = std::make_shared<Button>("CloseButton", closeCoords);
 
-        //don't worry about layers for now.  Set bounding box to sprite size for now
-        std::shared_ptr<Entity> startButton = std::make_shared<Button>(startButtonSprite, startCoords);
-        std::shared_ptr<Entity> quitButton = std::make_shared<Button>(quitButtonSprite, quitCoords);
-        std::shared_ptr<Entity> closeButton = std::make_shared<Button>(closeButtonSprite, closeCoords);
 
         //delta time
         m_Now = SDL_GetPerformanceCounter();
@@ -150,6 +146,7 @@ namespace rose {
             m_Renderer->AddEntity(startButton);
             m_Renderer->AddEntity(quitButton);
             m_Renderer->AddEntity(closeButton);
+
 
             m_Renderer->DrawScene();
 

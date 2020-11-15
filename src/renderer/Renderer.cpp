@@ -127,7 +127,9 @@ namespace rose {
 
         m_Texture = std::make_shared<Texture>();
         m_Texture->LoadTexture("./../assets/textureSheet.png");
-
+        m_Texture->AddSprite("StartButton", { glm::ivec2(0, 96), glm::ivec2(64, 32)});
+        m_Texture->AddSprite("QuitButton", { glm::ivec2(64, 0), glm::ivec2(64, 32)});
+        m_Texture->AddSprite("CloseButton", { glm::ivec2(96, 96), glm::ivec2(32, 32)});
 
     }
 
@@ -137,8 +139,9 @@ namespace rose {
         float texHeight = static_cast<float>(m_Texture->GetHeight());
 
         glm::mat4 model = entity->GetModelMatrix();
-        glm::vec2 texCoordsStart = { entity->GetSpriteCoords().x / texWidth, entity->GetSpriteCoords().y / texHeight };
-        glm::vec2 texCoordsEnd = {texCoordsStart.x + entity->GetSpriteDimensions().x / texWidth, texCoordsStart.y + entity->GetSpriteDimensions().y / texHeight};
+        const Sprite& sprite = m_Texture->GetSprite(entity->GetSpriteName());
+        glm::vec2 texCoordsStart = { sprite.TexCoords.x / texWidth, sprite.TexCoords.y / texHeight };
+        glm::vec2 texCoordsEnd = {texCoordsStart.x + sprite.TexDimensions.x / texWidth, texCoordsStart.y + sprite.TexDimensions.y / texHeight};
 
         m_VertexBuffer->AddVertex(glm::vec3(-32.0f, -32.0f, 0.0f), texCoordsStart, QuadCount());
         m_VertexBuffer->AddVertex(glm::vec3(32.0f, -32.0f, 0.0f), {texCoordsEnd.x, texCoordsStart.y}, QuadCount());

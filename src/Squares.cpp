@@ -1,38 +1,39 @@
 #include "Rose.h" //by any other name would have just as many memory leaks, and break as many cups
 
-class MainLayer: public rose::Layer{
+/*
+class Button: public rose::Entity {
     public:
-        MainLayer() {
-            //m_StartButton = new Ref<Button>();
-            //
-            //create a bunch of instances
-            //m_EntityList->Push(instances);
+    private:
+};*/
+
+//should create and have buttons animate inwards, so that
+//we can destroy the menu layer when player is playing puzzles, and 
+//then recreate it when player exits puzzles back to main menu
+class MenuLayer: public rose::Layer{
+    public:
+        MenuLayer() {
+   //         startButton = rose::MakeRef<Button>();
         }
-        virtual ~MainLayer() {
+        virtual ~MenuLayer() {
         }
         virtual void Update() override {
-            //if InputQueue.Next() == Input::LeftClick
-                //startButton->MoveTo(....)
-            //if InputQueue.Next() == Input::RightClick
-                //for(Entity& e: m_EntityList)
-                    //e->MoveTo(offscreen)
+            /*
+            glm::vec2 offscreen = {100.0f, 100.0f};
+            glm::vec2 mouseCoords = Input::GetMouseCoords();
+            if(Input::LeftPressed and startButton->PointCollision(mouseCoords)) startButton->MoveTo(offscreen);*/
         }
         virtual void Draw() override {
-            //m_startButton.Draw(); //Draw calls should call the renderer in application (how to do this???)
-            //
-            //for(Entity& e: m_EntityList)
-                //e->Draw();
+            //Renderer::Draw(startButton->GetSprite(), startButton->GetModelMatrix);
         }
     private:
-        //Ref<Button> m_StartButton;
-        //Ref<EntityList> m_EntityList;
+        //rose::Ref<Button> startButton;
 };
 
 
 
 int main(int, char**) {
     std::unique_ptr<rose::Application> squaresApp = std::make_unique<rose::Application>();
-    std::shared_ptr<rose::Layer> layer = std::make_shared<MainLayer>();
+    std::shared_ptr<rose::Layer> layer = std::make_shared<MenuLayer>();
 
     squaresApp->SetLayer(layer);
     squaresApp->Run();

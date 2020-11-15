@@ -14,7 +14,7 @@ namespace rose {
 class Entity {
     public:
         Entity() = default;
-        Entity(const Sprite& sprite, const glm::vec2& pos);
+        Entity(const std::string& sprite, const glm::vec2& pos);
         virtual ~Entity() {}
         virtual void SetPosition(const glm::vec2& coords);
     public:
@@ -25,8 +25,7 @@ class Entity {
         virtual void OnAnimationUpdate(float t);
         virtual void OnAnimationEnd();
     public:
-        virtual const glm::ivec2& GetSpriteCoords() const { return m_Sprite.TexCoords; }
-        virtual const glm::ivec2& GetSpriteDimensions() const { return m_Sprite.TexDimensions; }
+        virtual const std::string& GetSpriteName() const { return m_SpriteName; }
     public:
         virtual bool PointCollision(float pointX, float pointY) const;
         virtual void SetBoundingBox(float x, float y, float w, float h);
@@ -42,7 +41,7 @@ class Entity {
 
     //sprite data
     private: 
-        Sprite m_Sprite;
+        std::string m_SpriteName;
 
     //animation parameters
     private:

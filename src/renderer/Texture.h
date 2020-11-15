@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <unordered_map>
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -23,7 +24,10 @@ class Texture {
         GLuint GetRendererID() const { return m_RendererID; }
         uint32_t GetWidth() const { return m_Width; }
         uint32_t GetHeight() const { return m_Height; }
+        const Sprite& GetSprite(const std::string& key) const { return m_SpriteData.at(key); }
+        void AddSprite(std::string key, Sprite sprite);
     private:
+        std::unordered_map<std::string, Sprite> m_SpriteData;
         int32_t m_Width;
         int32_t m_Height;
         GLuint m_RendererID;

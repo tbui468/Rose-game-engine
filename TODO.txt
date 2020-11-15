@@ -1,8 +1,24 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
+Move all server code to Rose.lib - pretty much everything else right now
+    set up cmake to compile it to a static library
+
+Move all client code to Squares.cpp - Squares and Button
+
+First create a mock-up of what I want the API from Squares.cpp to look like.  
+    Then build the necessary structures to get there
+
+    Should integrate Entities, Layer, and Application classes (current setup pretty much ignores Layers)
+        Texture Map to access assets - maybe this should be global???  Or at least at the application level
+        Client should specify Sprite name as a string, and when entity is created in application, load in appropriate sprite data/dimensions
+
+        What should the API from Squares.cpp look like????
+
+
 Get SDL to allow window resizing and toggle window/fullscreen
     how does this affect collision and so forth???
     maybe have a way to display coordinates on mouse position???
+
 
 Have a way to set size of entity (eg, 64 x 32), so that sprite can vary in size
     bounding boxes are buggy (smaller than they should be)
@@ -15,3 +31,5 @@ Abstract things away as needed based on how the last step went to prepare for th
 Make puzzlesets, puzzles and fractals (the most complex class) - abstract or refactor as needed
 
 Set build (x86 or x64) (or should this be a build option???)
+
+Build on linux virtual machine to test different compiler (GCC)

@@ -9,7 +9,7 @@ namespace rose {
 class Button : public Entity {
     public:
         Button() = default;
-        Button(const Sprite& sprite, const glm::vec2& pos) : Entity(sprite, pos) {}
+        Button(const std::string& sprite, const glm::vec2& pos) : Entity(sprite, pos) {}
         virtual ~Button() {}
     private:
 };
