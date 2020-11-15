@@ -29,6 +29,7 @@ set (SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 
 add_library(Rose STATIC 
     "src/InputQueue.cpp"
+    "src/Input.cpp"
     "src/Entity.cpp"
     "src/Application.cpp"
     "src/Camera.cpp"

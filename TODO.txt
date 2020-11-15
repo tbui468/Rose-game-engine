@@ -1,9 +1,18 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
+Input class
+    Write Application::GetApplication() static function.  And declare and implement
+    How about making Application a singleton???  There only ever should be one instance of it anyway
+    then in main(), can call Application* app = Application::GetApp(); app->Run() etc
+    in Layer Update(), can call Application* app = Application::GetApp();, app->Quit() when input == InputType::Close
+        if I go this path will need to write some static functions/singleton stuff for Application class
+        this seems like the best solution for the time being since it gives everyone access to the currently running application
+            without having to pass a shared pointer to the application to everything
+
 Move all server code to Rose.lib - pretty much everything else right now
     set up cmake to compile it to a static library
 
-Move all client code to Squares.cpp - Squares and Button
+Move all client code to Squares.cpp - Squares, Button, and InputQueue
 
 First create a mock-up of what I want the API from Squares.cpp to look like.  
     Then build the necessary structures to get there

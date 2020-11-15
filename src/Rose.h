@@ -19,6 +19,8 @@
 #include "Entity.h"
 #include "Button.h"
 #include "InputQueue.h"
+#include "Input.h"
+#include "InputType.h"
 #include "AnimationTimer.h"
 #include "CommandCode.h"
 

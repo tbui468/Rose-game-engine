@@ -14,6 +14,7 @@ class Application {
         void SetLayer(std::shared_ptr<Layer> layer);
         void Run();
         void Shutdown();
+        //static Application* GetApplication();
     private:
         bool m_Quit = false;
         std::shared_ptr<Window> m_Window;

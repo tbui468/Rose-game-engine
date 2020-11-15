@@ -10,7 +10,8 @@
 #include "AnimationTimer.h"
 #include "CommandCode.h"
 #include "InputQueue.h"
-#include "Utility.h"
+#include "Input.h"
+//#include "Utility.h"
 
 namespace rose {
 
@@ -19,7 +20,7 @@ namespace rose {
             std::cout << "SDL_Init error!!!" << SDL_GetError() << std::endl;
         }
 
-        bool fullScreen = true;
+        bool fullScreen = false;
         m_Window = std::make_shared<Window>(960, 540, fullScreen);
 
         bool vsync = true;
@@ -68,7 +69,7 @@ namespace rose {
         AnimationTimer timer;
         timer.SetSpeed(0.001f);
 
-        InputQueue inputQueue(m_Window);
+        //InputQueue inputQueue(m_Window);
 
 
 
@@ -80,8 +81,8 @@ namespace rose {
             m_Layer->Update();
             m_Layer->Draw();
 
-            inputQueue.PollEvents();
-
+         //   inputQueue.PollEvents();
+/*
             CommandCode status = CommandCode::Failed;
             while(!inputQueue.Empty() && status == CommandCode::Failed) {
                 glm::ivec2 mouseCoords = inputQueue.GetMouseCoords();
@@ -92,6 +93,7 @@ namespace rose {
                         status = CommandCode::Success;
                         timer.ResetParameter();
                         break;
+                        
                     case InputType::LeftTap: 
 
                         std::cout << mouseCoords.x << ", " << mouseCoords.y << std::endl;
@@ -125,7 +127,7 @@ namespace rose {
                         status = CommandCode::Failed;
                         break;
                 }
-            }
+            }*/
 
 
             timer.Update(m_DeltaTime);

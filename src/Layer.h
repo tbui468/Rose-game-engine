@@ -9,6 +9,8 @@ class Layer {
         virtual ~Layer() {}
         virtual void Update() = 0;
         virtual void Draw() = 0;
+    private:
+        void DrawSprite(const Sprite& sprite, const glm::mat4& model); //
 };
 
 }
