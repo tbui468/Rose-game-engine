@@ -1,20 +1,13 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
+It was a problem with textures and sprite name not being valid
+    add in Debug mode with macros
+    add in ASSERTs with macros when debug mode is enabled
+    do a check on sprite names to make sure this same bug doesn't show up
 
-Move all server code to Rose.lib - pretty much everything else right now
-    set up cmake to compile it to a static library
-
-Move all client code to Squares.cpp - Squares, Button, and InputQueue
-
-First create a mock-up of what I want the API from Squares.cpp to look like.  
-    Then build the necessary structures to get there
-
-    Should integrate Entities, Layer, and Application classes (current setup pretty much ignores Layers)
-        Texture Map to access assets - maybe this should be global???  Or at least at the application level
-        Client should specify Sprite name as a string, and when entity is created in application, load in appropriate sprite data/dimensions
-
-        What should the API from Squares.cpp look like????
-
+Application
+    add functions to load texture, and add sprite based on texture
+    should be loading assets in main(), before app->Run() is called
 
 Get SDL to allow window resizing and toggle window/fullscreen
     how does this affect collision and so forth???

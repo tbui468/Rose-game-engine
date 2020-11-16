@@ -20,10 +20,12 @@ class Renderer {
     public:
         Renderer(std::shared_ptr<Window> window, bool vsync);
         virtual ~Renderer() {}
-        void AddEntity(std::shared_ptr<Entity> entity);
+        void AddEntity(std::shared_ptr<Entity> entity); //should just be called Draw
         uint32_t QuadCount() const { return m_Models.size(); }
         void ClearQuads();
+        //BeginScene()
         void DrawScene(); 
+        //EndScene() (clearQuads should be called here and it should also be private)
         void SetClearColor(const glm::ivec3& color);
     private:
         GLuint m_ShaderID;

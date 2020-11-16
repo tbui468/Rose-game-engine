@@ -8,13 +8,10 @@ namespace rose {
 InputType Input::GetInput() {
     SDL_Event event;
 
-    Application* app = Application::GetApplication();
-
     while(SDL_PollEvent(&event)) {
         switch(event.type) {
             case SDL_QUIT: 
-                app->Quit();
-                return InputType::Close; 
+                return InputType::Quit; 
                 break;
             case SDL_MOUSEBUTTONDOWN: 
                 if(event.button.button == SDL_BUTTON_LEFT)

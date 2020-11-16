@@ -29,6 +29,11 @@ void Texture::LoadTexture(const std::string& path) {
 
 }
 
+
+const Sprite& Texture::GetSprite(const std::string& key) const {
+    return m_SpriteData.at(key);
+}
+
 void Texture::AddSprite(std::string key, Sprite sprite) {
     m_SpriteData.insert(std::make_pair<std::string, Sprite>(std::move(key), std::move(sprite)));
 }

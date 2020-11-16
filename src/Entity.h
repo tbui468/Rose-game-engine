@@ -25,11 +25,10 @@ class Entity {
         virtual void OnAnimationUpdate(float t);
         virtual void OnAnimationEnd();
     public:
-        virtual const std::string& GetSpriteName() const { return m_SpriteName; }
-    public:
         virtual bool PointCollision(float pointX, float pointY) const;
         virtual void SetBoundingBox(float x, float y, float w, float h);
         virtual glm::mat4 GetModelMatrix() const;
+        virtual const std::string& GetSpriteName() const { return m_SpriteName; }
 
     public:
         float x {0.0f};

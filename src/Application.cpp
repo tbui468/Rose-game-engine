@@ -9,7 +9,7 @@
 #include "Button.h"
 #include "AnimationTimer.h"
 #include "CommandCode.h"
-#include "InputQueue.h"
+//#include "InputQueue.h"
 #include "Input.h"
 //#include "Utility.h"
 
@@ -96,61 +96,13 @@ namespace rose {
             m_Now = SDL_GetPerformanceCounter();
             m_DeltaTime = static_cast<double>((m_Now - m_Last) * 1000) / static_cast<double>(SDL_GetPerformanceFrequency());
 
+            m_Renderer->ClearQuads();
             m_Layer->Update();
             m_Layer->Draw();
 
-         //   inputQueue.PollEvents();
-/*
-            CommandCode status = CommandCode::Failed;
-            while(!inputQueue.Empty() && status == CommandCode::Failed) {
-                glm::ivec2 mouseCoords = inputQueue.GetMouseCoords();
-                InputType input = inputQueue.NextInput();
-                switch(input) {
-                    case InputType::Close: 
-                        m_Quit = true;
-                        status = CommandCode::Success;
-                        timer.ResetParameter();
-                        break;
-                        
-                    case InputType::LeftTap: 
-
-                        std::cout << mouseCoords.x << ", " << mouseCoords.y << std::endl;
-                        if(quitButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y)))
-                            m_Quit = true;
-                        if(startButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y))) {
-
-                            startButton->MoveTo({startCoords.x + windowWidth * .6f, startCoords.y});
-                            quitButton->MoveTo({quitCoords.x - windowWidth * .6f, quitCoords.y});
-                            startButton->ScaleTo({4.0f, 1.0f});
-                            quitButton->ScaleTo({2.0f, 4.0f});
-                            closeButton->MoveTo({800.0f, 0.0f});
-                            std::cout << "Clicked start button" << std::endl;
-                        }
-                        if(closeButton->PointCollision(static_cast<float>(mouseCoords.x), static_cast<float>(mouseCoords.y))) {
-                            startButton->MoveTo(startCoords);
-                            quitButton->MoveTo(quitCoords);
-                            startButton->ScaleTo({2.0f, 1.0f});
-                            quitButton->ScaleTo({2.0f, 1.0f});
-                            closeButton->MoveTo(closeCoords);
-                            std::cout << "Clicked start close" << std::endl;
-                        }
-                        status = CommandCode::Success;
-                        timer.ResetParameter();
-                        break;
-                    case InputType::RightTap: 
-                        status = CommandCode::Success;
-                        timer.ResetParameter();
-                        break;
-                    default:
-                        status = CommandCode::Failed;
-                        break;
-                }
-            }*/
-
-
             timer.Update(m_DeltaTime);
             float sigmoid = timer.GetSigmoidParameter();
-
+/*
             startButton->OnAnimationUpdate(sigmoid);
             quitButton->OnAnimationUpdate(sigmoid);
             closeButton->OnAnimationUpdate(sigmoid);
@@ -161,18 +113,26 @@ namespace rose {
                 closeButton->OnAnimationEnd();
             }
 
-            m_Renderer->ClearQuads();
-
-            m_Renderer->AddEntity(startButton);
-            m_Renderer->AddEntity(quitButton);
-            m_Renderer->AddEntity(closeButton);
-
+*/
+ //           m_Renderer->AddEntity(startButton);
+  //          m_Renderer->AddEntity(quitButton);
+   //         m_Renderer->AddEntity(closeButton);
+            //Draw(startButton);
 
             m_Renderer->DrawScene();
 
             SDL_GL_SwapWindow(m_Window->GetHandle());
         }
 
+    }
+
+
+    void Application::Draw(const std::string& spriteName, const glm::mat4& model) {
+
+    }
+
+    void Application::Draw(std::shared_ptr<Entity> entity) {
+        m_Renderer->AddEntity(entity);
     }
 
     void Application::Shutdown() {

@@ -24,7 +24,7 @@ class Texture {
         GLuint GetRendererID() const { return m_RendererID; }
         uint32_t GetWidth() const { return m_Width; }
         uint32_t GetHeight() const { return m_Height; }
-        const Sprite& GetSprite(const std::string& key) const { return m_SpriteData.at(key); }
+        const Sprite& GetSprite(const std::string& key) const;
         void AddSprite(std::string key, Sprite sprite);
     private:
         std::unordered_map<std::string, Sprite> m_SpriteData;

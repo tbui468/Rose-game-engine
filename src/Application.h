@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "renderer/Renderer.h"
 #include "Layer.h"
+#include "Entity.h"
 
 namespace rose {
 
@@ -18,6 +19,9 @@ class Application {
         int32_t GetWindowHeight() const { return m_Window->GetHeight(); }
         void SetClearColor(const glm::ivec3& color);
         static Application* GetApplication();
+    public: //rendering
+        void Draw(const std::string& spriteName, const glm::mat4& model); 
+        void Draw(std::shared_ptr<Entity> entity);
     private:
         Application();
         bool m_Quit = false;

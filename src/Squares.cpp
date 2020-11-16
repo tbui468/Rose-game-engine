@@ -1,47 +1,44 @@
 #include "Rose.h" //by any other name would have just as many memory leaks, and break as many cups
 
-
 class MyButton: public rose::Entity {
     public:
         MyButton() = default;
+        MyButton(const std::string& sprite, const glm::vec2& pos) : Entity(sprite, pos) {}
     private:
 };
 
-
-class MenuLayer: public rose::Layer{
+class MenuLayer: public rose::Layer {
     public:
         MenuLayer() {
-            startButton = std::make_shared<MyButton>();
+            quitButton = std::make_shared<MyButton>("QuitButton", glm::vec2(0.0f, -100.0f));
+            startButton = std::make_shared<MyButton>("StartButton", glm::vec2(0.0f, 100.0f));
+            m_App = rose::Application::GetApplication();
         }
         virtual ~MenuLayer() {
         }
         virtual void Update() override {
-            glm::ivec2 mouse;
+            glm::ivec2 mouse = rose::Input::GetMousePos();
             switch(rose::Input::GetInput()) {
                 case rose::InputType::LeftTap: 
-                    mouse = rose::Input::GetMousePos();
-                    std::cout << "Left tap at x: " << mouse.x << ", y: " << mouse.y << std::endl;
+                    if(quitButton->PointCollision(static_cast<float>(mouse.x), static_cast<float>(mouse.y)))
+                        m_App->Quit();
                     break;
                 case rose::InputType::RightTap: 
-                    mouse = rose::Input::GetMousePos();
-                    std::cout << "Right tap at x: " << mouse.x << ", y: " << mouse.y << std::endl;
                     break;
-                case rose::InputType::Close:
-                    //Application::Quit();  //get instance of applicati
+                case rose::InputType::Quit:
+                    m_App->Quit();
                     break;
             }
 
-            /*
-            glm::vec2 offscreen = {100.0f, 100.0f};
-            glm::vec2 mouseCoords = Input::GetMouseCoords();
-            if(Input::LeftPressed and startButton->PointCollision(mouseCoords)) startButton->MoveTo(offscreen);*/
         }
         virtual void Draw() override {
-            //DrawSprite(startButton->GetSprite(), startButton->GetModelMatrix); //if I go with this, then Layer needs a handle to renderer...
-            //DrawSprite(startButton);
+            m_App->Draw(quitButton);
+            m_App->Draw(startButton);
         }
     private:
-        std::shared_ptr<MyButton> startButton;
+        std::shared_ptr<rose::Entity> quitButton;
+        std::shared_ptr<rose::Entity> startButton;
+        rose::Application* m_App {nullptr};
 };
 
 
@@ -49,9 +46,7 @@ class MenuLayer: public rose::Layer{
 int main(int, char**) {
 
     rose::Application* app = rose::Application::GetApplication();
-//    app->LoadTexture("path");
- //   app->DefineSprite("name", textureID, glm::ivec2(start coords), glm::ivec2(sprite dimensions));
- //
+ 
     std::shared_ptr<rose::Layer> layer = std::make_shared<MenuLayer>(); 
     app->SetClearColor(glm::ivec3(255, 255, 255));
     app->SetLayer(layer);

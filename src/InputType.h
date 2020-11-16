@@ -5,7 +5,7 @@ namespace rose {
 
 enum class InputType {
     None,
-    Close,
+    Quit,
     LeftTap, 
     RightTap,
     DoubleTap, 
