@@ -134,7 +134,7 @@ namespace rose {
     }
 
 
-    void Renderer::AddEntity(std::shared_ptr<Entity> entity) {
+    void Renderer::AddEntity(const std::shared_ptr<Entity>& entity) {
         float texWidth = static_cast<float>(m_Texture->GetWidth());
         float texHeight = static_cast<float>(m_Texture->GetHeight());
 

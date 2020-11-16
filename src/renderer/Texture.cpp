@@ -1,7 +1,9 @@
-#include "renderer/Texture.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
+
+#include "renderer/Texture.h"
+#include "Logger.h"
 
 namespace rose {
 
@@ -31,6 +33,7 @@ void Texture::LoadTexture(const std::string& path) {
 
 
 const Sprite& Texture::GetSprite(const std::string& key) const {
+    assert(m_SpriteData.count(key) > 0);
     return m_SpriteData.at(key);
 }
 

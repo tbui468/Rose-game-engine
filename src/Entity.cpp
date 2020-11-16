@@ -5,7 +5,6 @@ namespace rose {
 
 Entity::Entity(const std::string& sprite, const glm::vec2& pos) {
     m_SpriteName = sprite;
-    //SetBoundingBox(0.0f, 0.0f, static_cast<float>(sprite.TexDimensions.x), static_cast<float>(sprite.TexDimensions.y));
     SetBoundingBox(0.0f, 0.0f, 64.0f, 32.0f);
     SetPosition(pos);
 }

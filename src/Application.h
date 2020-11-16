@@ -20,8 +20,8 @@ class Application {
         void SetClearColor(const glm::ivec3& color);
         static Application* GetApplication();
     public: //rendering
-        void Draw(const std::string& spriteName, const glm::mat4& model); 
-        void Draw(std::shared_ptr<Entity> entity);
+//        void Draw(const std::string& spriteName, const glm::mat4& model); 
+        void Draw(const std::shared_ptr<Entity>& entity);
     private:
         Application();
         bool m_Quit = false;

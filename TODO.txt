@@ -1,9 +1,17 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-It was a problem with textures and sprite name not being valid
-    add in Debug mode with macros
-    add in ASSERTs with macros when debug mode is enabled
-    do a check on sprite names to make sure this same bug doesn't show up
+Test animation of buttons (include Close button)
+    Move AnimationTimer out of Rose and into Squares.cpp or integrate into Rose
+    where do i put the OnANimationEnd()
+    once it all works, remove all Entities (buttons) from Application.cpp (it should only exist in Squares)
+    can delete Button.h class too since I want all client Entities declared/implement outside of Rose engine
+    need to move a timer out of Application (since it's a client object now)
+        timer is also needed to animate Buttons (onUpdate and OnAnimationEnd)
+
+Add in BeginScene and EndScene to sandwich DrawScene is Renderer class 
+    put all clear Quad code (this should be private) and any other housekeeping code in Begin and End
+    DrawScene should only have the actual drawing stuff
+
 
 Application
     add functions to load texture, and add sprite based on texture

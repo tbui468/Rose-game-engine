@@ -1,11 +1,14 @@
 #ifndef ROSE_H
 #define ROSE_H
 
-
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <assert.h>
 #include <SDL.h>
+
+
+
 
 #include "Application.h"
 #include "Layer.h"
@@ -18,11 +21,12 @@
 #include "Utility.h"
 #include "Entity.h"
 #include "Button.h"
-//#include "InputQueue.h"
 #include "Input.h"
 #include "InputType.h"
 #include "AnimationTimer.h"
 #include "CommandCode.h"
+
+
 
 
 #endif //ROSE

@@ -3,6 +3,7 @@
 class MyButton: public rose::Entity {
     public:
         MyButton() = default;
+        virtual ~MyButton() {}
         MyButton(const std::string& sprite, const glm::vec2& pos) : Entity(sprite, pos) {}
     private:
 };
@@ -44,6 +45,7 @@ class MenuLayer: public rose::Layer {
 
 
 int main(int, char**) {
+
 
     rose::Application* app = rose::Application::GetApplication();
  

@@ -8,6 +8,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
+
 namespace rose {
 
 struct Sprite {

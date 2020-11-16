@@ -9,9 +9,8 @@
 #include "Button.h"
 #include "AnimationTimer.h"
 #include "CommandCode.h"
-//#include "InputQueue.h"
 #include "Input.h"
-//#include "Utility.h"
+#include "Logger.h"
 
 namespace rose {
 
@@ -127,11 +126,11 @@ namespace rose {
     }
 
 
-    void Application::Draw(const std::string& spriteName, const glm::mat4& model) {
+//    void Application::Draw(const std::string& spriteName, const glm::mat4& model) {
 
-    }
+ //   }
 
-    void Application::Draw(std::shared_ptr<Entity> entity) {
+    void Application::Draw(const std::shared_ptr<Entity>& entity) {
         m_Renderer->AddEntity(entity);
     }
 
