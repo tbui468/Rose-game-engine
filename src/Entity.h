@@ -5,8 +5,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Utility.h"
+
+//#include "Utility.h"
 #include "renderer/Texture.h"
+#include "globals.h"
+
 
 namespace rose {
 
@@ -33,8 +36,8 @@ class Entity {
     public:
         float x {0.0f};
         float y {0.0f};
-        float xScale {1.0f};
-        float yScale {1.0f};
+        float xScale {g_Scale};
+        float yScale {g_Scale};
         float angle {0.0f};
         float alpha {1.0f};
 
@@ -47,8 +50,8 @@ class Entity {
         glm::vec2 m_FromPos {0.0f, 0.0f};
         glm::vec2 m_ToPos {0.0f, 0.0f};
 
-        glm::vec2 m_FromScale {1.0f, 1.0f};
-        glm::vec2 m_ToScale {1.0f, 1.0f};
+        glm::vec2 m_FromScale {g_Scale, g_Scale};
+        glm::vec2 m_ToScale {g_Scale, g_Scale};
 
         float m_ToAngle {0.0f};
         float m_FromAngle {0.0f};

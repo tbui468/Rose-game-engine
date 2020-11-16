@@ -1,24 +1,24 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-AnimationTimer is so confusing - get rid of it.  Just update each frame as needed
+Have everything scaled at 4x
+
+Bounding boxes
+    when creating an object, the sprite is also the bounding box
+    default size is 32x32 for all entities
 
 Get SDL to allow window resizing and toggle window/fullscreen
+    GetWindowSize()???? <- what does this currently give us??
     how does this affect collision and so forth???
     maybe have a way to display coordinates on mouse position???
     current hard coded coordinates don't work for full screen - need to grab current window size - not the saved ones
 
     related: need to scale bounding boxes too to window sizes
 
-Add in BeginScene and EndScene to sandwich DrawScene is Renderer class 
-    put all clear Quad code (this should be private) and any other housekeeping code in Begin and End
-    DrawScene should only have the actual drawing stuff
+    related: Cameras and view matrix/projection matrix
 
+Create puzzleset sprites and add them to sprite sheet
 
-Application
-    add functions to load texture, and add sprite based on texture
-    should be loading assets in main(), before app->Run() is called
-
-
+Create Puzzleset entities and have them animate in when player clicks on start button
 
 Have a way to set size of entity (eg, 64 x 32), so that sprite can vary in size
     bounding boxes are buggy (smaller than they should be)

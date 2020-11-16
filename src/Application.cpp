@@ -6,8 +6,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Application.h"
-#include "Button.h"
-#include "AnimationTimer.h"
 #include "CommandCode.h"
 #include "Input.h"
 
@@ -51,11 +49,6 @@ namespace rose {
     }
 
     void Application::Run() {
-
-//        float windowWidth = static_cast<float>(m_Window->GetWidth());
- //       float windowHeight = static_cast<float>(m_Window->GetHeight());
-
-
 
 
         //delta time

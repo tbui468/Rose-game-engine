@@ -1,8 +1,7 @@
 #include "renderer/Renderer.h"
 
 #include "glm/gtx/string_cast.hpp"
-
-
+#include "Globals.h"
 
 namespace rose {
 
@@ -37,27 +36,19 @@ namespace rose {
         /////////////OPENGL STUFF/////////////////////////////////
         m_VertexBuffer = std::make_shared<VertexBuffer>();
         m_VertexBuffer->Bind();
-/*
-        const float vertices[]= {  //3 vertex positions, 2 tex coordinates, 1 model index
-            -32.0f, -32.0f, 0.0f, 0.0f, 0.0f, 
-            32.0f, -32.0f, 0.0f, 1.0f, 0.0f, 
-            32.0f, 32.0f, 0.0f, 1.0f, 1.0f, 
-            -32.0f, 32.0f, 0.0f, 0.0f, 1.0f
-        };
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 5 * 4, &vertices[0], GL_STATIC_DRAW);*/
 
         m_IndexBuffer = std::make_shared<IndexBuffer>();
         m_IndexBuffer->Bind();
 
-        /*const uint32_t indices[]={
-            0, 1, 2, 0, 2, 3
-        };
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * 6, &indices[0], GL_STATIC_DRAW);*/
 
         //////////////SHADERS//////////////////////////
+        /*
         float halfWidth = static_cast<float>(window->GetWidth()) / 2.0f;
         float halfHeight = static_cast<float>(window->GetHeight()) / 2.0f;
-        m_Projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1.0f, 1.0f);
+        m_Projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1.0f, 1.0f);*/
+        float pWidth = 240.0f * g_Scale;
+        float pHeight = 135.0f * g_Scale;
+        m_Projection = glm::ortho(-pWidth, pWidth, -pHeight, pHeight, -1.0f, 1.0f);
 
         GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
         GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
@@ -143,10 +134,10 @@ namespace rose {
         glm::vec2 texCoordsStart = { sprite.TexCoords.x / texWidth, sprite.TexCoords.y / texHeight };
         glm::vec2 texCoordsEnd = {texCoordsStart.x + sprite.TexDimensions.x / texWidth, texCoordsStart.y + sprite.TexDimensions.y / texHeight};
 
-        m_VertexBuffer->AddVertex(glm::vec3(-32.0f, -32.0f, 0.0f), texCoordsStart, QuadCount());
-        m_VertexBuffer->AddVertex(glm::vec3(32.0f, -32.0f, 0.0f), {texCoordsEnd.x, texCoordsStart.y}, QuadCount());
-        m_VertexBuffer->AddVertex(glm::vec3(32.0f, 32.0f, 0.0f), texCoordsEnd, QuadCount());
-        m_VertexBuffer->AddVertex(glm::vec3(-32.0f, 32.0f, 0.0f), {texCoordsStart.x, texCoordsEnd.y}, QuadCount());
+        m_VertexBuffer->AddVertex(glm::vec3(-16.0f, -16.0f, 0.0f), texCoordsStart, QuadCount());
+        m_VertexBuffer->AddVertex(glm::vec3(16.0f, -16.0f, 0.0f), {texCoordsEnd.x, texCoordsStart.y}, QuadCount());
+        m_VertexBuffer->AddVertex(glm::vec3(16.0f, 16.0f, 0.0f), texCoordsEnd, QuadCount());
+        m_VertexBuffer->AddVertex(glm::vec3(-16.0f, 16.0f, 0.0f), {texCoordsStart.x, texCoordsEnd.y}, QuadCount());
 
         size_t indexPos = 4 * QuadCount();
         m_IndexBuffer->AddIndex(indexPos);

@@ -1,5 +1,10 @@
 #include "Rose.h" //by any other name would have just as many memory leaks, and break as many cups
 
+class PuzzleSet: public rose::Entity {
+    public:
+    private:
+};
+
 class MyButton: public rose::Entity {
     public:
         MyButton() = default;

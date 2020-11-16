@@ -7,9 +7,7 @@
 #include <assert.h>
 #include <SDL.h>
 
-
-
-
+#include "Globals.h"
 #include "Application.h"
 #include "Layer.h"
 #include "Window.h"
@@ -20,13 +18,9 @@
 #include "renderer/Texture.h"
 #include "Utility.h"
 #include "Entity.h"
-#include "Button.h"
 #include "Input.h"
 #include "InputType.h"
-#include "AnimationTimer.h"
 #include "CommandCode.h"
-
-
 
 
 #endif //ROSE
