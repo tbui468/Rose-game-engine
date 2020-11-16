@@ -1,12 +1,13 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-Test animation of buttons (include Close button)
-    Move AnimationTimer out of Rose and into Squares.cpp or integrate into Rose
-    where do i put the OnANimationEnd()
-    once it all works, remove all Entities (buttons) from Application.cpp (it should only exist in Squares)
-    can delete Button.h class too since I want all client Entities declared/implement outside of Rose engine
-    need to move a timer out of Application (since it's a client object now)
-        timer is also needed to animate Buttons (onUpdate and OnAnimationEnd)
+AnimationTimer is so confusing - get rid of it.  Just update each frame as needed
+
+Get SDL to allow window resizing and toggle window/fullscreen
+    how does this affect collision and so forth???
+    maybe have a way to display coordinates on mouse position???
+    current hard coded coordinates don't work for full screen - need to grab current window size - not the saved ones
+
+    related: need to scale bounding boxes too to window sizes
 
 Add in BeginScene and EndScene to sandwich DrawScene is Renderer class 
     put all clear Quad code (this should be private) and any other housekeeping code in Begin and End
@@ -17,9 +18,6 @@ Application
     add functions to load texture, and add sprite based on texture
     should be loading assets in main(), before app->Run() is called
 
-Get SDL to allow window resizing and toggle window/fullscreen
-    how does this affect collision and so forth???
-    maybe have a way to display coordinates on mouse position???
 
 
 Have a way to set size of entity (eg, 64 x 32), so that sprite can vary in size

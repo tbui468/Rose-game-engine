@@ -1,9 +1,7 @@
-
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
 #include "renderer/Texture.h"
-#include "Logger.h"
 
 namespace rose {
 

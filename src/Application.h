@@ -18,9 +18,9 @@ class Application {
         int32_t GetWindowWidth() const { return m_Window->GetWidth(); }
         int32_t GetWindowHeight() const { return m_Window->GetHeight(); }
         void SetClearColor(const glm::ivec3& color);
+        double GetDeltaTime() const { return m_DeltaTime; }
         static Application* GetApplication();
     public: //rendering
-//        void Draw(const std::string& spriteName, const glm::mat4& model); 
         void Draw(const std::shared_ptr<Entity>& entity);
     private:
         Application();
