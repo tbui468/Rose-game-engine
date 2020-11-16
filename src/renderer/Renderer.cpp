@@ -26,7 +26,7 @@ namespace rose {
         int w,h;
         SDL_GetWindowSize(window->GetHandle(), &w, &h);
         glViewport(0, 0, w, h);
-        glClearColor(0.992f, 0.965f, 0.890f, 0.0f);
+        SetClearColor(glm::ivec3(0, 0, 0));
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -162,6 +162,11 @@ namespace rose {
         m_Models.clear();
         m_VertexBuffer->Clear();
         m_IndexBuffer->Clear();
+    }
+
+
+    void Renderer::SetClearColor(const glm::ivec3& color) {
+        glClearColor(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, 0.0f);
     }
 
     void Renderer::DrawScene() {

@@ -24,6 +24,7 @@ class Renderer {
         uint32_t QuadCount() const { return m_Models.size(); }
         void ClearQuads();
         void DrawScene(); 
+        void SetClearColor(const glm::ivec3& color);
     private:
         GLuint m_ShaderID;
         glm::mat4 m_Projection;

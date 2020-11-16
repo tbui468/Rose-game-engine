@@ -27,7 +27,7 @@ class MenuLayer: public rose::Layer{
                     std::cout << "Right tap at x: " << mouse.x << ", y: " << mouse.y << std::endl;
                     break;
                 case rose::InputType::Close:
-                    //Application::Quit();  //get instance of application and quit (eg, set m_Quit to true).  Look at todo.txt for singleton details
+                    //Application::Quit();  //get instance of applicati
                     break;
             }
 
@@ -47,18 +47,16 @@ class MenuLayer: public rose::Layer{
 
 
 int main(int, char**) {
-    //if we go with singleton route, this code will look like
-    //std::unique_ptr<rose::Application> app = rose::Application::GetApplication();
-    //std::shared_ptr<rose::Layer> layer = std::make_shared<MenuLayer>(); //this won't change
-    //app->SetLayer(layer);
-    //app->Run();
-    //app->Shutdown();
-    std::unique_ptr<rose::Application> squaresApp = std::make_unique<rose::Application>();
-    std::shared_ptr<rose::Layer> layer = std::make_shared<MenuLayer>();
 
-    squaresApp->SetLayer(layer);
-    squaresApp->Run();
-    squaresApp->Shutdown();
+    rose::Application* app = rose::Application::GetApplication();
+//    app->LoadTexture("path");
+ //   app->DefineSprite("name", textureID, glm::ivec2(start coords), glm::ivec2(sprite dimensions));
+ //
+    std::shared_ptr<rose::Layer> layer = std::make_shared<MenuLayer>(); 
+    app->SetClearColor(glm::ivec3(255, 255, 255));
+    app->SetLayer(layer);
+    app->Run();
+    app->Shutdown();
 
     return 0;
 }

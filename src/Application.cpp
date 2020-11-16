@@ -15,6 +15,19 @@
 
 namespace rose {
 
+    
+    Application* Application::GetApplication() {
+        if(!s_Application) {
+            s_Application = new Application();
+        }
+
+        return s_Application;
+    }
+
+    void Application::Quit() {
+        m_Quit = true;
+    }
+
     Application::Application() {
         if(SDL_Init(SDL_INIT_VIDEO) != 0) {
             std::cout << "SDL_Init error!!!" << SDL_GetError() << std::endl;
@@ -32,6 +45,11 @@ namespace rose {
 
     void Application::SetLayer(std::shared_ptr<Layer> layer) {
         m_Layer = layer;
+    }
+
+
+    void Application::SetClearColor(const glm::ivec3& color) {
+        m_Renderer->SetClearColor(color);
     }
 
     void Application::Run() {
