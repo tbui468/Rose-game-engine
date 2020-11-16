@@ -22,9 +22,9 @@ float Sigmoid(float _t) {
 class MenuLayer: public rose::Layer {
     public:
         MenuLayer() {
-            quitButton = std::make_shared<MyButton>("QuitButton", glm::vec2(0.0f, -100.0f));
-            startButton = std::make_shared<MyButton>("StartButton", glm::vec2(0.0f, 100.0f));
-            closeButton = std::make_shared<MyButton>("CloseButton", glm::vec2(800.0f, 0.0f));
+            startButton = std::make_shared<MyButton>("StartButton", glm::vec2(0.0f, 32.0f * rose::g_Scale));
+            quitButton = std::make_shared<MyButton>("QuitButton", glm::vec2(0.0f, -32.0f * rose::g_Scale));
+            closeButton = std::make_shared<MyButton>("CloseButton", glm::vec2(128.0f * rose::g_Scale, 0.0f));
             m_App = rose::Application::GetApplication();
         }
 
@@ -39,21 +39,22 @@ class MenuLayer: public rose::Layer {
                     if(quitButton->PointCollision(static_cast<float>(mouse.x), static_cast<float>(mouse.y)))
                         m_App->Quit();
                     if(startButton->PointCollision(static_cast<float>(mouse.x), static_cast<float>(mouse.y))) {
-                        startButton->MoveTo(glm::vec2(800.0f, startButton->y));
-                        quitButton->MoveTo(glm::vec2(-800.0f, quitButton->y));
-                        closeButton->MoveTo(glm::vec2(400.0f, closeButton->y));
+                        startButton->MoveTo(glm::vec2(128.0f * rose::g_Scale, startButton->y));
+                        quitButton->MoveTo(glm::vec2(-128.0f * rose::g_Scale, quitButton->y));
+                        closeButton->MoveTo(glm::vec2(96.0f * rose::g_Scale, closeButton->y));
                         m_Parameter = 0.0f;
                         m_Start = true;
                     }
                     if(closeButton->PointCollision(static_cast<float>(mouse.x), static_cast<float>(mouse.y))) {
                         startButton->MoveTo(glm::vec2(0.0f, startButton->y));
                         quitButton->MoveTo(glm::vec2(0.0f, quitButton->y));
-                        closeButton->MoveTo(glm::vec2(800.0f, closeButton->y));
+                        closeButton->MoveTo(glm::vec2(128.0f * rose::g_Scale, closeButton->y));
                         m_Parameter = 0.0f;
                         m_Start = true;
                     }
                     break;
                 case rose::InputType::RightTap: 
+                    std::cout << "X: " << mouse.x << " Y: " << mouse.y << std::endl;
                     break;
                 case rose::InputType::Quit:
                     m_App->Quit();

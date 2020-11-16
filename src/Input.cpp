@@ -40,7 +40,7 @@ glm::ivec2 Input::GetMousePos() {
     int32_t windowHeight = app->GetWindowHeight();
 
     mouseCoords.x -= windowWidth / 2;
-    mouseCoords.y -= windowHeight / 2;
+    mouseCoords.y -= windowHeight /2;
     mouseCoords.y *= -1;
 
     return mouseCoords;

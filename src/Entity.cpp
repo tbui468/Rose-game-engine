@@ -1,11 +1,12 @@
 #include "Entity.h"
+#include "Globals.h"
 
 namespace rose {
 
 
 Entity::Entity(const std::string& sprite, const glm::vec2& pos) {
     m_SpriteName = sprite;
-    SetBoundingBox(0.0f, 0.0f, 64.0f, 32.0f);
+    SetBoundingBox(0.0f * g_Scale, 0.0f * g_Scale, 32.0f * g_Scale, 32.0f * g_Scale);
     SetPosition(pos);
 }
 

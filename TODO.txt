@@ -1,22 +1,26 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-Have everything scaled at 4x
+Collisions not working correctly because window mouse coordinates and entity coordinates are on different scales
+the scale of the projection is changing when we change g_Scale
+    so putting entities at 32, 32 will be different (that's why we scale the entity positions)
+    BUT!!!! Window mouse locations are completely different since in fullscreen, it's always the same
+    will need to SCALE DOWN the mouse coordinates if we want collisions working,
 
-Bounding boxes
-    when creating an object, the sprite is also the bounding box
-    default size is 32x32 for all entities
+    Both world and screen space fill the same physical space on my laptop screen, but the coordinate systems are NOT
+        the same
 
-Get SDL to allow window resizing and toggle window/fullscreen
-    GetWindowSize()???? <- what does this currently give us??
-    how does this affect collision and so forth???
-    maybe have a way to display coordinates on mouse position???
-    current hard coded coordinates don't work for full screen - need to grab current window size - not the saved ones
+    example: using a g_Scale of 1.0 will make the projection only 270 x 480, (which I'll call world or Entity space)
+    but mouse coordinates will still be on a 1920 x 1080 scale (for fullscreen on my laptop, which I'll call screenspace)
+        so the collisions don't work correctly
 
-    related: need to scale bounding boxes too to window sizes
+    example: using a g_Scale of 4.0 will make projection 1080 x 1920 (world/entity space)
+        which matches the window / mouse coordiantes space, so collisions work
 
-    related: Cameras and view matrix/projection matrix
+    i'm translating mouse coordinates based on window size too (and flipping the y axis)
 
-Create puzzleset sprites and add them to sprite sheet
+    It might be easier to work ONLY in 270 x 480 coordinate system and scale accordingly
+        this is because it's best to stick tho the 32x32 standard sizes for buttons etc
+
 
 Create Puzzleset entities and have them animate in when player clicks on start button
 
