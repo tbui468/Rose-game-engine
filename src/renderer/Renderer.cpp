@@ -130,14 +130,14 @@ namespace rose {
         float texHeight = static_cast<float>(m_Texture->GetHeight());
 
         glm::mat4 model = entity->GetModelMatrix();
-        const Sprite& sprite = m_Texture->GetSprite(entity->GetSpriteName());
+        const Sprite& sprite = entity->GetSprite();
         glm::vec2 texCoordsStart = { sprite.TexCoords.x / texWidth, sprite.TexCoords.y / texHeight };
         glm::vec2 texCoordsEnd = {texCoordsStart.x + sprite.TexDimensions.x / texWidth, texCoordsStart.y + sprite.TexDimensions.y / texHeight};
 
-        m_VertexBuffer->AddVertex(glm::vec3(-16.0f, -16.0f, 0.0f), texCoordsStart, QuadCount());
-        m_VertexBuffer->AddVertex(glm::vec3(16.0f, -16.0f, 0.0f), {texCoordsEnd.x, texCoordsStart.y}, QuadCount());
-        m_VertexBuffer->AddVertex(glm::vec3(16.0f, 16.0f, 0.0f), texCoordsEnd, QuadCount());
-        m_VertexBuffer->AddVertex(glm::vec3(-16.0f, 16.0f, 0.0f), {texCoordsStart.x, texCoordsEnd.y}, QuadCount());
+        m_VertexBuffer->AddVertex(glm::vec3(-0.5f, -0.5f, 0.0f), texCoordsStart, QuadCount());
+        m_VertexBuffer->AddVertex(glm::vec3(0.5f, -0.5f, 0.0f), {texCoordsEnd.x, texCoordsStart.y}, QuadCount());
+        m_VertexBuffer->AddVertex(glm::vec3(0.5f, 0.5f, 0.0f), texCoordsEnd, QuadCount());
+        m_VertexBuffer->AddVertex(glm::vec3(-0.5f, 0.5f, 0.0f), {texCoordsStart.x, texCoordsEnd.y}, QuadCount());
 
         size_t indexPos = 4 * QuadCount();
         m_IndexBuffer->AddIndex(indexPos);

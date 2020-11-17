@@ -7,9 +7,9 @@ class PuzzleSet: public rose::Entity {
 
 class MyButton: public rose::Entity {
     public:
-        MyButton() = default;
         virtual ~MyButton() {}
-        MyButton(const std::string& sprite, const glm::vec2& pos) : Entity(sprite, pos) {}
+        MyButton(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos): 
+            Entity(sprite, size, boundingBox, pos) {}
     private:
 };
 
@@ -22,9 +22,18 @@ float Sigmoid(float _t) {
 class MenuLayer: public rose::Layer {
     public:
         MenuLayer() {
-            startButton = std::make_shared<MyButton>("StartButton", glm::vec2(0.0f, 32.0f * rose::g_Scale));
-            quitButton = std::make_shared<MyButton>("QuitButton", glm::vec2(0.0f, -32.0f * rose::g_Scale));
-            closeButton = std::make_shared<MyButton>("CloseButton", glm::vec2(128.0f * rose::g_Scale, 0.0f));
+            rose::Sprite startSprite = {{0, 96}, {64, 32}};
+            rose::Sprite quitSprite = {{64, 0}, {64, 32}};
+            rose::Sprite closeSprite = {{96, 96}, {32, 32}};
+
+            glm::vec2 size = glm::vec2(64.0f, 32.0f);
+            glm::vec2 smallsize = glm::vec2(32.0f, 32.0f);
+            glm::vec4 boundingBox = glm::vec4(0.0f, 0.0f, 64.0f, 32.0f);
+            glm::vec4 smallboundingBox = glm::vec4(0.0f, 0.0f, 32.0f, 32.0f);
+            startButton = std::make_shared<MyButton>(startSprite, size, boundingBox, glm::vec2(0.0f, 135.0f));
+            quitButton = std::make_shared<MyButton>(quitSprite, size, boundingBox, glm::vec2(0.0f, -32.0f));
+            closeButton = std::make_shared<MyButton>(closeSprite, smallsize, smallboundingBox, glm::vec2(128.0f, 0.0f));
+
             m_App = rose::Application::GetApplication();
         }
 
@@ -45,16 +54,16 @@ class MenuLayer: public rose::Layer {
                     if(quitButton->PointCollision(static_cast<float>(mouse.x), static_cast<float>(mouse.y)))
                         m_App->Quit();
                     if(startButton->PointCollision(static_cast<float>(mouse.x), static_cast<float>(mouse.y))) {
-                        startButton->MoveTo(glm::vec2(128.0f * rose::g_Scale, startButton->y));
-                        quitButton->MoveTo(glm::vec2(-128.0f * rose::g_Scale, quitButton->y));
-                        closeButton->MoveTo(glm::vec2(96.0f * rose::g_Scale, closeButton->y));
+                        startButton->MoveTo(glm::vec2(128.0f * rose::g_Scale, startButton->y()));
+                        quitButton->MoveTo(glm::vec2(-128.0f * rose::g_Scale, quitButton->y()));
+                        closeButton->MoveTo(glm::vec2(96.0f * rose::g_Scale, closeButton->y()));
                         m_Parameter = 0.0f;
                         m_Start = true;
                     }
                     if(closeButton->PointCollision(static_cast<float>(mouse.x), static_cast<float>(mouse.y))) {
-                        startButton->MoveTo(glm::vec2(0.0f, startButton->y));
-                        quitButton->MoveTo(glm::vec2(0.0f, quitButton->y));
-                        closeButton->MoveTo(glm::vec2(128.0f * rose::g_Scale, closeButton->y));
+                        startButton->MoveTo(glm::vec2(0.0f, startButton->y()));
+                        quitButton->MoveTo(glm::vec2(0.0f, quitButton->y()));
+                        closeButton->MoveTo(glm::vec2(128.0f * rose::g_Scale, closeButton->y()));
                         m_Parameter = 0.0f;
                         m_Start = true;
                     }

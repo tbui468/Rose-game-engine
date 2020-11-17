@@ -1,53 +1,6 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-Collisions not working correctly because window mouse coordinates and entity coordinates are on different scales
-    easiest way is to scale screen or world space so they match
-    
-    world space is governed by projection matrix (480 x 270) and g_Scale (usually 1.0f - 4.0f)
-        Entities and collisions are done in world space
-
-    screen space is governed by window size (hard coded 960 x 540 to windowed mode, and 1920 x 1080 for my laptop in fullscreen mode)
-        need to transform mouse coordinates from screen space to world space
-        
-        screencoords * (world coords / screencoords ratio)
-        screencoords * (projection width / window width)
-
-    How to test if it's working?  4 different tests (need to also make sure all buttons are where I want them to be)
-    1. Set g_Scale to 1 and window to windowed mode, and test collisions
-    2. Set g_Scale to 1 and window to fullscreen ode, and test collisions
-    3. Set g_Scale to 4 and window to windowed mode, and test collisions
-    4. Set g_Scale to 4 and window to fullscreen ode, and test collisions
-
-the scale of the projection is changing when we change g_Scale
-    so putting entities at 32, 32 will be different (that's why we scale the entity positions)
-    BUT!!!! Window mouse locations are completely different since in fullscreen, it's always the same
-    will need to SCALE DOWN the mouse coordinates if we want collisions working,
-
-    Both world and screen space fill the same physical space on my laptop screen, but the coordinate systems are NOT
-        the same
-
-    example: using a g_Scale of 1.0 will make the projection only 270 x 480, (which I'll call world or Entity space)
-    but mouse coordinates will still be on a 1920 x 1080 scale (for fullscreen on my laptop, which I'll call screenspace)
-        so the collisions don't work correctly
-
-    example: using a g_Scale of 4.0 will make projection 1080 x 1920 (world/entity space)
-        which matches the window / mouse coordiantes space, so collisions work
-
-    i'm translating mouse coordinates based on window size too (and flipping the y axis)
-
-    It might be easier to work ONLY in 270 x 480 coordinate system and scale accordingly
-        this is because it's best to stick tho the 32x32 standard sizes for buttons etc
-
-
 Create Puzzleset entities and have them animate in when player clicks on start button
-
-Have a way to set size of entity (eg, 64 x 32), so that sprite can vary in size
-    bounding boxes are buggy (smaller than they should be)
-    seems to be an issue with screen resolution and window size (related to below)
-    Everything breaks when switching off fullscreen
-        think about how I want to do this and togglefull screen often to check (maybe should make a key for this??? so I can change it during runtime)
-
-Abstract things away as needed based on how the last step went to prepare for the next step
 
 Make puzzlesets, puzzles and fractals (the most complex class) - abstract or refactor as needed
 
