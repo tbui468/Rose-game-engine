@@ -30,8 +30,8 @@ class Entity {
         virtual const Sprite& GetSprite() const { return m_SpriteData; }
 
     public:
-        virtual float x() const { return m_Pos.x; }
-        virtual float y() const { return m_Pos.y; }
+        virtual float x() const { return m_Pos.x / g_Scale; }
+        virtual float y() const { return m_Pos.y / g_Scale; }
 
     //animation parameters
     private:

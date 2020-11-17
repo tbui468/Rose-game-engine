@@ -22,6 +22,7 @@ float Sigmoid(float _t) {
 class MenuLayer: public rose::Layer {
     public:
         MenuLayer() {
+
             rose::Sprite startSprite = {{0, 96}, {64, 32}};
             rose::Sprite quitSprite = {{64, 0}, {64, 32}};
             rose::Sprite closeSprite = {{96, 96}, {32, 32}};
@@ -30,9 +31,10 @@ class MenuLayer: public rose::Layer {
             glm::vec2 smallsize = glm::vec2(32.0f, 32.0f);
             glm::vec4 boundingBox = glm::vec4(0.0f, 0.0f, 64.0f, 32.0f);
             glm::vec4 smallboundingBox = glm::vec4(0.0f, 0.0f, 32.0f, 32.0f);
-            startButton = std::make_shared<MyButton>(startSprite, size, boundingBox, glm::vec2(0.0f, 135.0f));
+
+            startButton = std::make_shared<MyButton>(startSprite, size, boundingBox, glm::vec2(0.0f, 32.0f));
             quitButton = std::make_shared<MyButton>(quitSprite, size, boundingBox, glm::vec2(0.0f, -32.0f));
-            closeButton = std::make_shared<MyButton>(closeSprite, smallsize, smallboundingBox, glm::vec2(128.0f, 0.0f));
+            closeButton = std::make_shared<MyButton>(closeSprite, smallsize, smallboundingBox, glm::vec2(m_RightEdge + 32.0f, m_TopEdge - 32.0f));
 
             m_App = rose::Application::GetApplication();
         }
@@ -54,16 +56,16 @@ class MenuLayer: public rose::Layer {
                     if(quitButton->PointCollision(static_cast<float>(mouse.x), static_cast<float>(mouse.y)))
                         m_App->Quit();
                     if(startButton->PointCollision(static_cast<float>(mouse.x), static_cast<float>(mouse.y))) {
-                        startButton->MoveTo(glm::vec2(128.0f * rose::g_Scale, startButton->y()));
-                        quitButton->MoveTo(glm::vec2(-128.0f * rose::g_Scale, quitButton->y()));
-                        closeButton->MoveTo(glm::vec2(96.0f * rose::g_Scale, closeButton->y()));
+                        startButton->MoveTo(glm::vec2(m_RightEdge + 96.0f, startButton->y()));
+                        quitButton->MoveTo(glm::vec2(m_LeftEdge - 96.0f, quitButton->y()));
+                        closeButton->MoveTo(glm::vec2(m_RightEdge - 32.0f, closeButton->y()));
                         m_Parameter = 0.0f;
                         m_Start = true;
                     }
                     if(closeButton->PointCollision(static_cast<float>(mouse.x), static_cast<float>(mouse.y))) {
                         startButton->MoveTo(glm::vec2(0.0f, startButton->y()));
                         quitButton->MoveTo(glm::vec2(0.0f, quitButton->y()));
-                        closeButton->MoveTo(glm::vec2(128.0f * rose::g_Scale, closeButton->y()));
+                        closeButton->MoveTo(glm::vec2(m_RightEdge + 32.0f, closeButton->y()));
                         m_Parameter = 0.0f;
                         m_Start = true;
                     }
@@ -112,6 +114,11 @@ class MenuLayer: public rose::Layer {
         rose::Application* m_App {nullptr};
         float m_Parameter {0.0f};
         bool m_Start {false};
+
+        float m_LeftEdge {-240.0f};
+        float m_RightEdge {240.0f};
+        float m_TopEdge {135.0f};
+        float m_BottomEdge {-135.0f};
 };
 
 

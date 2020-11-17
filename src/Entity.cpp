@@ -11,8 +11,8 @@ Entity::Entity(const Sprite& sprite, const glm::vec2& size, const glm::vec4& bou
 }
 
 void Entity::MoveTo(const glm::vec2& _pos) {
-    m_FromPos = {m_Pos.x, m_Pos.y};
-    m_ToPos = {_pos.x, _pos.y};
+    m_FromPos = m_Pos;
+    m_ToPos = g_Scale * _pos;
 }
 void Entity::FadeTo(float _alpha) {
     m_FromAlpha = m_Alpha;
