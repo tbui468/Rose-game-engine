@@ -1,15 +1,12 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-Squares.cpp is getting big
-    create Squares directory
-    dump all classes into separate files there
-    update Cmake file
-
-PuzzleSelectors
-    Drawing them on screen
-    Animating them on screen
-    Clickable
-    Clicking them moves puzzles left/right
+PuzzleSelector (and the PuzzleIcons it contains)
+    puzzleicons need to track the puzzleselector it belongs to - just overload MoveTo() on PuzzleSelector to call MoveTo on the PuzzleIcons too
+    classes are created, but need to fill them in to do the following:
+        Drawing them on screen - DONE!
+        Animating them on screen - DONE!
+        Clickable
+        Clicking them moves puzzles left/right
 
 Move App->Draw(entity) to Entity->Draw()
     reason: I want to be able to overload entity draw calls

@@ -2,6 +2,7 @@
 #define PUZZLE_SET_H
 
 #include "Rose.h"
+#include "PuzzleSelector.h"
 
 namespace sqs {
 
@@ -19,7 +20,8 @@ class PuzzleSet: public rose::Entity {
 
     private:
         std::vector<std::shared_ptr<Entity>> m_PuzzleList;
-        bool m_DestroyPuzzles { false };
+        std::shared_ptr<Entity> m_PuzzleSelector {nullptr};
+        bool m_DestroyPuzzles {false};
 };
 
 }

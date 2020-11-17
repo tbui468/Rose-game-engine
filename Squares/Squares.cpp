@@ -5,15 +5,8 @@
 #include "Button.h"
 
 /*
-class PuzzleIcon: public rose::Entity {
-    public:
-        virtual ~PuzzleIcon() {}
-        PuzzleIcon(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos): 
-            Entity(sprite, size, boundingBox, pos) {}
-    private:
-};
 
-class PuzzleIconSelector: public rose::Entity {
+class PuzzleSelector: public rose::Entity {
     public:
         virtual ~PuzzleIconSelector() {}
         PuzzleIconSelector(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos): 
