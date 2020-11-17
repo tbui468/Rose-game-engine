@@ -1,6 +1,24 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-Create Puzzleset entities and have them animate in when player clicks on start button
+OnAnimationEnd and OnAnimationUpdate(sigmoid) shouldn't really be seen by client
+    hide it or condense it into fewer lines
+    could have a list of ALL entites in Square, and then call on ANimationUpdate/End on all of them in a few lines
+
+Allow window scaling when the application is active
+    should check online for reference material on how to change SDL2 window sizes (event)
+
+Everything is squished when the aspect ratio is not a 480x270 ratio
+    how do I fix this?  I want everything to look that same (eg same height/width ratio) regardless of window ratio
+    Two things:
+        1. Currently, the projection matrix in renderer is hard coded to 480x270 - need to change this to accomodate aspect ratio of window
+        2. Currently, Squares.cpp uses 480x270 world space (related to projection) need to change this to accomodate aspect ratio of window
+        3. Need to accomodate window scaling too
+
+    Tests: (all squares should be squares, and rectangles should be 2:1)
+        1. Check fullscreen
+        2. Check windowed with 480x270 aspect ratio
+        3. Check windowed with aspect ratio of 2:1
+        4. Check windowed with aspect ratio of 1:2
 
 Make puzzlesets, puzzles and fractals (the most complex class) - abstract or refactor as needed
 

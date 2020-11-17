@@ -42,10 +42,6 @@ namespace rose {
 
 
         //////////////SHADERS//////////////////////////
-        /*
-        float halfWidth = static_cast<float>(window->GetWidth()) / 2.0f;
-        float halfHeight = static_cast<float>(window->GetHeight()) / 2.0f;
-        m_Projection = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1.0f, 1.0f);*/
         m_ProjWidth = 480.0f * g_Scale;
         m_ProjHeight = 270.0f * g_Scale;
         m_Projection = glm::ortho(-m_ProjWidth / 2, m_ProjWidth / 2, -m_ProjHeight / 2, m_ProjHeight / 2, -1.0f, 1.0f);
