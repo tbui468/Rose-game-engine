@@ -1,5 +1,8 @@
 #include "Rose.h" //by any other name would have just as many memory leaks, and break as many cups
 
+#include "Puzzle.h"
+#include "PuzzleSet.h"
+#include "Button.h"
 
 /*
 class PuzzleIcon: public rose::Entity {
@@ -38,62 +41,9 @@ class PuzzleIconSelector: public rose::Entity {
         std::array<PuzzleIcon, 8> m_IconList;
 };*/
 
-class Puzzle: public rose::Entity {
-    public:
-        virtual ~Puzzle() {}
-        Puzzle(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos): 
-            Entity(sprite, size, boundingBox, pos) {}
-    private:
-};
+namespace sqs {
 
 
-class PuzzleSet: public rose::Entity {
-    public:
-        virtual ~PuzzleSet() {}
-        PuzzleSet(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos): 
-            Entity(sprite, size, boundingBox, pos) {
-            }
-
-        void Open() {
-            Close(); //temp: just to make sure we don't open too many puzzles
-
-            rose::Sprite sprite = {{32, 32}, {32, 32}};
-            glm::vec2 size = {32.0f, 32.0f};
-            glm::vec4 box = {0.0f, 0.0f, 32.0f, 32.0f};
-            for(int i = 0; i < 8; ++i) {
-                m_PuzzleList.emplace_back(std::make_shared<Puzzle>(sprite, size, box, glm::vec2(x() + 48.0f * i - 128.0f, y() + 32.0f)));
-            }
-        }
-
-        void DrawPuzzles(rose::Application* app) {
-            for(const std::shared_ptr<Entity>& puzzle: m_PuzzleList) {
-                app->Draw(puzzle);
-            }
-        }
-
-        void Close() {
-            for(std::shared_ptr<Entity>& puzzle: m_PuzzleList) {
-                if(!puzzle.get()) delete puzzle.get();
-            }
-            m_PuzzleList.clear();
-        }
-
-        bool IsOpen() const {
-            return m_PuzzleList.size() > 0;
-        }
-
-    private:
-        std::vector<std::shared_ptr<Entity>> m_PuzzleList;
-};
-
-
-class Button: public rose::Entity {
-    public:
-        virtual ~Button() {}
-        Button(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos): 
-            Entity(sprite, size, boundingBox, pos) {}
-    private:
-};
 
 
 float Sigmoid(float _t) {
@@ -118,8 +68,13 @@ class MenuLayer: public rose::Layer {
             glm::vec4 tinyboundingBox = glm::vec4(0.0f, 0.0f, 16.0f, 16.0f);
 
             startButton = std::make_shared<Button>(startSprite, size, boundingBox, glm::vec2(0.0f, 32.0f));
+            startButton->SetAnimationCoords(glm::vec2(0.0f, 32.0f), glm::vec2(m_RightEdge + 96.0f, 32.0f));
             quitButton = std::make_shared<Button>(quitSprite, size, boundingBox, glm::vec2(0.0f, -32.0f));
+            quitButton->SetAnimationCoords(glm::vec2(0.0f, -32.0f), glm::vec2(m_LeftEdge - 96.0f, -32.0f));
             closeButton = std::make_shared<Button>(closeSprite, tinysize, tinyboundingBox, glm::vec2(m_RightEdge + 16.0f, m_TopEdge - 16.0f));
+            closeButton->SetAnimationCoords(glm::vec2(m_RightEdge - 16.0f, m_TopEdge - 16.0f), glm::vec2(m_RightEdge + 16.0f, m_TopEdge - 16.0f));
+
+
             m_PuzzleSet0 = std::make_shared<PuzzleSet>(puzzleSetSprite, smallsize, smallboundingBox, glm::vec2(-32.0f, m_TopEdge + 32.0f));
             m_PuzzleSet1 = std::make_shared<PuzzleSet>(puzzleSetSprite, smallsize, smallboundingBox, glm::vec2(0.0f, m_TopEdge + 32.0f));
             m_PuzzleSet2 = std::make_shared<PuzzleSet>(puzzleSetSprite, smallsize, smallboundingBox, glm::vec2(32.0f, m_TopEdge + 32.0f));
@@ -155,9 +110,9 @@ class MenuLayer: public rose::Layer {
             }
 
             if(startButton->LeftTap(input, mouse.x, mouse.y)) {
-                startButton->MoveTo(glm::vec2(m_RightEdge + 96.0f, startButton->y()));
-                quitButton->MoveTo(glm::vec2(m_LeftEdge - 96.0f, quitButton->y()));
-                closeButton->MoveTo(glm::vec2(m_RightEdge - 16.0f, closeButton->y()));
+                startButton->GoAway();
+                quitButton->GoAway();
+                closeButton->ComeBack();
                 for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
                 m_Parameter = 0.0f;
                 m_Start = true;
@@ -167,6 +122,7 @@ class MenuLayer: public rose::Layer {
                 bool puzzleWasOpen = false;
                 for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) {
                     if(ps->IsOpen()) {
+                        //need to make the puzzles MoveTo(....)
                         puzzleWasOpen = true;
                         ps->Close();
                         break;
@@ -176,9 +132,9 @@ class MenuLayer: public rose::Layer {
                 if(puzzleWasOpen) {
                     for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
                 }else{
-                    startButton->MoveTo(glm::vec2(0.0f, startButton->y()));
-                    quitButton->MoveTo(glm::vec2(0.0f, quitButton->y()));
-                    closeButton->MoveTo(glm::vec2(m_RightEdge + 16.0f, closeButton->y()));
+                    startButton->ComeBack();
+                    quitButton->ComeBack();
+                    closeButton->GoAway();
                     for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), m_TopEdge + 32.0f));
                 }
 
@@ -247,14 +203,14 @@ class MenuLayer: public rose::Layer {
         float m_BottomEdge {-135.0f};
 };
 
-
+}
 
 int main(int, char**) {
 
 
     rose::Application* app = rose::Application::GetApplication();
 
-    std::shared_ptr<rose::Layer> layer = std::make_shared<MenuLayer>(); 
+    std::shared_ptr<rose::Layer> layer = std::make_shared<sqs::MenuLayer>(); 
 
     app->SetClearColor(glm::ivec3(253, 246, 227));
     app->SetLayer(layer);
@@ -264,5 +220,6 @@ int main(int, char**) {
 
     return 0;
 }
+
 
 

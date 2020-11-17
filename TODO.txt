@@ -1,9 +1,20 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-Have puzzles (just blue squares for now) animate in and out
+Squares.cpp is getting big
+    create Squares directory
+    dump all classes into separate files there
+    update Cmake file
+
+PuzzleSelectors
+    Drawing them on screen
+    Animating them on screen
+    Clickable
+    Clicking them moves puzzles left/right
 
 Move App->Draw(entity) to Entity->Draw()
-    reason: I want to be able to overload entity draw calls (so I can have the puzzleiconselector draw the puzzleicons it has)
+    reason: I want to be able to overload entity draw calls
+        so I can have the puzzleiconselector draw the puzzleicons it has,
+        I may do the same thing for PuzzleSets (having puzzlesets perform the draw call for all of its puzzles)
 
 Allow window scaling when the application is active
     should check online for reference material on how to change SDL2 window sizes (event)
