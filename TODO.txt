@@ -1,8 +1,9 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-OnAnimationEnd and OnAnimationUpdate(sigmoid) shouldn't really be seen by client
-    hide it or condense it into fewer lines
-    could have a list of ALL entites in Square, and then call on ANimationUpdate/End on all of them in a few lines
+Have puzzles (just blue squares for now) animate in and out
+
+Move App->Draw(entity) to Entity->Draw()
+    reason: I want to be able to overload entity draw calls (so I can have the puzzleiconselector draw the puzzleicons it has)
 
 Allow window scaling when the application is active
     should check online for reference material on how to change SDL2 window sizes (event)
@@ -19,8 +20,6 @@ Everything is squished when the aspect ratio is not a 480x270 ratio
         2. Check windowed with 480x270 aspect ratio
         3. Check windowed with aspect ratio of 2:1
         4. Check windowed with aspect ratio of 1:2
-
-Make puzzlesets, puzzles and fractals (the most complex class) - abstract or refactor as needed
 
 Set build (x86 or x64) (or should this be a build option???)
 

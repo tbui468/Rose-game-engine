@@ -8,6 +8,7 @@
 
 #include "renderer/Texture.h"
 #include "globals.h"
+#include "InputType.h"
 
 
 namespace rose {
@@ -25,6 +26,7 @@ class Entity {
         virtual void OnAnimationUpdate(float t);
         virtual void OnAnimationEnd();
     public:
+        virtual bool LeftTap(InputType input, float x, float y) const;
         virtual bool PointCollision(float pointX, float pointY) const;
         virtual glm::mat4 GetModelMatrix() const;
         virtual const Sprite& GetSprite() const { return m_SpriteData; }

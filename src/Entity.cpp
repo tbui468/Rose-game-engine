@@ -49,6 +49,11 @@ void Entity::OnAnimationEnd() {
     m_FromAlpha = m_Alpha;
 }
 
+bool Entity::LeftTap(InputType input, float x, float y) const {
+    if(input != InputType::LeftTap) return false;
+    if(!PointCollision(x, y)) return false;
+    return true;
+}
 
 bool Entity::PointCollision(float pointX, float pointY) const {
     if(pointX < m_Pos.x + m_BoundingBox.x - m_BoundingBox.z * .5f) return false;
