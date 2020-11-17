@@ -1,6 +1,23 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Collisions not working correctly because window mouse coordinates and entity coordinates are on different scales
+    easiest way is to scale screen or world space so they match
+    
+    world space is governed by projection matrix (480 x 270) and g_Scale (usually 1.0f - 4.0f)
+        Entities and collisions are done in world space
+
+    screen space is governed by window size (hard coded 960 x 540 to windowed mode, and 1920 x 1080 for my laptop in fullscreen mode)
+        need to transform mouse coordinates from screen space to world space
+        
+        screencoords * (world coords / screencoords ratio)
+        screencoords * (projection width / window width)
+
+    How to test if it's working?  4 different tests (need to also make sure all buttons are where I want them to be)
+    1. Set g_Scale to 1 and window to windowed mode, and test collisions
+    2. Set g_Scale to 1 and window to fullscreen ode, and test collisions
+    3. Set g_Scale to 4 and window to windowed mode, and test collisions
+    4. Set g_Scale to 4 and window to fullscreen ode, and test collisions
+
 the scale of the projection is changing when we change g_Scale
     so putting entities at 32, 32 will be different (that's why we scale the entity positions)
     BUT!!!! Window mouse locations are completely different since in fullscreen, it's always the same

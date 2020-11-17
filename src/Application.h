@@ -17,6 +17,8 @@ class Application {
         void Quit();
         int32_t GetWindowWidth() const { return m_Window->GetWidth(); }
         int32_t GetWindowHeight() const { return m_Window->GetHeight(); }
+        float GetProjWidth() const { return m_Renderer->GetProjWidth(); }
+        float GetProjHeight() const { return m_Renderer->GetProjHeight(); }
         void SetClearColor(const glm::ivec3& color);
         double GetDeltaTime() const { return m_DeltaTime; }
         static Application* GetApplication();

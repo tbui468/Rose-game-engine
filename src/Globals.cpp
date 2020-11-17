@@ -2,6 +2,6 @@
 
 namespace rose {
 
-    float g_Scale = 1.0f;
+    float g_Scale = 4.0f;
 
 }

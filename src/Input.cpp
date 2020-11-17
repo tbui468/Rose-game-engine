@@ -33,15 +33,21 @@ glm::ivec2 Input::GetMousePos() {
     glm::ivec2 mouseCoords;
     SDL_GetMouseState(&mouseCoords.x, &mouseCoords.y);
 
-    //transform so center of screen has coordinates (0, 0)
-    //and flip y axis so up is positive y
     Application* app = Application::GetApplication();
     int32_t windowWidth = app->GetWindowWidth();
     int32_t windowHeight = app->GetWindowHeight();
 
+    //move (0, 0) to center of screen and flip y-axis so that up is positive y
     mouseCoords.x -= windowWidth / 2;
     mouseCoords.y -= windowHeight /2;
     mouseCoords.y *= -1;
+
+    //scale mousecoordinates from screen space to world space
+    //mouse coords * (world space / screen space ratio)
+    float projWidth = app->GetProjWidth();
+    float projHeight = app->GetProjHeight();
+    mouseCoords.x *= (projWidth / windowWidth);
+    mouseCoords.y *= (projHeight / windowHeight);
 
     return mouseCoords;
 }

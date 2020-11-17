@@ -32,6 +32,12 @@ class MenuLayer: public rose::Layer {
 
 
         virtual void Update() override {
+            /*//this would a nice API to script with (essentially hiding input processing and collision detection)
+            for(Fractal& fractal: fractaList) {
+                if(fractal->Flick(Left) && fractal->CanTranslate(Left)) {
+                    Swap(fractal, Left);
+                }
+            }*/
             //process inputs
             glm::ivec2 mouse = rose::Input::GetMousePos();
             switch(rose::Input::GetInput()) {
@@ -85,6 +91,8 @@ class MenuLayer: public rose::Layer {
             m_App->Draw(quitButton);
             m_App->Draw(startButton);
             m_App->Draw(closeButton);
+            /*//This would be a nice overload for Draw, allowing arbitrary sprites and model matrices
+            m_App->Draw(closeButton->GetSprite(), closeButton->GetModelMatrix());*/
         }
 
 
