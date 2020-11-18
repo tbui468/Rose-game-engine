@@ -13,6 +13,7 @@ class PuzzleSet: public rose::Entity {
         PuzzleSet(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos);
         virtual ~PuzzleSet();
         void Open();
+        void OpenPuzzle(int index);
         void Close();
         bool IsOpen() const;
         void ClearAllData();

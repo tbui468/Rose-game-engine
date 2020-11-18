@@ -1,18 +1,18 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-Too much indirection and deep hierarchy for my needs
-    get rid of PuzzleSelector and just have the PuzzleSet own the PuzzleIcons - look at Squares.cpp for comment on how I want the API to look
 
-PuzzleSelector (and the PuzzleIcons it contains) - why do I even need this????
-    Just have the Puzzle Sets own a list of PuzzleIcons
-        then after calling LeftTap(input, mousex, mousey) on PuzzleSet
-        call LeftTap(input, mousex, mousey) on each of the PuzzleIcons in that set (if any)
+Fractals - the big one here.  The last large piece to get back to working status
 
-    This is a problem I'll have with puzzles and fractals
-        what is the simpliest way to propagate user inputs through to the Icons (and Fractals later)?
-        Having a puzzleselector is an extra abstraction layer - maybe should keep this just so
-            I can use this as an example on how to deal with Puzzles/Fractal relationship later (which will be at least an order of magnitude more complex)
-            this causes a lot of indirection - I'll need handles going in and out to process all inputs
+    1. Get Fractals responding to user input
+        need to add more possible user inputs - Flick in four directions
+    2. Forming larger fractals and splitting into smaller fractals (this should be a command called by puzzle)
+
+    1. Get Fractals data to read from external JSON
+    2. Get Fractals data to write to external JSON
+
+    1. Translations of fractals
+    2. Rotations of fractals
+    3. Reflections of fractals
 
 Allow window scaling when the application is active
     should check online for reference material on how to change SDL2 window sizes (event)

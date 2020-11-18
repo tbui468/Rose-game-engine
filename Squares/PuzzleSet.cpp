@@ -27,6 +27,8 @@ namespace sqs {
             m_PuzzleList.emplace_back(new Puzzle(sprite, size, box, glm::vec2(360.0f + Puzzle::GetSpacing() * i, 0.0f), i));
         }
 
+        OpenPuzzle(0);
+
         for(Puzzle* puzzle: m_PuzzleList) {
             if(puzzle) puzzle->MoveBy({-360.0f, 0.0f});
         }
@@ -44,6 +46,16 @@ namespace sqs {
 
         for(PuzzleIcon* icon: m_PuzzleIconList) {
             if(icon) icon->MoveBy({0.0f, -30.0f});
+        }
+    }
+
+
+    void PuzzleSet::OpenPuzzle(int index){
+        for(Puzzle* puzzle: m_PuzzleList) {
+            if(puzzle){
+                if(puzzle->GetIndex() == index) puzzle->Open();
+                else puzzle->Close();
+            }
         }
     }
 

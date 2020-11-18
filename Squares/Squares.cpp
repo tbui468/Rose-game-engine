@@ -2,16 +2,29 @@
 
 #include "Puzzle.h"
 #include "PuzzleSet.h"
-//#include "PuzzleSelector.h"
 #include "PuzzleIcon.h"
 #include "Button.h"
+#include "Fractal.h"
 
 
 namespace sqs {
 
 
-float Sigmoid(float _t) {
+static float Sigmoid(float _t) {
     return 1.0f / (1.0f + exp(-15.0f * (_t - 0.5f)));
+}
+
+static Puzzle* GetOpenPuzzle(const std::vector<std::shared_ptr<PuzzleSet>>& puzzleSets) {
+    for(std::shared_ptr<PuzzleSet> ps: puzzleSets) {
+        if(ps) {
+            if(ps->IsOpen()) {
+                for(Puzzle* puzzle: ps->GetPuzzles()) {
+                    if(puzzle) if(puzzle->IsOpen()) return puzzle;
+                }
+            }
+        }
+    }
+    return nullptr;
 }
 
 
@@ -125,6 +138,7 @@ class MenuLayer: public rose::Layer {
                 for(PuzzleIcon* icon: ps->GetPuzzleIcons()) {
                     if(icon->LeftTap(input, mouse.x, mouse.y)) {
                         int index = icon->GetPuzzleIndex();
+                        ps->OpenPuzzle(index);
                         for(Puzzle* puzzle: ps->GetPuzzles()) {
                             float xPos = (puzzle->GetIndex() - index) * Puzzle::GetSpacing();
                             puzzle->MoveTo(glm::vec2(xPos, 0.0f));
@@ -134,7 +148,21 @@ class MenuLayer: public rose::Layer {
                         break;
                     }
                 }
+
+
             }
+
+            if(Puzzle* puzzle = GetOpenPuzzle(m_PuzzleSets)) {
+                std::cout << "I'm the active puzzle: " << puzzle->GetIndex() << std::endl;
+                /*
+                for(Fractal* fractal: puzzle->GetFractals()) {
+                    if(fractal->LeftFlick(input, mouse.x, mouse.y)) {
+                        Fractal* other = puzzle->GetFractal(Left, fractal);
+                        if(other) puzzle->Swap(fractal, other);
+                    }
+                } */
+            }
+
 
 
             double deltaTime = m_App->GetDeltaTime();
@@ -146,8 +174,6 @@ class MenuLayer: public rose::Layer {
                     for(std::shared_ptr<rose::Entity>& e: m_Entities) e->OnAnimationUpdate(Sigmoid(m_Parameter));
                 }
             }
-
-
 
         }
 

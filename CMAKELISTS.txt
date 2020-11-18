@@ -46,6 +46,7 @@ target_include_directories(Glad PRIVATE ${GLAD_INCLUDE_DIR})
 
 add_executable(Squares 
     "Squares/Squares.cpp"
+    "Squares/Fractal.cpp"
     "Squares/Button.cpp"
     "Squares/Puzzle.cpp"
     "Squares/PuzzleIcon.cpp"
