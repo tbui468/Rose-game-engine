@@ -1,9 +1,12 @@
 #include "PuzzleSelector.h"
+#include "PuzzleIcon.h"
 
 namespace sqs {
 
-PuzzleSelector::PuzzleSelector(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos): 
+PuzzleSelector::PuzzleSelector(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos, PuzzleSet* puzzleSet): 
     Entity(sprite, size, boundingBox, pos) {
+        m_PuzzleSetHandle = puzzleSet;
+
         rose::Sprite iconsprite = {{32, 32}, {8, 8}};
         glm::vec2 iconsize = {8.0f, 8.0f};
         glm::vec4 iconbox = {0.0f, 0.0f, 8.0f, 8.0f};
@@ -11,7 +14,7 @@ PuzzleSelector::PuzzleSelector(const rose::Sprite& sprite, const glm::vec2& size
         int iconCount = 8;
         float halfLength = (iconCount - 1) * margin / 2.0f;
         for(int i = 0; i < iconCount; ++i) {
-            m_PuzzleIconList.emplace_back(new PuzzleIcon(iconsprite, iconsize, iconbox, glm::vec2(-halfLength + margin * i, y())));
+            m_PuzzleIconList.emplace_back(new PuzzleIcon(iconsprite, iconsize, iconbox, glm::vec2(-halfLength + margin * i, y()), m_PuzzleSetHandle, i));
         }
     }
 
@@ -53,6 +56,16 @@ void PuzzleSelector::Draw() {
     for(PuzzleIcon* icon: m_PuzzleIconList) {
         if(icon) icon->Draw();
     }
+}
+
+bool PuzzleSelector::ProcessIconTaps(rose::InputType input, float mousex, float mousey) {
+    for(PuzzleIcon* icon: m_PuzzleIconList) {
+        if(icon && icon->LeftTap(input, mousex, mousey)) {
+            icon->OnClick();
+            return true;
+        }
+    }
+    return false;
 }
 
 

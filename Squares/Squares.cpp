@@ -2,6 +2,8 @@
 
 #include "Puzzle.h"
 #include "PuzzleSet.h"
+#include "PuzzleSelector.h"
+#include "PuzzleIcon.h"
 #include "Button.h"
 
 
@@ -84,6 +86,7 @@ class MenuLayer: public rose::Layer {
                 m_Start = true;
             }
 
+
             if(closeButton->LeftTap(input, mouse.x, mouse.y)) {
                 bool puzzleWasOpen = false;
                 for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) {
@@ -115,6 +118,18 @@ class MenuLayer: public rose::Layer {
                 if(ps->LeftTap(input, mouse.x, mouse.y)) {
                     ps->Open();
                     for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), m_TopEdge + 32.0f));
+                    m_Parameter = 0.0f;
+                    m_Start = true;
+                    break;
+                }
+                /* //this API is easier to understand
+                for(PuzzleIcon* icon: ps->GetPuzzleIconList()) {
+                    if(icon->LeftTap(input, mouse.x, mouse.y)) {
+                        ps->MovePuzzles(icon->x(), icon->y()); //just an example
+                    }
+                }*/
+                //this currently works, but there's too much indirection / too many heirarchy levels (especially for just icons)
+                if(ps->ProcessIconTaps(input, mouse.x, mouse.y)) {
                     m_Parameter = 0.0f;
                     m_Start = true;
                     break;

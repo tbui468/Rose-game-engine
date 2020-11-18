@@ -1,5 +1,6 @@
 #include "PuzzleSet.h"
 #include "Puzzle.h"
+#include "PuzzleSelector.h"
 
 namespace sqs {
 
@@ -26,7 +27,7 @@ namespace sqs {
         rose::Sprite selectorSprite = {{32, 32}, {32, 32}};
         glm::vec2 selectorSize = {64.0f, 16.0f};
         glm::vec4 selectorBox = {0.0f, 0.0f, 64.0f, 16.0f};
-        m_PuzzleSelector = new PuzzleSelector(selectorSprite, selectorSize, selectorBox, glm::vec2(0.0f, 150.0f));
+        m_PuzzleSelector = new PuzzleSelector(selectorSprite, selectorSize, selectorBox, glm::vec2(0.0f, 150.0f), this);
         m_PuzzleSelector->MoveTo({m_PuzzleSelector->x(), 110.0f});
     }
 
@@ -52,6 +53,8 @@ namespace sqs {
         for(Entity* puzzle: m_PuzzleList) {
             if(puzzle) puzzle->OnAnimationEnd();
         }
+
+        if(m_PuzzleSelector) m_PuzzleSelector->OnAnimationEnd();
 
         if(m_DestroyPuzzles) {
             for(Entity* puzzle: m_PuzzleList) {
@@ -84,6 +87,12 @@ namespace sqs {
             if(puzzle) puzzle->Draw();
         }
         if(m_PuzzleSelector) m_PuzzleSelector->Draw();
+    }
+
+
+    bool PuzzleSet::ProcessIconTaps(rose::InputType input, float mousex, float mousey) {
+        if(m_PuzzleSelector) return m_PuzzleSelector->ProcessIconTaps(input, mousex, mousey);
+        else return false;
     }
 
 }

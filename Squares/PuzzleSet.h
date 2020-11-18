@@ -2,9 +2,10 @@
 #define PUZZLE_SET_H
 
 #include "Rose.h"
-#include "PuzzleSelector.h"
 
 namespace sqs {
+
+class PuzzleSelector;
 
 class PuzzleSet: public rose::Entity {
     public:
@@ -17,10 +18,11 @@ class PuzzleSet: public rose::Entity {
         virtual void OnAnimationEnd() override;
         virtual void OnAnimationUpdate(float t) override;
         virtual void Draw() override;
+        bool ProcessIconTaps(rose::InputType input, float mousex, float mousey);
 
     private:
         std::vector<Entity*> m_PuzzleList;
-        Entity* m_PuzzleSelector {nullptr};
+        PuzzleSelector* m_PuzzleSelector {nullptr};
         bool m_DestroyPuzzles {false};
 };
 
