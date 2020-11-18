@@ -18,6 +18,12 @@ void Entity::MoveTo(const glm::vec2& _pos) {
     m_FromPos = m_Pos;
     m_ToPos = g_Scale * _pos;
 }
+
+void Entity::MoveBy(const glm::vec2& shift) {
+    m_FromPos = m_Pos;
+    m_ToPos = {m_Pos.x + g_Scale * shift.x, m_Pos.y + g_Scale * shift.y};
+}
+
 void Entity::FadeTo(float _alpha) {
     m_FromAlpha = m_Alpha;
     m_ToAlpha = _alpha;

@@ -1,6 +1,6 @@
 #include "PuzzleSet.h"
 #include "Puzzle.h"
-#include "PuzzleSelector.h"
+#include "PuzzleIcon.h"
 
 namespace sqs {
 
@@ -8,6 +8,11 @@ namespace sqs {
     PuzzleSet::PuzzleSet(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos): 
         Entity(sprite, size, boundingBox, pos) {
         }
+
+
+    PuzzleSet::~PuzzleSet() {
+        ClearAllData(); 
+    }
 
 
     void PuzzleSet::Open() {
@@ -19,29 +24,60 @@ namespace sqs {
         glm::vec2 size = {32.0f, 32.0f};
         glm::vec4 box = {0.0f, 0.0f, 32.0f, 32.0f};
         for(int i = 0; i < 8; ++i) {
-            m_PuzzleList.emplace_back(new Puzzle(sprite, size, box, glm::vec2(360.0f + 128.0f * i, 0.0f)));
+            m_PuzzleList.emplace_back(new Puzzle(sprite, size, box, glm::vec2(360.0f + Puzzle::GetSpacing() * i, 0.0f), i));
         }
-        MovePuzzlesBy(glm::vec2(-360.0f, 0.0f));
 
-        //create puzzle selector belonging to this set
-        rose::Sprite selectorSprite = {{32, 32}, {32, 32}};
-        glm::vec2 selectorSize = {64.0f, 16.0f};
-        glm::vec4 selectorBox = {0.0f, 0.0f, 64.0f, 16.0f};
-        m_PuzzleSelector = new PuzzleSelector(selectorSprite, selectorSize, selectorBox, glm::vec2(0.0f, 150.0f), this);
-        m_PuzzleSelector->MoveTo({m_PuzzleSelector->x(), 110.0f});
+        for(Puzzle* puzzle: m_PuzzleList) {
+            if(puzzle) puzzle->MoveBy({-360.0f, 0.0f});
+        }
+
+        //create puzzle icons
+        rose::Sprite iconsprite = {{32, 32}, {8, 8}};
+        glm::vec2 iconsize = {8.0f, 8.0f};
+        glm::vec4 iconbox = {0.0f, 0.0f, 8.0f, 8.0f};
+        float margin = 24.0f;
+        int iconCount = 8;
+        float halfLength = (iconCount - 1) * margin / 2.0f;
+        for(int i = 0; i < iconCount; ++i) {
+            m_PuzzleIconList.emplace_back(new PuzzleIcon(iconsprite, iconsize, iconbox, glm::vec2(-halfLength + margin * i, 150.0f), i));
+        }
+
+        for(PuzzleIcon* icon: m_PuzzleIconList) {
+            if(icon) icon->MoveBy({0.0f, -30.0f});
+        }
     }
 
-
-    void PuzzleSet::MovePuzzlesBy(const glm::vec2& shift) {
-        for(Entity* puzzle: m_PuzzleList) {
-            if(puzzle) puzzle->MoveTo({puzzle->x() + shift.x, puzzle->y() + shift.y});
-        }
-    }
 
     void PuzzleSet::Close() {
-        MovePuzzlesBy(glm::vec2(480.0f, 0.0f));
-        if(m_PuzzleSelector) m_PuzzleSelector->MoveTo({m_PuzzleSelector->x(), 150.0f});
+        for(Puzzle* puzzle: m_PuzzleList) {
+            if(puzzle) puzzle->MoveBy({480.0f, 0.0f});
+        }
+
+        for(PuzzleIcon* icon: m_PuzzleIconList) {
+            if(icon) icon->MoveBy({0.0f, 150.0f});
+        }
+
         m_DestroyPuzzles = true;
+    }
+
+    void PuzzleSet::ClearAllData() {
+        for(Puzzle* puzzle: m_PuzzleList) {
+            if(puzzle) {
+                delete puzzle;
+                puzzle = nullptr;
+            }
+        }
+
+        m_PuzzleList.clear();
+
+        for(PuzzleIcon* icon: m_PuzzleIconList) {
+            if(icon) {
+                delete icon;
+                icon = nullptr;
+            }
+        }
+
+        m_PuzzleIconList.clear();
     }
 
     bool PuzzleSet::IsOpen() const {
@@ -50,49 +86,38 @@ namespace sqs {
 
     void PuzzleSet::OnAnimationEnd() {
         Entity::OnAnimationEnd();
-        for(Entity* puzzle: m_PuzzleList) {
+        for(Puzzle* puzzle: m_PuzzleList) {
             if(puzzle) puzzle->OnAnimationEnd();
         }
 
-        if(m_PuzzleSelector) m_PuzzleSelector->OnAnimationEnd();
+        for(PuzzleIcon* icon: m_PuzzleIconList) {
+            if(icon) icon->OnAnimationEnd();
+        }
 
         if(m_DestroyPuzzles) {
-            for(Entity* puzzle: m_PuzzleList) {
-                if(puzzle) {
-                    delete puzzle;
-                    puzzle = nullptr;
-                }
-            }
-
-            m_PuzzleList.clear();
-
-            if(m_PuzzleSelector) {
-                delete m_PuzzleSelector;
-                m_PuzzleSelector = nullptr;
-            }
+            ClearAllData();
         }
     }
 
     void PuzzleSet::OnAnimationUpdate(float t) {
         Entity::OnAnimationUpdate(t);
-        for(Entity* puzzle: m_PuzzleList) {
+        for(Puzzle* puzzle: m_PuzzleList) {
             if(puzzle) puzzle->OnAnimationUpdate(t);
         }
-        if(m_PuzzleSelector) m_PuzzleSelector->OnAnimationUpdate(t);
+        for(PuzzleIcon* icon: m_PuzzleIconList) {
+            if(icon) icon->OnAnimationUpdate(t);
+        }
     }
 
     void PuzzleSet::Draw() {
         Entity::Draw();
-        for(Entity* puzzle: m_PuzzleList) {
+        for(Puzzle* puzzle: m_PuzzleList) {
             if(puzzle) puzzle->Draw();
         }
-        if(m_PuzzleSelector) m_PuzzleSelector->Draw();
+        for(PuzzleIcon* icon: m_PuzzleIconList) {
+            if(icon) icon->Draw();
+        }
     }
 
-
-    bool PuzzleSet::ProcessIconTaps(rose::InputType input, float mousex, float mousey) {
-        if(m_PuzzleSelector) return m_PuzzleSelector->ProcessIconTaps(input, mousex, mousey);
-        else return false;
-    }
 
 }

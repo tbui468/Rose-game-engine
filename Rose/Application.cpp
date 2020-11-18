@@ -37,7 +37,7 @@ namespace rose {
         bool fullScreen = true;
         m_Window = std::make_shared<Window>(960, 540, fullScreen);
 
-        bool vsync = false;
+        bool vsync = true;
         m_Renderer = std::make_shared<Renderer>(m_Window, vsync);
 
 

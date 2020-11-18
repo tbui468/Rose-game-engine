@@ -5,24 +5,26 @@
 
 namespace sqs {
 
-class PuzzleSelector;
+class PuzzleIcon;
+class Puzzle;
 
 class PuzzleSet: public rose::Entity {
     public:
         PuzzleSet(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos);
-        virtual ~PuzzleSet() {}
+        virtual ~PuzzleSet();
         void Open();
-        void MovePuzzlesBy(const glm::vec2& shift);
         void Close();
         bool IsOpen() const;
+        void ClearAllData();
         virtual void OnAnimationEnd() override;
         virtual void OnAnimationUpdate(float t) override;
         virtual void Draw() override;
-        bool ProcessIconTaps(rose::InputType input, float mousex, float mousey);
+        const std::vector<Puzzle*>& GetPuzzles() const { return m_PuzzleList; }
+        const std::vector<PuzzleIcon*>& GetPuzzleIcons() const { return m_PuzzleIconList; }
 
     private:
-        std::vector<Entity*> m_PuzzleList;
-        PuzzleSelector* m_PuzzleSelector {nullptr};
+        std::vector<Puzzle*> m_PuzzleList;
+        std::vector<PuzzleIcon*> m_PuzzleIconList;
         bool m_DestroyPuzzles {false};
 };
 

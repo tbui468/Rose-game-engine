@@ -49,7 +49,6 @@ add_executable(Squares
     "Squares/Button.cpp"
     "Squares/Puzzle.cpp"
     "Squares/PuzzleIcon.cpp"
-    "Squares/PuzzleSelector.cpp"
     "Squares/PuzzleSet.cpp")
 target_include_directories(Squares PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${GLM_INCLUDE_DIR} ${ROSE_INCLUDE_DIR})
 target_link_libraries(Squares Rose)

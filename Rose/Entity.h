@@ -20,6 +20,7 @@ class Entity {
         virtual ~Entity() {}
     public:
         virtual void MoveTo(const glm::vec2& pos);
+        virtual void MoveBy(const glm::vec2& shift);
         virtual void FadeTo(float alpha);
         virtual void ScaleTo(const glm::vec2& scale);
         virtual void RotateTo(float angle);

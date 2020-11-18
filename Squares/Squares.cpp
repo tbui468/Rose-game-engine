@@ -2,7 +2,7 @@
 
 #include "Puzzle.h"
 #include "PuzzleSet.h"
-#include "PuzzleSelector.h"
+//#include "PuzzleSelector.h"
 #include "PuzzleIcon.h"
 #include "Button.h"
 
@@ -122,17 +122,17 @@ class MenuLayer: public rose::Layer {
                     m_Start = true;
                     break;
                 }
-                /* //this API is easier to understand
-                for(PuzzleIcon* icon: ps->GetPuzzleIconList()) {
+                for(PuzzleIcon* icon: ps->GetPuzzleIcons()) {
                     if(icon->LeftTap(input, mouse.x, mouse.y)) {
-                        ps->MovePuzzles(icon->x(), icon->y()); //just an example
+                        int index = icon->GetPuzzleIndex();
+                        for(Puzzle* puzzle: ps->GetPuzzles()) {
+                            float xPos = (puzzle->GetIndex() - index) * Puzzle::GetSpacing();
+                            puzzle->MoveTo(glm::vec2(xPos, 0.0f));
+                        }
+                        m_Parameter = 0.0f;
+                        m_Start = true;
+                        break;
                     }
-                }*/
-                //this currently works, but there's too much indirection / too many heirarchy levels (especially for just icons)
-                if(ps->ProcessIconTaps(input, mouse.x, mouse.y)) {
-                    m_Parameter = 0.0f;
-                    m_Start = true;
-                    break;
                 }
             }
 
