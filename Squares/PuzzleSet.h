@@ -19,8 +19,8 @@ class PuzzleSet: public rose::Entity {
         virtual void Draw() override;
 
     private:
-        std::vector<std::shared_ptr<Entity>> m_PuzzleList;
-        std::shared_ptr<Entity> m_PuzzleSelector {nullptr};
+        std::vector<Entity*> m_PuzzleList;
+        Entity* m_PuzzleSelector {nullptr};
         bool m_DestroyPuzzles {false};
 };
 

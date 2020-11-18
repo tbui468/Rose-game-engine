@@ -64,6 +64,8 @@ class MenuLayer: public rose::Layer {
             glm::vec2 mouse = {static_cast<float>(mouseI.x), static_cast<float>(mouseI.y)};
             rose::InputType input = rose::Input::GetInput();
 
+            if(m_Parameter <1.0f) input = rose::InputType::None; //temp: to avoid retting animations
+
 
             //process inputs
             if(quitButton->LeftTap(input, mouse.x, mouse.y) || input == rose::InputType::Quit) m_App->Quit();
@@ -155,7 +157,7 @@ class MenuLayer: public rose::Layer {
         std::vector<std::shared_ptr<Button>> m_Buttons;
 
         rose::Application* m_App {nullptr};
-        float m_Parameter {0.0f};
+        float m_Parameter {1.0f};
         bool m_Start {false};
 
         float m_LeftEdge {-240.0f};

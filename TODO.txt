@@ -1,23 +1,10 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-change renderer->addentity() to raw pointers???
-    maybe should stick to raw pointers until I have a clearer understanding of why I would need smart pointers
-
-Get this done first since it will make everthing so much simpler to work with (overriding draw functions)
-    Move App->Draw(entity) to Entity->Draw()
-        this can still have the app call the renderer (or call renderer directly)
-    this format will just be easier to understand from an API perspective (everything is about manipulating entities)
-        reason: I want to be able to overload entity draw calls
-            so I can have the puzzleiconselector draw the puzzleicons it has,
-            I may do the same thing for PuzzleSets (having puzzlesets perform the draw call for all of its puzzles)
 
 PuzzleSelector (and the PuzzleIcons it contains)
-    puzzleicons need to track the puzzleselector it belongs to - just overload MoveTo() on PuzzleSelector to call MoveTo on the PuzzleIcons too
-    classes are created, but need to fill them in to do the following:
-        Drawing them on screen - DONE!
-        Animating them on screen - DONE!
-        Clickable
-        Clicking them moves puzzles left/right
+    PuzzleIcons not being deleted when PuzzleSelector is destroyed
+    Clickable
+    Clicking them moves puzzles left/right
 
 Allow window scaling when the application is active
     should check online for reference material on how to change SDL2 window sizes (event)
