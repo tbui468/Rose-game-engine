@@ -11,12 +11,12 @@ class PuzzleSet: public rose::Entity {
         PuzzleSet(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos);
         virtual ~PuzzleSet() {}
         void Open();
-        void DrawPuzzles(rose::Application* app);
-        void MovePuzzles(const glm::vec2& shift);
+        void MovePuzzlesBy(const glm::vec2& shift);
         void Close();
         bool IsOpen() const;
         virtual void OnAnimationEnd() override;
         virtual void OnAnimationUpdate(float t) override;
+        virtual void Draw() override;
 
     private:
         std::vector<std::shared_ptr<Entity>> m_PuzzleList;

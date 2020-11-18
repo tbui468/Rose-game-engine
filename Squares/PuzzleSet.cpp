@@ -20,7 +20,7 @@ namespace sqs {
         for(int i = 0; i < 8; ++i) {
             m_PuzzleList.emplace_back(std::make_shared<Puzzle>(sprite, size, box, glm::vec2(360.0f + 128.0f * i, 0.0f)));
         }
-        MovePuzzles(glm::vec2(-360.0f, 0.0f));
+        MovePuzzlesBy(glm::vec2(-360.0f, 0.0f));
 
         //create puzzle selector belonging to this set
         rose::Sprite selectorSprite = {{32, 32}, {32, 32}};
@@ -30,21 +30,22 @@ namespace sqs {
         m_PuzzleSelector->MoveTo({m_PuzzleSelector->x(), 100.0f});
     }
 
+/*
     void PuzzleSet::DrawPuzzles(rose::Application* app) {
         for(const std::shared_ptr<Entity>& puzzle: m_PuzzleList) {
             app->Draw(puzzle);
         }
         if(m_PuzzleSelector) app->Draw(m_PuzzleSelector);
-    }
+    }*/
 
-    void PuzzleSet::MovePuzzles(const glm::vec2& shift) {
+    void PuzzleSet::MovePuzzlesBy(const glm::vec2& shift) {
         for(std::shared_ptr<Entity>& puzzle: m_PuzzleList) {
             puzzle->MoveTo({puzzle->x() + shift.x, puzzle->y() + shift.y});
         }
     }
 
     void PuzzleSet::Close() {
-        MovePuzzles(glm::vec2(480.0f, 0.0f));
+        MovePuzzlesBy(glm::vec2(480.0f, 0.0f));
         if(m_PuzzleSelector) m_PuzzleSelector->MoveTo({m_PuzzleSelector->x(), 150.0f});
         m_DestroyPuzzles = true;
     }
@@ -79,6 +80,14 @@ namespace sqs {
             puzzle->OnAnimationUpdate(t);
         }
         if(m_PuzzleSelector) m_PuzzleSelector->OnAnimationUpdate(t);
+    }
+
+    void PuzzleSet::Draw() {
+        Entity::Draw();
+        for(const std::shared_ptr<Entity>& puzzle: m_PuzzleList) {
+            puzzle->Draw();
+        }
+        if(m_PuzzleSelector) m_PuzzleSelector->Draw();
     }
 
 }

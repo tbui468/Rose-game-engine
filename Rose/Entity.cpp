@@ -1,5 +1,9 @@
+#include <memory>
+
 #include "Entity.h"
+#include "Application.h"
 #include "Globals.h"
+#include "renderer/Renderer.h"
 
 namespace rose {
 
@@ -47,6 +51,12 @@ void Entity::OnAnimationEnd() {
     m_FromAngle = m_Angle;
     m_Alpha = m_ToAlpha;
     m_FromAlpha = m_Alpha;
+}
+
+void Entity::Draw() {
+    Application* app = Application::GetApplication();
+    std::shared_ptr<Renderer> renderer = app->GetRenderer();
+    renderer->AddEntity(this);
 }
 
 bool Entity::LeftTap(InputType input, float x, float y) const {

@@ -22,8 +22,7 @@ class Application {
         void SetClearColor(const glm::ivec3& color);
         double GetDeltaTime() const { return m_DeltaTime; }
         static Application* GetApplication();
-    public: //rendering
-        void Draw(const std::shared_ptr<Entity>& entity);
+        std::shared_ptr<Renderer> GetRenderer();
     private:
         Application();
         bool m_Quit = false;

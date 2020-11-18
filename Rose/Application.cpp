@@ -20,6 +20,11 @@ namespace rose {
         return s_Application;
     }
 
+    std::shared_ptr<Renderer> Application::GetRenderer() {
+        assert(s_Application);
+        return m_Renderer;
+    }
+
     void Application::Quit() {
         m_Quit = true;
     }
@@ -77,9 +82,6 @@ namespace rose {
 
 
 
-    void Application::Draw(const std::shared_ptr<Entity>& entity) {
-        m_Renderer->AddEntity(entity);
-    }
 
     void Application::Shutdown() {
         SDL_DestroyWindow(m_Window->GetHandle());

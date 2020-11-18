@@ -4,39 +4,8 @@
 #include "PuzzleSet.h"
 #include "Button.h"
 
-/*
-
-class PuzzleSelector: public rose::Entity {
-    public:
-        virtual ~PuzzleIconSelector() {}
-        PuzzleIconSelector(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos): 
-            Entity(sprite, size, boundingBox, pos) {
-                for(int i = 0; i < 8; ++i) {
-                    std::shared_ptr<PuzzleIcon> icon = std::make_shared<PuzzleIcon>(iconsprite, size, boundingbox, relativepos);
-                    m_IconList.at(i) = icon;
-                }
-            }
-
-         //mostly the same, but also moves all puzzleicons in m_IconList
-         //might need to make this a friend class to access base class member variables
-        virtual void OnAnimationUpdate(float _t) override {
-            m_Pos.x = m_FromPos.x + (m_ToPos.x - m_FromPos.x) * _t;
-            m_Pos.y = m_FromPos.y + (m_ToPos.y - m_FromPos.y) * _t;
-            m_Scale.x = m_FromScale.x + (m_ToScale.x - m_FromScale.x) * _t;
-            m_Scale.y = m_FromScale.y + (m_ToScale.y - m_FromScale.y) * _t;
-            m_Angle = m_FromAngle + (m_ToAngle - m_FromAngle) * _t;
-            m_Alpha = m_FromAlpha + (m_ToAlpha - m_FromAlpha) * _t;
-            for(PuzzleIcon& p: m_IconList) {
-                p->OnAnimationUpdate(_t);
-            }
-        }
-    private:
-        std::array<PuzzleIcon, 8> m_IconList;
-};*/
 
 namespace sqs {
-
-
 
 
 float Sigmoid(float _t) {
@@ -104,7 +73,9 @@ class MenuLayer: public rose::Layer {
 
             if(startButton->LeftTap(input, mouse.x, mouse.y)) {
                 startButton->GoAway();
+                startButton->ScaleTo(glm::vec2(2.0f, 1.0f));
                 quitButton->GoAway();
+                quitButton->ScaleTo(glm::vec2(1.0f, 2.0f));
                 closeButton->ComeBack();
                 for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
                 m_Parameter = 0.0f;
@@ -126,7 +97,9 @@ class MenuLayer: public rose::Layer {
                     for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
                 }else{
                     startButton->ComeBack();
+                    startButton->ScaleTo(glm::vec2(1.0f, 1.0f));
                     quitButton->ComeBack();
+                    quitButton->ScaleTo(glm::vec2(1.0f, 1.0f));
                     closeButton->GoAway();
                     for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), m_TopEdge + 32.0f));
                 }
@@ -149,7 +122,7 @@ class MenuLayer: public rose::Layer {
 
             double deltaTime = m_App->GetDeltaTime();
             if(m_Parameter < 1.0f && m_Start) {
-                m_Parameter += static_cast<float>(deltaTime) * .0015f;
+                m_Parameter += static_cast<float>(deltaTime) * .0010f;
                 if(m_Parameter >= 1.0f) {
                     for(std::shared_ptr<rose::Entity>& e: m_Entities) e->OnAnimationEnd();
                 }else{
@@ -164,12 +137,7 @@ class MenuLayer: public rose::Layer {
 
         virtual void Draw() override {
             for(std::shared_ptr<rose::Entity>& e: m_Entities) {
-                m_App->Draw(e);
-//                e->Draw();
-            }
-            
-            for(std::shared_ptr<PuzzleSet>& ps: m_PuzzleSets) {
-                ps->DrawPuzzles(m_App);
+                e->Draw();
             }
         }
 

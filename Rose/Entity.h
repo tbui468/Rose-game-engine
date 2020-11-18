@@ -25,6 +25,7 @@ class Entity {
         virtual void RotateTo(float angle);
         virtual void OnAnimationUpdate(float t);
         virtual void OnAnimationEnd();
+        virtual void Draw();
     public:
         virtual bool LeftTap(InputType input, float x, float y) const;
         virtual bool PointCollision(float pointX, float pointY) const;
