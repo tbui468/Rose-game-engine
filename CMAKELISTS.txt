@@ -29,7 +29,6 @@ set (ROSE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Rose)
 
 add_library(Rose STATIC 
     "Rose/Globals.cpp"
-    "Rose/Input.cpp"
     "Rose/Entity.cpp"
     "Rose/Application.cpp"
     "Rose/Camera.cpp"
@@ -46,6 +45,7 @@ target_include_directories(Glad PRIVATE ${GLAD_INCLUDE_DIR})
 
 add_executable(Squares 
     "Squares/Squares.cpp"
+    "Squares/MenuLayer.cpp"
     "Squares/Fractal.cpp"
     "Squares/Button.cpp"
     "Squares/Puzzle.cpp"

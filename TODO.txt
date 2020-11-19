@@ -3,8 +3,6 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 Fractals - the big one here.  The last large piece to get back to working status
 
     Entity uses the singleton GetApplication() to draw
-    Input uses the singleton GetApplication() to get app and window to process inputs
-        Input should be something the application owns 
 
     let's keep the singleton for now, but I might get rid of it later
 

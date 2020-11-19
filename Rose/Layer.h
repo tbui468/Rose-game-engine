@@ -7,7 +7,7 @@ class Layer {
     public:
         Layer(){}
         virtual ~Layer() {}
-        virtual bool Update(double deltaTime) = 0;
+        virtual bool Update(double deltaTime, rose::InputType input, const glm::ivec2& mousePos) = 0;
         virtual void Draw() = 0;
     private:
 };

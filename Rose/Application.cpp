@@ -7,7 +7,6 @@
 
 #include "Application.h"
 #include "CommandCode.h"
-#include "Input.h"
 
 namespace rose {
 
@@ -78,14 +77,20 @@ namespace rose {
         m_DeltaTime = 0.0;
 
 
+
         while(!m_Quit) {
             m_Last = m_Now;
             m_Now = SDL_GetPerformanceCounter();
             m_DeltaTime = static_cast<double>((m_Now - m_Last) * 1000) / static_cast<double>(SDL_GetPerformanceFrequency());
 
+            InputType input = GetInput();
+            glm::ivec2 mousePos = GetMousePos();
+
+            if(input == InputType::Quit) m_Quit = true;
+
 
             m_Renderer->ClearQuads();
-            m_Quit = m_Layer->Update(m_DeltaTime);
+            m_Quit = m_Layer->Update(m_DeltaTime, input, mousePos);
             m_Layer->Draw();
 
 
@@ -95,6 +100,54 @@ namespace rose {
         }
 
     }
+
+
+InputType Application::GetInput() {
+    SDL_Event event;
+
+    while(SDL_PollEvent(&event)) {
+        switch(event.type) {
+            case SDL_QUIT: 
+                return InputType::Quit; 
+                break;
+            case SDL_MOUSEBUTTONDOWN: 
+                if(event.button.button == SDL_BUTTON_LEFT)
+                    return InputType::LeftTap;
+                else if(event.button.button == SDL_BUTTON_RIGHT)
+                    return InputType::RightTap;
+                break;
+            case SDL_MOUSEBUTTONUP: 
+                if(event.button.button == SDL_BUTTON_LEFT)
+                    return InputType::LeftRelease;
+                else if(event.button.button == SDL_BUTTON_RIGHT)
+                    return InputType::RightRelease;
+                break;
+            default: 
+                return InputType::None; 
+                break;
+        }
+    }
+
+    return InputType::None;
+}
+
+
+glm::ivec2 Application::GetMousePos() {
+    glm::ivec2 mouseCoords;
+    SDL_GetMouseState(&mouseCoords.x, &mouseCoords.y);
+
+    //move (0, 0) to center of screen and flip y-axis so that up is positive y
+    mouseCoords.x -= GetWindowWidth() / 2;
+    mouseCoords.y -= GetWindowHeight() /2;
+    mouseCoords.y *= -1;
+
+    //scale mousecoordinates from screen space to world space
+    //mouse coords * (world space / screen space ratio)
+    mouseCoords.x *= (GetProjWidth() / GetWindowWidth());
+    mouseCoords.y *= (GetProjHeight() / GetWindowHeight());
+
+    return mouseCoords;
+}
 
 
 

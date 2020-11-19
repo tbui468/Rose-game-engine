@@ -17,6 +17,8 @@ class Application {
         void Run();
         void Shutdown();
         void Quit();
+        InputType GetInput();
+        glm::ivec2 GetMousePos();
         int32_t GetWindowWidth() const { return m_Window->GetWidth(); }
         int32_t GetWindowHeight() const { return m_Window->GetHeight(); }
         float GetProjWidth() const { return m_Renderer->GetProjWidth(); }

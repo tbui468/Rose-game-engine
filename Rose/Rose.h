@@ -18,7 +18,6 @@
 #include "renderer/Texture.h"
 #include "Utility.h"
 #include "Entity.h"
-#include "Input.h"
 #include "InputType.h"
 #include "CommandCode.h"
 
