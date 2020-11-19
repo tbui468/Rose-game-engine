@@ -3,6 +3,13 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 Fractals - the big one here.  The last large piece to get back to working status
 
     Entity uses the singleton GetApplication() to draw
+        Make a RenderCommand purely static class so that Entity can call it without needing access to application/renderer
+            RenderCommand::StartScene() should also call RenderCommand::Clear() and any OpenGL commands needed before drawing
+            RenderCommand::AddQuad() //just adds vertices/indices.  called by Entites in Layer::Update(....)
+            RenderCommand::Draw() 
+            RenderCommand::EndScene(); //should clear the index/vertex buffers/swap screen buffers and do anyother cleanup needed for OpenGL
+
+    Renderer is bound to a context (the Window).  So who should own what?
 
     let's keep the singleton for now, but I might get rid of it later
 

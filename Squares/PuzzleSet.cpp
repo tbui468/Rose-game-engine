@@ -121,7 +121,7 @@ namespace sqs {
         }
     }
 
-    void PuzzleSet::Draw() {
+    void PuzzleSet::Draw() const {
         Entity::Draw();
         for(Puzzle* puzzle: m_PuzzleList) {
             if(puzzle) puzzle->Draw();

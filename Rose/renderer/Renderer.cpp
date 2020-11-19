@@ -122,7 +122,7 @@ namespace rose {
     }
 
 
-    void Renderer::AddEntity(Entity* entity) {
+    void Renderer::AddEntity(const Entity* entity) {
         float texWidth = static_cast<float>(m_Texture->GetWidth());
         float texHeight = static_cast<float>(m_Texture->GetHeight());
 

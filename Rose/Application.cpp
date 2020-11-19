@@ -19,7 +19,7 @@ namespace rose {
         return s_Application;
     }
 
-    std::shared_ptr<Renderer> Application::GetRenderer() {
+    std::shared_ptr<Renderer> Application::GetRenderer() const {
         assert(s_Application);
         return m_Renderer;
     }
@@ -102,57 +102,57 @@ namespace rose {
     }
 
 
-InputType Application::GetInput() {
-    SDL_Event event;
+    InputType Application::GetInput() const {
+        SDL_Event event;
 
-    while(SDL_PollEvent(&event)) {
-        switch(event.type) {
-            case SDL_QUIT: 
-                return InputType::Quit; 
-                break;
-            case SDL_MOUSEBUTTONDOWN: 
-                if(event.button.button == SDL_BUTTON_LEFT)
-                    return InputType::LeftTap;
-                else if(event.button.button == SDL_BUTTON_RIGHT)
-                    return InputType::RightTap;
-                break;
-            case SDL_MOUSEBUTTONUP: 
-                if(event.button.button == SDL_BUTTON_LEFT)
-                    return InputType::LeftRelease;
-                else if(event.button.button == SDL_BUTTON_RIGHT)
-                    return InputType::RightRelease;
-                break;
-            default: 
-                return InputType::None; 
-                break;
+        while(SDL_PollEvent(&event)) {
+            switch(event.type) {
+                case SDL_QUIT: 
+                    return InputType::Quit; 
+                    break;
+                case SDL_MOUSEBUTTONDOWN: 
+                    if(event.button.button == SDL_BUTTON_LEFT)
+                        return InputType::LeftTap;
+                    else if(event.button.button == SDL_BUTTON_RIGHT)
+                        return InputType::RightTap;
+                    break;
+                case SDL_MOUSEBUTTONUP: 
+                    if(event.button.button == SDL_BUTTON_LEFT)
+                        return InputType::LeftRelease;
+                    else if(event.button.button == SDL_BUTTON_RIGHT)
+                        return InputType::RightRelease;
+                    break;
+                default: 
+                    return InputType::None; 
+                    break;
+            }
         }
+
+        return InputType::None;
     }
 
-    return InputType::None;
-}
 
+    glm::ivec2 Application::GetMousePos() const {
+        glm::ivec2 mouseCoords;
+        SDL_GetMouseState(&mouseCoords.x, &mouseCoords.y);
 
-glm::ivec2 Application::GetMousePos() {
-    glm::ivec2 mouseCoords;
-    SDL_GetMouseState(&mouseCoords.x, &mouseCoords.y);
+        //move (0, 0) to center of screen and flip y-axis so that up is positive y
+        mouseCoords.x -= GetWindowWidth() / 2;
+        mouseCoords.y -= GetWindowHeight() /2;
+        mouseCoords.y *= -1;
 
-    //move (0, 0) to center of screen and flip y-axis so that up is positive y
-    mouseCoords.x -= GetWindowWidth() / 2;
-    mouseCoords.y -= GetWindowHeight() /2;
-    mouseCoords.y *= -1;
+        //scale mousecoordinates from screen space to world space
+        //mouse coords * (world space / screen space ratio)
+        mouseCoords.x *= (GetProjWidth() / GetWindowWidth());
+        mouseCoords.y *= (GetProjHeight() / GetWindowHeight());
 
-    //scale mousecoordinates from screen space to world space
-    //mouse coords * (world space / screen space ratio)
-    mouseCoords.x *= (GetProjWidth() / GetWindowWidth());
-    mouseCoords.y *= (GetProjHeight() / GetWindowHeight());
-
-    return mouseCoords;
-}
+        return mouseCoords;
+    }
 
 
 
 
-    void Application::Shutdown() {
+    void Application::Shutdown() const {
         SDL_DestroyWindow(m_Window->GetHandle());
         SDL_Quit();
     }

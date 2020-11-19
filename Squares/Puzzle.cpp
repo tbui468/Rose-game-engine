@@ -70,7 +70,7 @@ void Puzzle::OnAnimationUpdate(float t) {
     }
 }
 
-void Puzzle::Draw() {
+void Puzzle::Draw() const {
     Entity::Draw();
     for(int i = 0; i < 4; ++i) {
         if(m_FractalGrid.at(i)) m_FractalGrid.at(i)->Draw();

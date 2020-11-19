@@ -59,10 +59,12 @@ void Entity::OnAnimationEnd() {
     m_FromAlpha = m_Alpha;
 }
 
-void Entity::Draw() {
+void Entity::Draw() const {
     Application* app = Application::GetApplication();
     std::shared_ptr<Renderer> renderer = app->GetRenderer();
     renderer->AddEntity(this);
+
+//    RenderCommand::AddQuad(this);
 }
 
 bool Entity::LeftTap(InputType input, float x, float y) const {

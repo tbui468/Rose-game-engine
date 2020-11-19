@@ -19,7 +19,7 @@ class PuzzleSet: public rose::Entity {
         void ClearAllData();
         virtual void OnAnimationEnd() override;
         virtual void OnAnimationUpdate(float t) override;
-        virtual void Draw() override;
+        virtual void Draw() const override;
         const std::vector<Puzzle*>& GetPuzzles() const { return m_PuzzleList; }
         const std::vector<PuzzleIcon*>& GetPuzzleIcons() const { return m_PuzzleIconList; }
 

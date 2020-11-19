@@ -16,7 +16,7 @@ class Puzzle: public rose::Entity {
         bool IsOpen() const { return m_IsOpen; }
         void Open();
         void Close();
-        virtual void Draw() override;
+        virtual void Draw() const override;
         virtual void MoveTo(const glm::vec2& pos) override;
         virtual void MoveBy(const glm::vec2& shift) override;
         virtual void OnAnimationEnd() override;
