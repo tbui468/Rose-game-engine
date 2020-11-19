@@ -18,7 +18,7 @@ namespace rose {
 
 class Renderer {
     public:
-        Renderer(std::shared_ptr<Window> window, bool vsync);
+        Renderer(std::shared_ptr<Window> window, bool vsync, const std::string& exePath);
         virtual ~Renderer() {}
         void AddEntity(Entity* entity); //should just be called Draw
         uint32_t QuadCount() const { return m_Models.size(); }

@@ -5,6 +5,7 @@
 #include "PuzzleIcon.h"
 #include "Button.h"
 #include "Fractal.h"
+#include "InputDispatcher.h"
 
 
 namespace sqs {
@@ -13,6 +14,7 @@ namespace sqs {
 static float Sigmoid(float _t) {
     return 1.0f / (1.0f + exp(-15.0f * (_t - 0.5f)));
 }
+
 
 static Puzzle* GetOpenPuzzle(const std::vector<std::shared_ptr<PuzzleSet>>& puzzleSets) {
     for(std::shared_ptr<PuzzleSet> ps: puzzleSets) {
@@ -74,7 +76,8 @@ class MenuLayer: public rose::Layer {
 
 
         virtual void Update() override {
-            //get inputs
+            //get inputs - need to process them here and
+            //then give processed inputs to Square entities
             glm::ivec2 mouseI = rose::Input::GetMousePos();
             glm::vec2 mouse = {static_cast<float>(mouseI.x), static_cast<float>(mouseI.y)};
             rose::InputType input = rose::Input::GetInput();
@@ -130,7 +133,7 @@ class MenuLayer: public rose::Layer {
             for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) {
                 if(ps->LeftTap(input, mouse.x, mouse.y)) {
                     ps->Open();
-                    for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), m_TopEdge + 32.0f));
+                    for(std::shared_ptr<PuzzleSet>& psInside : m_PuzzleSets) psInside->MoveTo(glm::vec2(psInside->x(), m_TopEdge + 32.0f));
                     m_Parameter = 0.0f;
                     m_Start = true;
                     break;
@@ -153,9 +156,8 @@ class MenuLayer: public rose::Layer {
             }
 
             if(Puzzle* puzzle = GetOpenPuzzle(m_PuzzleSets)) {
-                std::cout << "I'm the active puzzle: " << puzzle->GetIndex() << std::endl;
-                /*
-                for(Fractal* fractal: puzzle->GetFractals()) {
+//                std::cout << "I'm the active puzzle: " << puzzle->GetIndex() << std::endl;
+           /*     for(Fractal* fractal: puzzle->GetFractals()) {
                     if(fractal->LeftFlick(input, mouse.x, mouse.y)) {
                         Fractal* other = puzzle->GetFractal(Left, fractal);
                         if(other) puzzle->Swap(fractal, other);

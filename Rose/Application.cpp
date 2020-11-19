@@ -34,14 +34,30 @@ namespace rose {
             std::cout << "SDL_Init error!!!" << SDL_GetError() << std::endl;
         }
 
+        char* exePath = GetExecutablePath();
+        std::string exePathString(exePath);
+
+        std::cout << exePathString << std::endl;
+
         bool fullScreen = false;
         m_Window = std::make_shared<Window>(960, 540, fullScreen);
 
         bool vsync = false;
-        m_Renderer = std::make_shared<Renderer>(m_Window, vsync);
+        m_Renderer = std::make_shared<Renderer>(m_Window, vsync, exePathString);
+
+    }
 
 
-
+    char* Application::GetExecutablePath() const {
+        char* dataPath;
+        char* basePath = SDL_GetBasePath();
+        if(basePath) {
+            dataPath = basePath;
+        }else{
+            dataPath = SDL_strdup("./");
+        }
+        SDL_free(basePath);
+        return dataPath;
     }
 
     void Application::SetLayer(std::shared_ptr<Layer> layer) {

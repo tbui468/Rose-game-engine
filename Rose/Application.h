@@ -25,6 +25,7 @@ class Application {
         std::shared_ptr<Renderer> GetRenderer();
     private:
         Application();
+        char* GetExecutablePath() const;
         bool m_Quit = false;
         std::shared_ptr<Window> m_Window;
         std::shared_ptr<Renderer> m_Renderer;
@@ -32,8 +33,8 @@ class Application {
     private: //delta time
         inline static Application* s_Application {nullptr};
         double m_DeltaTime;
-        uint64_t m_Now = 0;
-        uint64_t m_Last = 0;
+        uint64_t m_Now {0};
+        uint64_t m_Last {0};
 };
 
 }

@@ -5,7 +5,7 @@
 
 namespace rose {
 
-    Renderer::Renderer(std::shared_ptr<Window> window, bool vsync) {
+    Renderer::Renderer(std::shared_ptr<Window> window, bool vsync, const std::string& exePath) {
         SDL_GLContext glContext;
         glContext = SDL_GL_CreateContext(window->GetHandle());
         if(glContext == NULL)
@@ -113,7 +113,8 @@ namespace rose {
 
 
         m_Texture = std::make_shared<Texture>();
-        m_Texture->LoadTexture("./../assets/textureSheet.png");
+        //m_Texture->LoadTexture("./../assets/textureSheet.png");
+        m_Texture->LoadTexture(exePath + "../../assets/textureSheet.png");
         m_Texture->AddSprite("StartButton", { glm::ivec2(0, 96), glm::ivec2(64, 32)});
         m_Texture->AddSprite("QuitButton", { glm::ivec2(64, 0), glm::ivec2(64, 32)});
         m_Texture->AddSprite("CloseButton", { glm::ivec2(96, 96), glm::ivec2(32, 32)});

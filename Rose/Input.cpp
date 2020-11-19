@@ -19,6 +19,12 @@ InputType Input::GetInput() {
                 else if(event.button.button == SDL_BUTTON_RIGHT)
                     return InputType::RightTap;
                 break;
+            case SDL_MOUSEBUTTONUP: 
+                if(event.button.button == SDL_BUTTON_LEFT)
+                    return InputType::LeftRelease;
+                else if(event.button.button == SDL_BUTTON_RIGHT)
+                    return InputType::RightRelease;
+                break;
             default: 
                 return InputType::None; 
                 break;

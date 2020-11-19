@@ -7,12 +7,9 @@ enum class InputType {
     None,
     Quit,
     LeftTap, 
+    LeftRelease,
     RightTap,
-    DoubleTap, 
-    FlickLeft,
-    FlickRight,
-    FlickUp,
-    FlickDown
+    RightRelease
 };
 
 }

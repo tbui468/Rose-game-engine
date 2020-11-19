@@ -1,18 +1,31 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-
 Fractals - the big one here.  The last large piece to get back to working status
 
+    Bug: When staring Squares.exe from inside Debug directory, textures don't load correctly
+        only seems to work when started from inside build directory
+
     1. Get Fractals responding to user input
-        need to add more possible user inputs - Flick in four directions
+        how should the inputdispatcher process inputs??
+            write out the API I want to use in Squares.cpp to process all inputs coming in from Rose engine
+            then declare/implement those functions
+            InputDispatcher will also need to keep track of animation timing...
+                it might be a good idea to pull all that stuff scattered all over the Layer Update() function 
+                into the InputDispatcher to process
+                function calls can then be used on the InputDispatcher to get necessary data
+
     2. Forming larger fractals and splitting into smaller fractals (this should be a command called by puzzle)
 
     1. Get Fractals data to read from external JSON
+            how are JSON files formatted????
     2. Get Fractals data to write to external JSON
 
     1. Translations of fractals
     2. Rotations of fractals
     3. Reflections of fractals
+
+Benchmarking - use website to drag/drop JSON file
+    will be interesting to see what slows down when laptop is unplugged
 
 Allow window scaling when the application is active
     should check online for reference material on how to change SDL2 window sizes (event)
