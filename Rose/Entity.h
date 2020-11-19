@@ -24,6 +24,7 @@ class Entity {
         virtual void FadeTo(float alpha);
         virtual void ScaleTo(const glm::vec2& scale);
         virtual void RotateTo(float angle);
+        virtual void RotateBy(float angle);
         virtual void OnAnimationUpdate(float t);
         virtual void OnAnimationEnd();
         virtual void Draw() const;

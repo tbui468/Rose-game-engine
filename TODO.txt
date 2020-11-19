@@ -2,8 +2,32 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-    It might be easier to just have puzzle keeping a vector of Fractals now
-        since I want to keep the index data inside the fractals themselves
+    Rewrite Fractal constructor (and class)
+        the Fractal(fractal size, index, pos): Entity(...)
+            size /bounding box that are passed to Entity(...) must be scaled by fractal size
+            Entity will need a SetSprite() function so that we can change sprites later
+                since the fractal sprite has to be custom made
+
+            Fractal needs to call CreateTexture in constructor, and then call SetSprite() to change sprite data (in self and Entity)
+
+            will need to create a second texture for custom sprite textures
+                can use the fractal index to signify the corner of sprite sheet
+                since fractals are limited to 8 x 8, we just need 32x32x64 sized sheet - a 256 x 256 sprite sheet is enough
+                when creating a new fractal sprite of size 2 at index (2, 1), texture coords will start at (64, 32), and have dimensions 64x64
+                need an API to create texture
+                CopyTexture(destinationDataStart, sourceDataStart, texWidth, texHeight);
+                will need to allocate buffer in texture class at the beginning
+                will need to bind appropriate texture when drawing
+                    could add extra data value to Sprite data - texture sheet0 or texture sheet 1 
+        
+
+    Pinchout and pinchin Fractals to change sizes
+        First get split working (since it's easier)
+            Write Puzzle::Split(Fractal* f)
+            Will need to change Fractal constructor to allow different fractal sizes 
+                this will require a way to create new textures....this might be tricky
+            will need to write static Fractal functions that calculate fractal location based on size and target size
+                
 
     Entity uses the singleton GetApplication() to draw
         Make a RenderCommand purely static class so that Entity can call it without needing access to application/renderer

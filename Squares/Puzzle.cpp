@@ -27,7 +27,6 @@ Puzzle::~Puzzle() {
     }
 }
 
-
 void Puzzle::Open() {
     m_IsOpen = true;
 }
@@ -35,7 +34,6 @@ void Puzzle::Open() {
 void Puzzle::Close() {
     m_IsOpen = false;
 }
-
 
 void Puzzle::MoveTo(const glm::vec2& pos) {
     Entity::MoveTo(pos);
@@ -76,7 +74,6 @@ void Puzzle::Draw() const {
     }
 }
 
-
 Fractal* Puzzle::GetFractal(const glm::ivec2& index) const {
     for(Fractal* f: m_Fractals) {
         if(f->GetIndex() == index) return f;
@@ -86,15 +83,17 @@ Fractal* Puzzle::GetFractal(const glm::ivec2& index) const {
 
 void Puzzle::SwapFractals(Fractal* fractalA, Fractal* fractalB) {
     glm::ivec2 indexA = fractalA->GetIndex();
-    std::cout << "Before swap A: "  << indexA.x << ", " << indexA.y << std::endl;
     fractalA->SetIndex(fractalB->GetIndex());
     fractalB->SetIndex(indexA);
 
-    glm::ivec2 indexAfter = fractalA->GetIndex();
-    std::cout << "After swap A: "  << indexAfter.x << ", " << indexAfter.y << std::endl;
-
     fractalA->MoveTo({fractalB->x(), fractalB->y()});
     fractalB->MoveTo({fractalA->x(), fractalA->y()});
+}
+
+void Puzzle::SplitFractal(Fractal* fractal) {
+    //find fractal in m_Fractals and delete it
+    //instantiate four subfractals and add them to m_Fractals
+    //animate the four subfractals
 }
 
 

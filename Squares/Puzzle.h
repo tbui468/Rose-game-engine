@@ -16,6 +16,7 @@ class Puzzle: public rose::Entity {
         bool IsOpen() const { return m_IsOpen; }
         void Open();
         void Close();
+        void SplitFractal(Fractal* fractal);
         virtual void Draw() const override;
         virtual void MoveTo(const glm::vec2& pos) override;
         virtual void MoveBy(const glm::vec2& shift) override;

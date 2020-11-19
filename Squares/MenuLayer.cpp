@@ -8,7 +8,6 @@
 namespace sqs {
 
 
-
     MenuLayer::MenuLayer(): Layer() {
         const rose::Sprite startSprite = {{0, 96}, {64, 32}};
         const rose::Sprite quitSprite = {{64, 0}, {64, 32}};
@@ -102,6 +101,12 @@ namespace sqs {
         SetAnimationStart();
     }
 
+    void MenuLayer::SplitFractal(Fractal* fractal) {
+        Puzzle* puzzle = GetOpenPuzzle();
+        puzzle->SplitFractal(fractal);
+        SetAnimationStart();
+    }
+
     bool MenuLayer::Update(double deltaTime, rose::InputType rawInput, const glm::ivec2& mousePos) {
         rose::InputType input = rawInput;
         //process raw inputs here to accept double taps/flicks
@@ -142,22 +147,27 @@ namespace sqs {
                     break;
                 }
             }
-
-
         }
 
-        if(Puzzle* puzzle = GetOpenPuzzle(m_PuzzleSets)) {
+        if(Puzzle* puzzle = GetOpenPuzzle()) {
             for(Fractal* fractal: puzzle->GetFractals()) {
                 if(fractal->LeftFlick(input, mouse.x, mouse.y)) {
                     glm::ivec2 index = fractal->GetIndex();
-                    Fractal* otherFractal = puzzle->GetFractal(glm::ivec2(index.x - 1, index.y)); //to get fractal to the left of current
-                    if(otherFractal) {
+                    Fractal* otherFractal = puzzle->GetFractal(glm::ivec2(index.x - 1 * fractal->GetSize(), index.y)); //to get fractal to the left of current
+                    if(otherFractal && fractal->GetSize() == otherFractal->GetSize()) {
                         puzzle->SwapFractals(fractal, otherFractal);
+                        fractal->RotateBy(1.5708f);
                         SetAnimationStart();
                         break;
                     }
-                }
-            } 
+                }/*else if(fractal->PinchOut(input, mouse.x, mouse.y) && fractal->GetSize() > 1) {
+                    SplitFractal(fractal);
+                }*/
+            } /*
+            if(Fractal::PinchIn(input, mouse.x, mouse.y)) {
+                FourFractals* ff = puzzle->GetFourFractals(mouse.x, mouse.y);
+                if(ff) FormFractal(ff);
+            }*/
         }
 
 
@@ -175,7 +185,7 @@ namespace sqs {
     }
 
 
-    Puzzle* MenuLayer::GetOpenPuzzle(const std::vector<PuzzleSet*>& puzzleSets) const {
+    Puzzle* MenuLayer::GetOpenPuzzle() const {
         PuzzleSet* puzzleSet = GetOpenPuzzleSet();
         if(puzzleSet) {
             for(Puzzle* puzzle: puzzleSet->GetPuzzles()) {

@@ -8,13 +8,14 @@ namespace sqs {
     class Button;
     class PuzzleSet;
     class Puzzle;
+    class Fractal;
 
     class MenuLayer: public rose::Layer {
         public:
             MenuLayer();
             virtual ~MenuLayer();
             virtual bool Update(double deltaTime, rose::InputType input, const glm::ivec2& mousePos) override;
-            Puzzle* GetOpenPuzzle(const std::vector<PuzzleSet*>& puzzleSets) const;
+            Puzzle* GetOpenPuzzle() const;
             PuzzleSet* GetOpenPuzzleSet() const;
             virtual void Draw() override;
             float Sigmoid(float t) const;
@@ -25,6 +26,7 @@ namespace sqs {
             void ClosePuzzleSet(PuzzleSet* puzzleSet);
             void OpenPuzzle(Puzzle* puzzle);
             void SetAnimationStart();
+            void SplitFractal(Fractal* fractal);
         private:
             Button* m_QuitButton;
             Button* m_StartButton;

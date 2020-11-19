@@ -32,9 +32,13 @@ void Entity::ScaleTo(const glm::vec2& _scale) {
     m_FromScale = {m_Scale.x, m_Scale.y};
     m_ToScale = _scale;
 }
-void Entity::RotateTo(float _angle) {
+void Entity::RotateTo(float angle) {
     m_FromAngle = m_Angle;
-    m_ToAngle = _angle;
+    m_ToAngle = angle;
+}
+void Entity::RotateBy(float angle) {
+    m_FromAngle = m_Angle;
+    m_ToAngle = m_Angle + angle;
 }
 void Entity::OnAnimationUpdate(float _t) {
     m_Pos.x = m_FromPos.x + (m_ToPos.x - m_FromPos.x) * _t;
