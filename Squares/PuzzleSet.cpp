@@ -27,7 +27,7 @@ namespace sqs {
             m_PuzzleList.emplace_back(new Puzzle(sprite, size, box, glm::vec2(360.0f + Puzzle::GetSpacing() * i, 0.0f), i));
         }
 
-        OpenPuzzle(0);
+        OpenPuzzle(m_PuzzleList.at(0));
 
         for(Puzzle* puzzle: m_PuzzleList) {
             if(puzzle) puzzle->MoveBy({-360.0f, 0.0f});
@@ -41,7 +41,7 @@ namespace sqs {
         int iconCount = 8;
         float halfLength = (iconCount - 1) * margin / 2.0f;
         for(int i = 0; i < iconCount; ++i) {
-            m_PuzzleIconList.emplace_back(new PuzzleIcon(iconsprite, iconsize, iconbox, glm::vec2(-halfLength + margin * i, 150.0f), i));
+            m_PuzzleIconList.emplace_back(new PuzzleIcon(iconsprite, iconsize, iconbox, glm::vec2(-halfLength + margin * i, 150.0f), m_PuzzleList.at(i)));
         }
 
         for(PuzzleIcon* icon: m_PuzzleIconList) {
@@ -50,11 +50,16 @@ namespace sqs {
     }
 
 
-    void PuzzleSet::OpenPuzzle(int index){
+    void PuzzleSet::OpenPuzzle(Puzzle* puzzleToOpen){
         for(Puzzle* puzzle: m_PuzzleList) {
             if(puzzle){
-                if(puzzle->GetIndex() == index) puzzle->Open();
+                //open/close appropriate puzzles
+                if(&(*puzzleToOpen) == &(*puzzle)) puzzle->Open();
                 else puzzle->Close();
+
+                //move all puzzles
+                float xPos = (puzzle->GetIndex() - puzzleToOpen->GetIndex()) * Puzzle::GetSpacing();
+                puzzle->MoveTo(glm::vec2(xPos, 0.0f));
             }
         }
     }

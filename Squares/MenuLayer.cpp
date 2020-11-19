@@ -7,10 +7,6 @@
 
 namespace sqs {
 
-    //@todo: move this function to a utility class, either in Squares or in Rose
-    static float Sigmoid(float _t) {
-        return 1.0f / (1.0f + exp(-15.0f * (_t - 0.5f)));
-    }
 
 
     MenuLayer::MenuLayer(): Layer() {
@@ -63,10 +59,47 @@ namespace sqs {
         for(PuzzleSet* ps: m_PuzzleSets) delete ps;
     }
 
+    void MenuLayer::OpenPuzzleSetMenu() {
+        m_StartButton->GoAway();
+        m_StartButton->ScaleTo(glm::vec2(2.0f, 1.0f));
+        m_QuitButton->GoAway();
+        m_QuitButton->ScaleTo(glm::vec2(1.0f, 2.0f));
+        m_CloseButton->ComeBack();
+        for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
+        m_Parameter = 0.0f;
+        m_Start = true;
+    }
+
+    void MenuLayer::OpenMainMenu() {
+        m_StartButton->ComeBack();
+        m_StartButton->ScaleTo(glm::vec2(1.0f, 1.0f));
+        m_QuitButton->ComeBack();
+        m_QuitButton->ScaleTo(glm::vec2(1.0f, 1.0f));
+        m_CloseButton->GoAway();
+        for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), m_TopEdge + 32.0f));
+    }
+
+    void MenuLayer::ClosePuzzleSet(PuzzleSet* openPuzzleSet) {
+        for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
+        openPuzzleSet->Close();
+    }
+
+    void MenuLayer::OpenPuzzleSet(PuzzleSet* puzzleSet) {
+        puzzleSet->Open();
+        for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), m_TopEdge + 32.0f));
+        m_Parameter = 0.0f;
+        m_Start = true;
+    }
+
+    void MenuLayer::OpenPuzzle(Puzzle* puzzle) {
+        PuzzleSet* puzzleSet = GetOpenPuzzleSet();
+        puzzleSet->OpenPuzzle(puzzle);
+        m_Parameter = 0.0f;
+        m_Start = true;
+    }
 
     bool MenuLayer::Update(double deltaTime, rose::InputType input, const glm::ivec2& mousePos) {
-        //get inputs - need to process them here and
-        //then give processed inputs to Square entities
+
         glm::vec2 mouse = {static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)};
 
         if(m_Parameter <1.0f) input = rose::InputType::None; //temp: to avoid retting animations
@@ -79,37 +112,17 @@ namespace sqs {
         }
 
         if(m_StartButton->LeftTap(input, mouse.x, mouse.y)) {
-            m_StartButton->GoAway();
-            m_StartButton->ScaleTo(glm::vec2(2.0f, 1.0f));
-            m_QuitButton->GoAway();
-            m_QuitButton->ScaleTo(glm::vec2(1.0f, 2.0f));
-            m_CloseButton->ComeBack();
-            for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
-            m_Parameter = 0.0f;
-            m_Start = true;
+            OpenPuzzleSetMenu();
         }
 
 
         if(m_CloseButton->LeftTap(input, mouse.x, mouse.y)) {
-            bool puzzleWasOpen = false;
-            for(PuzzleSet* ps : m_PuzzleSets) {
-                if(ps->IsOpen()) {
-                    //need to make the puzzles MoveTo(....)
-                    puzzleWasOpen = true;
-                    ps->Close();
-                    break;
-                } 
-            }
+            PuzzleSet* openPuzzleSet = GetOpenPuzzleSet();
 
-            if(puzzleWasOpen) {
-                for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
+            if(openPuzzleSet) {
+                ClosePuzzleSet(openPuzzleSet);
             }else{
-                m_StartButton->ComeBack();
-                m_StartButton->ScaleTo(glm::vec2(1.0f, 1.0f));
-                m_QuitButton->ComeBack();
-                m_QuitButton->ScaleTo(glm::vec2(1.0f, 1.0f));
-                m_CloseButton->GoAway();
-                for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), m_TopEdge + 32.0f));
+                OpenMainMenu();
             }
 
             m_Parameter = 0.0f;
@@ -119,22 +132,12 @@ namespace sqs {
 
         for(PuzzleSet* ps : m_PuzzleSets) {
             if(ps->LeftTap(input, mouse.x, mouse.y)) {
-                ps->Open();
-                for(PuzzleSet* psInside : m_PuzzleSets) psInside->MoveTo(glm::vec2(psInside->x(), m_TopEdge + 32.0f));
-                m_Parameter = 0.0f;
-                m_Start = true;
+                OpenPuzzleSet(ps);
                 break;
             }
             for(PuzzleIcon* icon: ps->GetPuzzleIcons()) {
                 if(icon->LeftTap(input, mouse.x, mouse.y)) {
-                    int index = icon->GetPuzzleIndex();
-                    ps->OpenPuzzle(index);
-                    for(Puzzle* puzzle: ps->GetPuzzles()) {
-                        float xPos = (puzzle->GetIndex() - index) * Puzzle::GetSpacing();
-                        puzzle->MoveTo(glm::vec2(xPos, 0.0f));
-                    }
-                    m_Parameter = 0.0f;
-                    m_Start = true;
+                    OpenPuzzle(icon->GetPuzzle());
                     break;
                 }
             }
@@ -167,15 +170,21 @@ namespace sqs {
     }
 
 
-    Puzzle* MenuLayer::GetOpenPuzzle(const std::vector<PuzzleSet*>& puzzleSets) {
-        for(PuzzleSet* ps: puzzleSets) {
-            if(ps) {
-                if(ps->IsOpen()) {
-                    for(Puzzle* puzzle: ps->GetPuzzles()) {
-                        if(puzzle) if(puzzle->IsOpen()) return puzzle;
-                    }
-                }
+    Puzzle* MenuLayer::GetOpenPuzzle(const std::vector<PuzzleSet*>& puzzleSets) const {
+        PuzzleSet* puzzleSet = GetOpenPuzzleSet();
+        if(puzzleSet) {
+            for(Puzzle* puzzle: puzzleSet->GetPuzzles()) {
+                if(puzzle && puzzle->IsOpen()) return puzzle;
             }
+        }
+
+        return nullptr;
+    }
+
+
+    PuzzleSet* MenuLayer::GetOpenPuzzleSet() const {
+        for(PuzzleSet* ps: m_PuzzleSets) {
+            if(ps && ps->IsOpen()) return ps;
         }
         return nullptr;
     }
@@ -185,6 +194,10 @@ namespace sqs {
         for(rose::Entity* e: m_Entities) {
             e->Draw();
         }
+    }
+
+    float MenuLayer::Sigmoid(float t) const {
+        return 1.0f / (1.0f + exp(-15.0f * (t - 0.5f)));
     }
 
 

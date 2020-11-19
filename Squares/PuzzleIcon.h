@@ -6,15 +6,16 @@
 
 namespace sqs {
 
+class Puzzle;
 
 class PuzzleIcon: public rose::Entity {
     public:
-        PuzzleIcon(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos, int puzzleIndex);
+        PuzzleIcon(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos, Puzzle* puzzle);
         virtual ~PuzzleIcon() {}
         void OnClick();
-        int GetPuzzleIndex() const { return m_PuzzleIndex; }
+        Puzzle* GetPuzzle() const { return m_PuzzleHandle; }
     private:
-        int m_PuzzleIndex {-1};
+        Puzzle* m_PuzzleHandle {nullptr};
 };
 
 }

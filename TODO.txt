@@ -2,6 +2,12 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
+    Break MenuLayer() into subfunctions - eg, OpenPuzzleSetMap(), OpenPuzzleSet(), OpenMenu()
+        wouldn't it be easier if Icon kept a reference to the Puzzle, instead of an index?
+
+    Use newly implemented input parameter in Layer::Update() to process input - can use function in MenuLayer for now
+        to detect Flicks, Taps, etc
+
     Entity uses the singleton GetApplication() to draw
         Make a RenderCommand purely static class so that Entity can call it without needing access to application/renderer
             RenderCommand::StartScene() should also call RenderCommand::Clear() and any OpenGL commands needed before drawing
@@ -12,6 +18,10 @@ Fractals - the big one here.  The last large piece to get back to working status
     Renderer is bound to a context (the Window).  So who should own what?
 
     let's keep the singleton for now, but I might get rid of it later
+
+
+    Benchmarking - use website to drag/drop JSON file
+        will be interesting to see what slows down when laptop is unplugged
 
     1. Get Fractals responding to user input
         how should the inputdispatcher process inputs??
@@ -32,8 +42,6 @@ Fractals - the big one here.  The last large piece to get back to working status
     2. Rotations of fractals
     3. Reflections of fractals
 
-Benchmarking - use website to drag/drop JSON file
-    will be interesting to see what slows down when laptop is unplugged
 
 Allow window scaling when the application is active
     should check online for reference material on how to change SDL2 window sizes (event)

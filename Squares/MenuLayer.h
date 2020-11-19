@@ -14,9 +14,16 @@ namespace sqs {
             MenuLayer();
             virtual ~MenuLayer();
             virtual bool Update(double deltaTime, rose::InputType input, const glm::ivec2& mousePos) override;
-            Puzzle* GetOpenPuzzle(const std::vector<PuzzleSet*>& puzzleSets);
+            Puzzle* GetOpenPuzzle(const std::vector<PuzzleSet*>& puzzleSets) const;
+            PuzzleSet* GetOpenPuzzleSet() const;
             virtual void Draw() override;
-
+            float Sigmoid(float t) const;
+        public:
+            void OpenPuzzleSetMenu();
+            void OpenMainMenu();
+            void OpenPuzzleSet(PuzzleSet* puzzleSet);
+            void ClosePuzzleSet(PuzzleSet* puzzleSet);
+            void OpenPuzzle(Puzzle* puzzle);
         private:
             Button* m_QuitButton;
             Button* m_StartButton;
