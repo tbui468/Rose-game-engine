@@ -16,8 +16,8 @@ static float Sigmoid(float _t) {
 }
 
 
-static Puzzle* GetOpenPuzzle(const std::vector<std::shared_ptr<PuzzleSet>>& puzzleSets) {
-    for(std::shared_ptr<PuzzleSet> ps: puzzleSets) {
+static Puzzle* GetOpenPuzzle(const std::vector<PuzzleSet*>& puzzleSets) {
+    for(PuzzleSet* ps: puzzleSets) {
         if(ps) {
             if(ps->IsOpen()) {
                 for(Puzzle* puzzle: ps->GetPuzzles()) {
@@ -46,36 +46,32 @@ class MenuLayer: public rose::Layer {
             glm::vec4 smallboundingBox = glm::vec4(0.0f, 0.0f, 32.0f, 32.0f);
             glm::vec4 tinyboundingBox = glm::vec4(0.0f, 0.0f, 16.0f, 16.0f);
 
-            startButton = std::make_shared<Button>(startSprite, size, boundingBox, glm::vec2(0.0f, 32.0f));
-            startButton->SetAnimationCoords(glm::vec2(0.0f, 32.0f), glm::vec2(m_RightEdge + 96.0f, 32.0f));
-            quitButton = std::make_shared<Button>(quitSprite, size, boundingBox, glm::vec2(0.0f, -32.0f));
-            quitButton->SetAnimationCoords(glm::vec2(0.0f, -32.0f), glm::vec2(m_LeftEdge - 96.0f, -32.0f));
-            closeButton = std::make_shared<Button>(closeSprite, tinysize, tinyboundingBox, glm::vec2(m_RightEdge + 16.0f, m_TopEdge - 16.0f));
-            closeButton->SetAnimationCoords(glm::vec2(m_RightEdge - 16.0f, m_TopEdge - 16.0f), glm::vec2(m_RightEdge + 16.0f, m_TopEdge - 16.0f));
+            m_StartButton = new Button(startSprite, size, boundingBox, glm::vec2(0.0f, 32.0f));
+            m_StartButton->SetAnimationCoords(glm::vec2(0.0f, 32.0f), glm::vec2(m_RightEdge + 96.0f, 32.0f));
+            m_QuitButton = new Button(quitSprite, size, boundingBox, glm::vec2(0.0f, -32.0f));
+            m_QuitButton->SetAnimationCoords(glm::vec2(0.0f, -32.0f), glm::vec2(m_LeftEdge - 96.0f, -32.0f));
+            m_CloseButton = new Button(closeSprite, tinysize, tinyboundingBox, glm::vec2(m_RightEdge + 16.0f, m_TopEdge - 16.0f));
+            m_CloseButton->SetAnimationCoords(glm::vec2(m_RightEdge - 16.0f, m_TopEdge - 16.0f), glm::vec2(m_RightEdge + 16.0f, m_TopEdge - 16.0f));
 
 
-            m_PuzzleSet0 = std::make_shared<PuzzleSet>(puzzleSetSprite, smallsize, smallboundingBox, glm::vec2(-32.0f, m_TopEdge + 32.0f));
-            m_PuzzleSet1 = std::make_shared<PuzzleSet>(puzzleSetSprite, smallsize, smallboundingBox, glm::vec2(0.0f, m_TopEdge + 32.0f));
-            m_PuzzleSet2 = std::make_shared<PuzzleSet>(puzzleSetSprite, smallsize, smallboundingBox, glm::vec2(32.0f, m_TopEdge + 32.0f));
+            m_PuzzleSet0 = new PuzzleSet(puzzleSetSprite, smallsize, smallboundingBox, glm::vec2(-32.0f, m_TopEdge + 32.0f));
+            m_PuzzleSet1 = new PuzzleSet(puzzleSetSprite, smallsize, smallboundingBox, glm::vec2(0.0f, m_TopEdge + 32.0f));
+            m_PuzzleSet2 = new PuzzleSet(puzzleSetSprite, smallsize, smallboundingBox, glm::vec2(32.0f, m_TopEdge + 32.0f));
 
-            m_Entities.push_back(std::static_pointer_cast<rose::Entity>(startButton));
-            m_Entities.push_back(std::static_pointer_cast<rose::Entity>(quitButton));
-            m_Entities.push_back(std::static_pointer_cast<rose::Entity>(closeButton));
-            m_Entities.push_back(std::static_pointer_cast<rose::Entity>(m_PuzzleSet0));
-            m_Entities.push_back(std::static_pointer_cast<rose::Entity>(m_PuzzleSet1));
-            m_Entities.push_back(std::static_pointer_cast<rose::Entity>(m_PuzzleSet2));
+            m_Entities.push_back((rose::Entity*)m_StartButton);
+            m_Entities.push_back((rose::Entity*)m_QuitButton);
+            m_Entities.push_back((rose::Entity*)m_CloseButton);
+            m_Entities.push_back((rose::Entity*)m_PuzzleSet0);
+            m_Entities.push_back((rose::Entity*)m_PuzzleSet1);
+            m_Entities.push_back((rose::Entity*)m_PuzzleSet2);
 
             m_PuzzleSets.push_back(m_PuzzleSet0);
             m_PuzzleSets.push_back(m_PuzzleSet1);
             m_PuzzleSets.push_back(m_PuzzleSet2);
 
-            m_App = rose::Application::GetApplication();
         }
 
-        virtual ~MenuLayer() {}
-
-
-        virtual void Update() override {
+        virtual bool Update(double deltaTime) override {
             //get inputs - need to process them here and
             //then give processed inputs to Square entities
             glm::ivec2 mouseI = rose::Input::GetMousePos();
@@ -85,27 +81,27 @@ class MenuLayer: public rose::Layer {
             if(m_Parameter <1.0f) input = rose::InputType::None; //temp: to avoid retting animations
 
 
-            //process inputs
-            if(quitButton->LeftTap(input, mouse.x, mouse.y) || input == rose::InputType::Quit) m_App->Quit();
+            //process inputs - return true to quit application
+            if(m_QuitButton->LeftTap(input, mouse.x, mouse.y) || input == rose::InputType::Quit) return true;
             if(input == rose::InputType::RightTap) {
 
             }
 
-            if(startButton->LeftTap(input, mouse.x, mouse.y)) {
-                startButton->GoAway();
-                startButton->ScaleTo(glm::vec2(2.0f, 1.0f));
-                quitButton->GoAway();
-                quitButton->ScaleTo(glm::vec2(1.0f, 2.0f));
-                closeButton->ComeBack();
-                for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
+            if(m_StartButton->LeftTap(input, mouse.x, mouse.y)) {
+                m_StartButton->GoAway();
+                m_StartButton->ScaleTo(glm::vec2(2.0f, 1.0f));
+                m_QuitButton->GoAway();
+                m_QuitButton->ScaleTo(glm::vec2(1.0f, 2.0f));
+                m_CloseButton->ComeBack();
+                for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
                 m_Parameter = 0.0f;
                 m_Start = true;
             }
 
 
-            if(closeButton->LeftTap(input, mouse.x, mouse.y)) {
+            if(m_CloseButton->LeftTap(input, mouse.x, mouse.y)) {
                 bool puzzleWasOpen = false;
-                for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) {
+                for(PuzzleSet* ps : m_PuzzleSets) {
                     if(ps->IsOpen()) {
                         //need to make the puzzles MoveTo(....)
                         puzzleWasOpen = true;
@@ -115,14 +111,14 @@ class MenuLayer: public rose::Layer {
                 }
 
                 if(puzzleWasOpen) {
-                    for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
+                    for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
                 }else{
-                    startButton->ComeBack();
-                    startButton->ScaleTo(glm::vec2(1.0f, 1.0f));
-                    quitButton->ComeBack();
-                    quitButton->ScaleTo(glm::vec2(1.0f, 1.0f));
-                    closeButton->GoAway();
-                    for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), m_TopEdge + 32.0f));
+                    m_StartButton->ComeBack();
+                    m_StartButton->ScaleTo(glm::vec2(1.0f, 1.0f));
+                    m_QuitButton->ComeBack();
+                    m_QuitButton->ScaleTo(glm::vec2(1.0f, 1.0f));
+                    m_CloseButton->GoAway();
+                    for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), m_TopEdge + 32.0f));
                 }
 
                 m_Parameter = 0.0f;
@@ -130,10 +126,10 @@ class MenuLayer: public rose::Layer {
             }
 
 
-            for(std::shared_ptr<PuzzleSet>& ps : m_PuzzleSets) {
+            for(PuzzleSet* ps : m_PuzzleSets) {
                 if(ps->LeftTap(input, mouse.x, mouse.y)) {
                     ps->Open();
-                    for(std::shared_ptr<PuzzleSet>& psInside : m_PuzzleSets) psInside->MoveTo(glm::vec2(psInside->x(), m_TopEdge + 32.0f));
+                    for(PuzzleSet* psInside : m_PuzzleSets) psInside->MoveTo(glm::vec2(psInside->x(), m_TopEdge + 32.0f));
                     m_Parameter = 0.0f;
                     m_Start = true;
                     break;
@@ -167,39 +163,49 @@ class MenuLayer: public rose::Layer {
 
 
 
-            double deltaTime = m_App->GetDeltaTime();
             if(m_Parameter < 1.0f && m_Start) {
                 m_Parameter += static_cast<float>(deltaTime) * .0010f;
                 if(m_Parameter >= 1.0f) {
-                    for(std::shared_ptr<rose::Entity>& e: m_Entities) e->OnAnimationEnd();
+                    for(rose::Entity* e: m_Entities) e->OnAnimationEnd();
                 }else{
-                    for(std::shared_ptr<rose::Entity>& e: m_Entities) e->OnAnimationUpdate(Sigmoid(m_Parameter));
+                    for(rose::Entity* e: m_Entities) e->OnAnimationUpdate(Sigmoid(m_Parameter));
                 }
             }
 
+            return false;
         }
 
 
         virtual void Draw() override {
-            for(std::shared_ptr<rose::Entity>& e: m_Entities) {
+            for(rose::Entity* e: m_Entities) {
                 e->Draw();
             }
         }
 
+        virtual ~MenuLayer() {
+            if(m_QuitButton) delete m_QuitButton;
+            if(m_StartButton) delete m_StartButton;
+            if(m_CloseButton) delete m_CloseButton;
+            if(m_PuzzleSet0) delete m_PuzzleSet0;
+            if(m_PuzzleSet1) delete m_PuzzleSet1;
+            if(m_PuzzleSet2) delete m_PuzzleSet2;
+
+            for(rose::Entity* e: m_Entities) delete e;
+            for(PuzzleSet* ps: m_PuzzleSets) delete ps;
+        }
+
 
     private:
-        std::shared_ptr<Button> quitButton;
-        std::shared_ptr<Button> startButton;
-        std::shared_ptr<Button> closeButton;
-        std::shared_ptr<PuzzleSet> m_PuzzleSet0;
-        std::shared_ptr<PuzzleSet> m_PuzzleSet1;
-        std::shared_ptr<PuzzleSet> m_PuzzleSet2;
+        Button* m_QuitButton;
+        Button* m_StartButton;
+        Button* m_CloseButton;
+        PuzzleSet* m_PuzzleSet0;
+        PuzzleSet* m_PuzzleSet1;
+        PuzzleSet* m_PuzzleSet2;
 
-        std::vector<std::shared_ptr<rose::Entity>> m_Entities;
-        std::vector<std::shared_ptr<PuzzleSet>> m_PuzzleSets;
-        std::vector<std::shared_ptr<Button>> m_Buttons;
+        std::vector<rose::Entity*> m_Entities;
+        std::vector<PuzzleSet*> m_PuzzleSets;
 
-        rose::Application* m_App {nullptr};
         float m_Parameter {1.0f};
         bool m_Start {false};
 
@@ -214,6 +220,7 @@ class MenuLayer: public rose::Layer {
 int main(int, char**) {
 
 
+    //rose::Application* app = new rose::Application();
     rose::Application* app = rose::Application::GetApplication();
 
     std::shared_ptr<rose::Layer> layer = std::make_shared<sqs::MenuLayer>(); 

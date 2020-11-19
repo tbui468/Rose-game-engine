@@ -9,6 +9,8 @@
 namespace rose {
 
 class Application {
+    private:
+        Application(); //making it private only because singleton for now
     public:
         virtual ~Application() {}
         void SetLayer(std::shared_ptr<Layer> layer);
@@ -24,7 +26,6 @@ class Application {
         static Application* GetApplication();
         std::shared_ptr<Renderer> GetRenderer();
     private:
-        Application();
         char* GetExecutablePath() const;
         bool m_Quit = false;
         std::shared_ptr<Window> m_Window;

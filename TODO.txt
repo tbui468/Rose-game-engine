@@ -2,8 +2,11 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-    Bug: When staring Squares.exe from inside Debug directory, textures don't load correctly
-        only seems to work when started from inside build directory
+    Entity uses the singleton GetApplication() to draw
+    Input uses the singleton GetApplication() to get app and window to process inputs
+        Input should be something the application owns 
+
+    let's keep the singleton for now, but I might get rid of it later
 
     1. Get Fractals responding to user input
         how should the inputdispatcher process inputs??

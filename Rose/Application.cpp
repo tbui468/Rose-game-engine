@@ -11,7 +11,7 @@
 
 namespace rose {
 
-    
+
     Application* Application::GetApplication() {
         if(!s_Application) {
             s_Application = new Application();
@@ -85,7 +85,7 @@ namespace rose {
 
 
             m_Renderer->ClearQuads();
-            m_Layer->Update();
+            m_Quit = m_Layer->Update(m_DeltaTime);
             m_Layer->Draw();
 
 

@@ -7,7 +7,7 @@ class Layer {
     public:
         Layer(){}
         virtual ~Layer() {}
-        virtual void Update() = 0;
+        virtual bool Update(double deltaTime) = 0;
         virtual void Draw() = 0;
     private:
 };
