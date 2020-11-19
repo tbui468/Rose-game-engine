@@ -6,10 +6,14 @@ namespace rose {
 enum class InputType {
     None,
     Quit,
-    LeftTap, 
-    LeftRelease,
-    RightTap,
-    RightRelease
+    LeftDown,
+    LeftUp,
+    RightDown,
+    RightUp,
+    FlickLeft,
+    FlickRight,
+    FlickUp,
+    FlickDown
 };
 
 }

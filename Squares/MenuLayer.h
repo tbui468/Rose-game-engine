@@ -24,6 +24,7 @@ namespace sqs {
             void OpenPuzzleSet(PuzzleSet* puzzleSet);
             void ClosePuzzleSet(PuzzleSet* puzzleSet);
             void OpenPuzzle(Puzzle* puzzle);
+            void SetAnimationStart();
         private:
             Button* m_QuitButton;
             Button* m_StartButton;

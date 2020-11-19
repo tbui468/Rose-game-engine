@@ -112,15 +112,15 @@ namespace rose {
                     break;
                 case SDL_MOUSEBUTTONDOWN: 
                     if(event.button.button == SDL_BUTTON_LEFT)
-                        return InputType::LeftTap;
+                        return InputType::LeftDown;
                     else if(event.button.button == SDL_BUTTON_RIGHT)
-                        return InputType::RightTap;
+                        return InputType::RightDown;
                     break;
                 case SDL_MOUSEBUTTONUP: 
                     if(event.button.button == SDL_BUTTON_LEFT)
-                        return InputType::LeftRelease;
+                        return InputType::LeftUp;
                     else if(event.button.button == SDL_BUTTON_RIGHT)
-                        return InputType::RightRelease;
+                        return InputType::RightUp;
                     break;
                 default: 
                     return InputType::None; 

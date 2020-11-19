@@ -7,24 +7,23 @@ namespace sqs {
 Puzzle::Puzzle(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos, int index) :
         Entity(sprite, size, boundingBox, pos) {
             m_Index = index; 
-            m_FractalGrid.fill(nullptr);
 
-            rose::Sprite fractalSprite = {{0, 0}, {32, 32}};
-            glm::vec2 fractalSize = glm::vec2(32.0f, 32.0f);
-            glm::vec4 fractalBoundingBox = glm::vec4(0.0f, 0.0f, 32.0f, 32.0f);
+            const rose::Sprite fractalSprite = {{0, 0}, {32, 32}};
+            const glm::vec2 fractalSize = glm::vec2(32.0f, 32.0f);
+            const glm::vec4 fractalBoundingBox = glm::vec4(0.0f, 0.0f, 32.0f, 32.0f);
 
             for(int row = 0; row < 2; ++row) {
                 for(int col = 0; col < 2; ++col) {
-                    m_FractalGrid.at(row * 2 + col) = new Fractal(fractalSprite, fractalSize, fractalBoundingBox, 
-                                    glm::vec2(x() + col * 48.0f - 24.0f, y() + row * 48.0f - 24.0f));
+                    m_Fractals.emplace_back(new Fractal(fractalSprite, fractalSize, fractalBoundingBox, 
+                                            glm::vec2(x() + col * 48.0f - 24.0f, y() - row * 48.0f - 24.0f), {col, row}));
                 }
             }
         }
 
 
 Puzzle::~Puzzle() {
-    for(int i = 0; i < 4; ++i) {
-        if(m_FractalGrid.at(i)) delete m_FractalGrid.at(i);
+    for(Fractal* f: m_Fractals) {
+        if(f) delete f;
     }
 }
 
@@ -44,37 +43,59 @@ void Puzzle::MoveTo(const glm::vec2& pos) {
     float deltaX = pos.x - x();
     float deltaY = pos.y - y();
 
-    for(int i = 0; i < 4; ++i) {
-        if(m_FractalGrid.at(i)) m_FractalGrid.at(i)->MoveBy(glm::vec2(deltaX, deltaY));
+    for(Fractal* f: m_Fractals) {
+        if(f) f->MoveBy(glm::vec2(deltaX, deltaY));
     }
 }
 
 void Puzzle::MoveBy(const glm::vec2& shift) {
     Entity::MoveBy(shift);
-    for(int i = 0; i < 4; ++i) {
-        if(m_FractalGrid.at(i)) m_FractalGrid.at(i)->MoveBy(shift);
+    for(Fractal* f: m_Fractals) {
+        if(f) f->MoveBy(shift);
     }
 }
 
 
 void Puzzle::OnAnimationEnd() {
     Entity::OnAnimationEnd();
-    for(int i = 0; i < 4; ++i) {
-        if(m_FractalGrid.at(i)) m_FractalGrid.at(i)->OnAnimationEnd();
+    for(Fractal* f: m_Fractals) {
+        if(f) f->OnAnimationEnd();
     }
 }
 void Puzzle::OnAnimationUpdate(float t) {
     Entity::OnAnimationUpdate(t);
-    for(int i = 0; i < 4; ++i) {
-        if(m_FractalGrid.at(i)) m_FractalGrid.at(i)->OnAnimationUpdate(t);
+    for(Fractal* f: m_Fractals) {
+        if(f) f->OnAnimationUpdate(t);
     }
 }
 
 void Puzzle::Draw() const {
     Entity::Draw();
-    for(int i = 0; i < 4; ++i) {
-        if(m_FractalGrid.at(i)) m_FractalGrid.at(i)->Draw();
+    for(Fractal* f: m_Fractals) {
+        if(f) f->Draw();
     }
 }
+
+
+Fractal* Puzzle::GetFractal(const glm::ivec2& index) const {
+    for(Fractal* f: m_Fractals) {
+        if(f->GetIndex() == index) return f;
+    }
+    return nullptr;
+}
+
+void Puzzle::SwapFractals(Fractal* fractalA, Fractal* fractalB) {
+    glm::ivec2 indexA = fractalA->GetIndex();
+    std::cout << "Before swap A: "  << indexA.x << ", " << indexA.y << std::endl;
+    fractalA->SetIndex(fractalB->GetIndex());
+    fractalB->SetIndex(indexA);
+
+    glm::ivec2 indexAfter = fractalA->GetIndex();
+    std::cout << "After swap A: "  << indexAfter.x << ", " << indexAfter.y << std::endl;
+
+    fractalA->MoveTo({fractalB->x(), fractalB->y()});
+    fractalB->MoveTo({fractalA->x(), fractalA->y()});
+}
+
 
 }

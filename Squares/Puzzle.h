@@ -21,9 +21,12 @@ class Puzzle: public rose::Entity {
         virtual void MoveBy(const glm::vec2& shift) override;
         virtual void OnAnimationEnd() override;
         virtual void OnAnimationUpdate(float t) override;
+        Fractal* GetFractal(const glm::ivec2& index) const;
+        const std::vector<Fractal*>& GetFractals() const { return m_Fractals; }
+        void SwapFractals(Fractal* fractalA, Fractal* fractalB);
     private:
         int m_Index;
-        std::array<Fractal*, 4> m_FractalGrid;
+        std::vector<Fractal*> m_Fractals;
         bool m_IsOpen {false};
 
     //static members/functions

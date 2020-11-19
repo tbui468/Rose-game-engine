@@ -20,9 +20,9 @@ namespace sqs {
         m_DestroyPuzzles = false;
 
         //create puzzles belong to this set
-        rose::Sprite sprite = {{32, 32}, {32, 32}};
-        glm::vec2 size = {32.0f, 32.0f};
-        glm::vec4 box = {0.0f, 0.0f, 32.0f, 32.0f};
+        const rose::Sprite sprite = {{32, 32}, {32, 32}};
+        const glm::vec2 size = {32.0f, 32.0f};
+        const glm::vec4 box = {0.0f, 0.0f, 32.0f, 32.0f};
         for(int i = 0; i < 8; ++i) {
             m_PuzzleList.emplace_back(new Puzzle(sprite, size, box, glm::vec2(360.0f + Puzzle::GetSpacing() * i, 0.0f), i));
         }
@@ -34,12 +34,13 @@ namespace sqs {
         }
 
         //create puzzle icons
-        rose::Sprite iconsprite = {{32, 32}, {8, 8}};
-        glm::vec2 iconsize = {8.0f, 8.0f};
-        glm::vec4 iconbox = {0.0f, 0.0f, 8.0f, 8.0f};
-        float margin = 24.0f;
-        int iconCount = 8;
-        float halfLength = (iconCount - 1) * margin / 2.0f;
+        const rose::Sprite iconsprite = {{32, 32}, {8, 8}};
+        const glm::vec2 iconsize = {8.0f, 8.0f};
+        const glm::vec4 iconbox = {0.0f, 0.0f, 8.0f, 8.0f};
+        const float margin = 24.0f;
+        const int iconCount = 8;
+        const float halfLength = (iconCount - 1) * margin / 2.0f;
+
         for(int i = 0; i < iconCount; ++i) {
             m_PuzzleIconList.emplace_back(new PuzzleIcon(iconsprite, iconsize, iconbox, glm::vec2(-halfLength + margin * i, 150.0f), m_PuzzleList.at(i)));
         }

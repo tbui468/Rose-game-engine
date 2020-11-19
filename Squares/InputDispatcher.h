@@ -3,15 +3,6 @@
 
 namespace sqs {
 
-enum class InputType { //the namespace will differentiate between this and rose InputType
-    SingleTap,
-    DoubleTap,
-    FlickLeft,
-    FlickRight,
-    FlickUp,
-    FlickDown
-};
-
 class InputDispatcher {
     public:
         InputDispatcher() = default;

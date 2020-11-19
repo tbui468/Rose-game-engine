@@ -68,7 +68,7 @@ void Entity::Draw() const {
 }
 
 bool Entity::LeftTap(InputType input, float x, float y) const {
-    if(input != InputType::LeftTap) return false;
+    if(input != InputType::LeftDown) return false;
     if(!PointCollision(x, y)) return false;
     return true;
 }

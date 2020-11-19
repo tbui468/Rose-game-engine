@@ -2,11 +2,8 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-    Break MenuLayer() into subfunctions - eg, OpenPuzzleSetMap(), OpenPuzzleSet(), OpenMenu()
-        wouldn't it be easier if Icon kept a reference to the Puzzle, instead of an index?
-
-    Use newly implemented input parameter in Layer::Update() to process input - can use function in MenuLayer for now
-        to detect Flicks, Taps, etc
+    It might be easier to just have puzzle keeping a vector of Fractals now
+        since I want to keep the index data inside the fractals themselves
 
     Entity uses the singleton GetApplication() to draw
         Make a RenderCommand purely static class so that Entity can call it without needing access to application/renderer
