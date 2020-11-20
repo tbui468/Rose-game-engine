@@ -2,9 +2,34 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-    PuzzleSets and Buttons can be store in static list in their respective classes if that makes sense to do so
-        can call a static class function to instantiate an instance
-        makes more sense for puzzlesets, but buttons need to be separate
+    Get shader class up and running - test it
+        Need to have shader set uniforms
+
+    Create batch class to encapsulate models, vertex buffer, and index buffer, and texture
+        Batch(Texture texture, Shader shader); //will need to create Shader class too
+        Batch->Bind();
+        Batch->UploadData();
+        Batch->AddQuad()
+
+    
+
+    Idea: create a Batch class, and have renderer own two batches: default texture and custom texture
+        in renderer DrawScene(), can Bind buffers, set data (include models/texture) and draw Batch 1
+                            and then  Bind buffers, set data (incuding models/texture), and draw batch 2
+    
+    Finish Fractal::MakeEntityData(....)
+        needs to copy texture data from default texture to custom texture
+
+    update Texture so that we can load 1 or 2 textures when drawing (.png sprite sheet or the custom sprite sheet for fractals)
+        requires two different draw calls for each of the textures
+    
+
+    Need to update renderer and have two lists of Entities to draw:
+        - ones using default texture sheet
+        - ones using custom texture sheet (just the fractals)
+
+    Have Fractals of different sizes display - will need new textures
+        use delegated constructors to fix constructor parameter problem
 
     Rewrite Fractal constructor (and class)
         the Fractal(fractal size, index, pos): Entity(...)

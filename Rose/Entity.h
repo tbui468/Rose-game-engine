@@ -13,6 +13,13 @@
 
 namespace rose {
 
+struct EntityData {
+    Sprite sprite;
+    glm::vec2 size;
+    glm::vec4 boundingBox;
+    glm::vec2 position;
+};
+
 
 class Entity {
     public:

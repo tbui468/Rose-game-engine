@@ -11,9 +11,16 @@
 
 namespace rose {
 
+enum class TextureType {
+    None,
+    Default,
+    Custom
+};
+
 struct Sprite {
     glm::ivec2 TexCoords;
     glm::ivec2 TexDimensions;
+    TextureType TexType;
 };
 
 

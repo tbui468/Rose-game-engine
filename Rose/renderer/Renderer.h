@@ -13,6 +13,7 @@
 #include "renderer/Texture.h"
 #include "renderer/VertexBuffer.h"
 #include "renderer/IndexBuffer.h"
+#include "renderer/Shader.h"
 
 namespace rose {
 
@@ -30,14 +31,15 @@ class Renderer {
         float GetProjWidth() const { return m_ProjWidth; }
         float GetProjHeight() const { return m_ProjHeight; }
     private:
-        GLuint m_ShaderID;
         float m_ProjWidth {0.0f};
         float m_ProjHeight {0.0f};
         glm::mat4 m_Projection;
+
         std::vector<glm::mat4> m_Models;
         std::shared_ptr<Texture> m_Texture;
         std::shared_ptr<VertexBuffer> m_VertexBuffer;
         std::shared_ptr<IndexBuffer> m_IndexBuffer;
+        std::shared_ptr<Shader> m_Shader;
 };   
 
 }

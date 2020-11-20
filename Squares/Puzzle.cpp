@@ -8,14 +8,9 @@ Puzzle::Puzzle(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec
         Entity(sprite, size, boundingBox, pos) {
             m_Index = index; 
 
-            const rose::Sprite fractalSprite = {{0, 0}, {32, 32}};
-            const glm::vec2 fractalSize = glm::vec2(32.0f, 32.0f);
-            const glm::vec4 fractalBoundingBox = glm::vec4(0.0f, 0.0f, 32.0f, 32.0f);
-
             for(int row = 0; row < 2; ++row) {
                 for(int col = 0; col < 2; ++col) {
-                    m_Fractals.emplace_back(new Fractal(fractalSprite, fractalSize, fractalBoundingBox, 
-                                            glm::vec2(x() + col * 48.0f - 24.0f, y() - row * 48.0f - 24.0f), {col, row}));
+                    m_Fractals.emplace_back(new Fractal(1, {col, row}, glm::vec2(x() + col * 48.0f - 24.0f, y() - row * 48.0f - 24.0f)));
                 }
             }
         }

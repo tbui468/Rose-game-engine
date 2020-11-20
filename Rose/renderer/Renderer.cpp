@@ -3,6 +3,7 @@
 #include "glm/gtx/string_cast.hpp"
 #include "Globals.h"
 
+
 namespace rose {
 
     Renderer::Renderer(std::shared_ptr<Window> window, bool vsync, const std::string& exePath) {
@@ -41,14 +42,12 @@ namespace rose {
         m_IndexBuffer->Bind();
 
 
-        //////////////SHADERS//////////////////////////
         m_ProjWidth = 480.0f * g_Scale;
         m_ProjHeight = 270.0f * g_Scale;
         m_Projection = glm::ortho(-m_ProjWidth / 2, m_ProjWidth / 2, -m_ProjHeight / 2, m_ProjHeight / 2, -1.0f, 1.0f);
 
-        GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-        GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
+        //Shader stuff
         const char* vertexShaderCode = 
             "#version 330 core\n"
             "layout(location = 0) in vec3 vertexPos;"
@@ -71,49 +70,12 @@ namespace rose {
             "   color = texture(texSampler, v_texCoords);"
             "}";
 
-        GLint result = GL_FALSE;
-        int infoLogLength;
 
-        glShaderSource(vertexShaderID, 1, &vertexShaderCode, NULL);
-        glCompileShader(vertexShaderID);
+        m_Shader = std::make_shared<Shader>(vertexShaderCode, fragmentShaderCode);
 
-        glGetShaderiv(vertexShaderID, GL_COMPILE_STATUS, &result);
-        glGetShaderiv(vertexShaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
-        if(infoLogLength > 0) {
-            std::vector<char> vertexShaderError(infoLogLength + 1);
-            glGetShaderInfoLog(vertexShaderID, infoLogLength, NULL, vertexShaderError.data());
-            printf("%s\n", vertexShaderError.data());
-        }else{
-            std::cout << "Vertex shader compiled!" << std::endl;
-        }
-
-
-        glShaderSource(fragmentShaderID, 1, &fragmentShaderCode, NULL);
-        glCompileShader(fragmentShaderID);
-
-        glGetShaderiv(fragmentShaderID, GL_COMPILE_STATUS, &result);
-        glGetShaderiv(fragmentShaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
-        if(infoLogLength > 0) {
-            std::vector<char> fragmentShaderError(infoLogLength + 1);
-            glGetShaderInfoLog(fragmentShaderID, infoLogLength, NULL, fragmentShaderError.data());
-            printf("%s\n", fragmentShaderError.data());
-        }else{
-            std::cout << "Fragment shader compiled!" << std::endl;
-        }
-
-        m_ShaderID = glCreateProgram();
-        glAttachShader(m_ShaderID, vertexShaderID);
-        glAttachShader(m_ShaderID, fragmentShaderID);
-        glLinkProgram(m_ShaderID);
-        //clean up (since we only need the compiled and linked program)
-        glDetachShader(m_ShaderID, vertexShaderID);
-        glDetachShader(m_ShaderID, fragmentShaderID);
-        glDeleteShader(vertexShaderID);
-        glDeleteShader(fragmentShaderID);
 
 
         m_Texture = std::make_shared<Texture>();
-        //m_Texture->LoadTexture("./../assets/textureSheet.png");
         m_Texture->LoadTexture(exePath + "../../assets/textureSheet.png");
         m_Texture->AddSprite("StartButton", { glm::ivec2(0, 96), glm::ivec2(64, 32)});
         m_Texture->AddSprite("QuitButton", { glm::ivec2(64, 0), glm::ivec2(64, 32)});
@@ -167,15 +129,10 @@ namespace rose {
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float))); //this is the tex coords
         glVertexAttribIPointer(2, 1, GL_INT, sizeof(Vertex), (void*)(5 * sizeof(float))); //this is the tex coords
 
-        glUseProgram(m_ShaderID);
-        //projection
-        GLint projUniform = glGetUniformLocation(m_ShaderID, "projection");
-        glUniformMatrix4fv(projUniform, 1, GL_FALSE, (const float*)glm::value_ptr(m_Projection));
-        //model array
-        GLint modelUniform = glGetUniformLocation(m_ShaderID, "models");
-        glUniformMatrix4fv(modelUniform, QuadCount(), GL_FALSE, (const float*)glm::value_ptr(m_Models.at(0)));
-        //texture
-        glUniform1i(glGetUniformLocation(m_ShaderID, "texSampler"), 0);
+        m_Shader->Bind();
+        m_Shader->SetUniformMatF("projection", 1, (const float*)glm::value_ptr(m_Projection));
+        m_Shader->SetUniformMatF("models", m_Models.size(), (const float*)glm::value_ptr(m_Models.at(0)));
+        m_Shader->SetUniformI("texSampler", 0);
 
         m_VertexBuffer->Bind();
         m_VertexBuffer->SetData();
