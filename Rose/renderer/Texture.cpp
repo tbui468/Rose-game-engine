@@ -5,10 +5,11 @@
 
 namespace rose {
 
-Texture::Texture() {
+Texture::Texture(int texSlot) {
     glGenTextures(1, &m_RendererID);
-    glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(GL_TEXTURE0 + texSlot);
     glBindTexture(GL_TEXTURE_2D, m_RendererID);
+    m_TextureSlot = texSlot;
 }
 
 

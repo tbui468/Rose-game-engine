@@ -14,6 +14,7 @@
 #include "renderer/VertexBuffer.h"
 #include "renderer/IndexBuffer.h"
 #include "renderer/Shader.h"
+#include "renderer/Batch.h"
 
 namespace rose {
 
@@ -22,8 +23,6 @@ class Renderer {
         Renderer(std::shared_ptr<Window> window, bool vsync, const std::string& exePath);
         virtual ~Renderer() {}
         void AddEntity(const Entity* entity); //should just be called Draw
-        uint32_t QuadCount() const { return m_Models.size(); }
-        void ClearQuads();
         //BeginScene()
         void DrawScene(); 
         //EndScene() (clearQuads should be called here and it should also be private)
@@ -34,6 +33,10 @@ class Renderer {
         float m_ProjWidth {0.0f};
         float m_ProjHeight {0.0f};
         glm::mat4 m_Projection;
+
+
+        std::shared_ptr<Batch> m_BatchDefaultTex;
+        std::shared_ptr<Batch> m_BatchCustomTex;
 
         std::vector<glm::mat4> m_Models;
         std::shared_ptr<Texture> m_Texture;

@@ -34,17 +34,6 @@ namespace rose {
         glGenVertexArrays(1, &vertexArray);
         glBindVertexArray(vertexArray);
 
-        /////////////OPENGL STUFF/////////////////////////////////
-        m_VertexBuffer = std::make_shared<VertexBuffer>();
-        m_VertexBuffer->Bind();
-
-        m_IndexBuffer = std::make_shared<IndexBuffer>();
-        m_IndexBuffer->Bind();
-
-
-        m_ProjWidth = 480.0f * g_Scale;
-        m_ProjHeight = 270.0f * g_Scale;
-        m_Projection = glm::ortho(-m_ProjWidth / 2, m_ProjWidth / 2, -m_ProjHeight / 2, m_ProjHeight / 2, -1.0f, 1.0f);
 
 
         //Shader stuff
@@ -54,7 +43,7 @@ namespace rose {
             "layout(location = 1) in vec2 texCoords;"
             "layout(location = 2) in int modelIndex;"
             "uniform mat4 projection;"
-            "uniform mat4 models[64];"
+            "uniform mat4 models[128];"
             "out vec2 v_texCoords;"
             "void main() {"
             "   gl_Position = projection * models[modelIndex] * vec4(vertexPos, 1.0);"
@@ -75,44 +64,26 @@ namespace rose {
 
 
 
-        m_Texture = std::make_shared<Texture>();
+        m_Texture = std::make_shared<Texture>(0);
         m_Texture->LoadTexture(exePath + "../../assets/textureSheet.png");
         m_Texture->AddSprite("StartButton", { glm::ivec2(0, 96), glm::ivec2(64, 32)});
         m_Texture->AddSprite("QuitButton", { glm::ivec2(64, 0), glm::ivec2(64, 32)});
         m_Texture->AddSprite("CloseButton", { glm::ivec2(96, 96), glm::ivec2(32, 32)});
 
+
+        m_ProjWidth = 480.0f * g_Scale;
+        m_ProjHeight = 270.0f * g_Scale;
+        m_Projection = glm::ortho(-m_ProjWidth / 2, m_ProjWidth / 2, -m_ProjHeight / 2, m_ProjHeight / 2, -1.0f, 1.0f);
+
+        m_BatchDefaultTex = std::make_shared<Batch>(m_Texture, m_Shader, m_Projection);
+        //m_BatchCustomTex = std::make_shared<Batch>(m_Texture, m_Shader, m_Projection);
     }
 
 
     void Renderer::AddEntity(const Entity* entity) {
-        float texWidth = static_cast<float>(m_Texture->GetWidth());
-        float texHeight = static_cast<float>(m_Texture->GetHeight());
-
-        glm::mat4 model = entity->GetModelMatrix();
-        const Sprite& sprite = entity->GetSprite();
-        glm::vec2 texCoordsStart = { sprite.TexCoords.x / texWidth, sprite.TexCoords.y / texHeight };
-        glm::vec2 texCoordsEnd = {texCoordsStart.x + sprite.TexDimensions.x / texWidth, texCoordsStart.y + sprite.TexDimensions.y / texHeight};
-
-        m_VertexBuffer->AddVertex(glm::vec3(-0.5f, -0.5f, 0.0f), texCoordsStart, QuadCount());
-        m_VertexBuffer->AddVertex(glm::vec3(0.5f, -0.5f, 0.0f), {texCoordsEnd.x, texCoordsStart.y}, QuadCount());
-        m_VertexBuffer->AddVertex(glm::vec3(0.5f, 0.5f, 0.0f), texCoordsEnd, QuadCount());
-        m_VertexBuffer->AddVertex(glm::vec3(-0.5f, 0.5f, 0.0f), {texCoordsStart.x, texCoordsEnd.y}, QuadCount());
-
-        size_t indexPos = 4 * QuadCount();
-        m_IndexBuffer->AddIndex(indexPos);
-        m_IndexBuffer->AddIndex(indexPos + 1);
-        m_IndexBuffer->AddIndex(indexPos + 2);
-        m_IndexBuffer->AddIndex(indexPos);
-        m_IndexBuffer->AddIndex(indexPos + 2);
-        m_IndexBuffer->AddIndex(indexPos + 3);
-        m_Models.push_back(model); 
+        m_BatchDefaultTex->AddQuad(entity);
     }
 
-    void Renderer::ClearQuads() {
-        m_Models.clear();
-        m_VertexBuffer->Clear();
-        m_IndexBuffer->Clear();
-    }
 
 
     void Renderer::SetClearColor(const glm::ivec3& color) {
@@ -128,7 +99,7 @@ namespace rose {
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0); //this is the vertex positions
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float))); //this is the tex coords
         glVertexAttribIPointer(2, 1, GL_INT, sizeof(Vertex), (void*)(5 * sizeof(float))); //this is the tex coords
-
+/*
         m_Shader->Bind();
         m_Shader->SetUniformMatF("projection", 1, (const float*)glm::value_ptr(m_Projection));
         m_Shader->SetUniformMatF("models", m_Models.size(), (const float*)glm::value_ptr(m_Models.at(0)));
@@ -139,7 +110,15 @@ namespace rose {
         m_IndexBuffer->Bind();
         m_IndexBuffer->SetData();
 
-        glDrawElements(GL_TRIANGLES, m_IndexBuffer->Count(), GL_UNSIGNED_INT, (void*)0); //this should draw from index buffer (and corresponding vertex buffer)
+        glDrawElements(GL_TRIANGLES, m_IndexBuffer->Count(), GL_UNSIGNED_INT, (void*)0); //this should draw from index buffer (and corresponding vertex buffer)*/
+        
+        m_BatchDefaultTex->Bind();
+        glDrawElements(GL_TRIANGLES, m_BatchDefaultTex->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
+        m_BatchDefaultTex->ClearBuffers();
+        /*
+        m_BatchCustomTex->Bind();
+        glDrawElements(GL_TRIANGLES, m_BatchCustomTex->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
+        m_BatchCustomTex->ClearBuffers();*/
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);

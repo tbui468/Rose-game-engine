@@ -89,7 +89,6 @@ namespace rose {
             if(input == InputType::Quit) m_Quit = true;
 
 
-            m_Renderer->ClearQuads();
             m_Quit = m_Layer->Update(m_DeltaTime, input, mousePos);
             m_Layer->Draw();
 

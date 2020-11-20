@@ -2,15 +2,10 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-    Get shader class up and running - test it
-        Need to have shader set uniforms
+    AddEntity(entity*) in Renderer should now take SPrite data into account to decide which batch to add it to
+        if Sprite.TexType is default, add to BatchDefaultTex, if custom then add to BatchCustomTex
 
-    Create batch class to encapsulate models, vertex buffer, and index buffer, and texture
-        Batch(Texture texture, Shader shader); //will need to create Shader class too
-        Batch->Bind();
-        Batch->UploadData();
-        Batch->AddQuad()
-
+        To test, create new custom texture, and then enable drawing of BatchCustomTex
     
 
     Idea: create a Batch class, and have renderer own two batches: default texture and custom texture

@@ -26,7 +26,7 @@ struct Sprite {
 
 class Texture {
     public:
-        Texture();
+        Texture(int texSlot);
         virtual ~Texture() {}
         void LoadTexture(const std::string& path);
         GLuint GetRendererID() const { return m_RendererID; }
@@ -34,11 +34,13 @@ class Texture {
         uint32_t GetHeight() const { return m_Height; }
         const Sprite& GetSprite(const std::string& key) const;
         void AddSprite(std::string key, Sprite sprite);
+        int GetSlot() const { return m_TextureSlot; }
     private:
         std::unordered_map<std::string, Sprite> m_SpriteData;
         int32_t m_Width;
         int32_t m_Height;
         GLuint m_RendererID;
+        int m_TextureSlot;
 };
 
 
