@@ -23,11 +23,15 @@ class PuzzleSet: public rose::Entity {
         virtual void Draw() const override;
         const std::vector<Puzzle*>& GetPuzzles() const { return m_PuzzleList; }
         const std::vector<PuzzleIcon*>& GetPuzzleIcons() const { return m_PuzzleIconList; }
-
     private:
         std::vector<Puzzle*> m_PuzzleList;
         std::vector<PuzzleIcon*> m_PuzzleIconList;
         bool m_DestroyPuzzles {false};
+    public:
+        static std::vector<PuzzleSet*>& GetSets();
+        static void CreateSets();
+    private:
+        static std::vector<PuzzleSet*> s_PuzzleSets;
 };
 
 }

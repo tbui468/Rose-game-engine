@@ -2,6 +2,10 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
+    PuzzleSets and Buttons can be store in static list in their respective classes if that makes sense to do so
+        can call a static class function to instantiate an instance
+        makes more sense for puzzlesets, but buttons need to be separate
+
     Rewrite Fractal constructor (and class)
         the Fractal(fractal size, index, pos): Entity(...)
             size /bounding box that are passed to Entity(...) must be scaled by fractal size

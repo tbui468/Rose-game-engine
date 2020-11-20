@@ -31,12 +31,8 @@ namespace sqs {
             Button* m_QuitButton;
             Button* m_StartButton;
             Button* m_CloseButton;
-            PuzzleSet* m_PuzzleSet0;
-            PuzzleSet* m_PuzzleSet1;
-            PuzzleSet* m_PuzzleSet2;
 
             std::vector<rose::Entity*> m_Entities;
-            std::vector<PuzzleSet*> m_PuzzleSets;
 
             float m_Parameter {1.0f};
             bool m_Start {false};

@@ -96,6 +96,7 @@ namespace sqs {
         }
 
         m_PuzzleIconList.clear();
+
     }
 
     bool PuzzleSet::IsOpen() const {
@@ -135,6 +136,25 @@ namespace sqs {
         for(PuzzleIcon* icon: m_PuzzleIconList) {
             if(icon) icon->Draw();
         }
+    }
+
+    //////////static functions and variables
+    std::vector<PuzzleSet*> PuzzleSet::s_PuzzleSets;
+
+    void PuzzleSet::CreateSets() {
+        const rose::Sprite puzzleSetSprite = {{0, 0}, {32, 32}};
+        const glm::vec2 size = glm::vec2(32.0f, 32.0f);
+        const glm::vec4 boundingBox = glm::vec4(0.0f, 0.0f, 32.0f, 32.0f);
+        float topEdge = 135.0f;
+
+        PuzzleSet::s_PuzzleSets.emplace_back(new PuzzleSet(puzzleSetSprite, size, boundingBox, glm::vec2(-32.0f, topEdge + 32.0f)));
+        PuzzleSet::s_PuzzleSets.emplace_back(new PuzzleSet(puzzleSetSprite, size, boundingBox, glm::vec2(0.0f, topEdge + 32.0f)));
+        PuzzleSet::s_PuzzleSets.emplace_back(new PuzzleSet(puzzleSetSprite, size, boundingBox, glm::vec2(32.0f, topEdge + 32.0f)));
+    }
+
+    std::vector<PuzzleSet*>& PuzzleSet::GetSets() {
+        if(PuzzleSet::s_PuzzleSets.empty()) PuzzleSet::CreateSets();
+        return PuzzleSet::s_PuzzleSets;
     }
 
 
