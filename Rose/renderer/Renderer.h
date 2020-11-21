@@ -33,16 +33,17 @@ class Renderer {
         float m_ProjWidth {0.0f};
         float m_ProjHeight {0.0f};
         glm::mat4 m_Projection;
+        GLuint m_TextureID[2];
+        GLuint m_Texture;
 
 
         std::shared_ptr<Batch> m_BatchDefaultTex;
         std::shared_ptr<Batch> m_BatchCustomTex;
 
-        std::vector<glm::mat4> m_Models;
-        std::shared_ptr<Texture> m_Texture;
-        std::shared_ptr<VertexBuffer> m_VertexBuffer;
-        std::shared_ptr<IndexBuffer> m_IndexBuffer;
+        std::shared_ptr<Texture> m_TextureDefault;
+        std::shared_ptr<Texture> m_TextureCustom;
         std::shared_ptr<Shader> m_Shader;
+        std::shared_ptr<Shader> m_Shader1;
 };   
 
 }

@@ -2,29 +2,24 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-    AddEntity(entity*) in Renderer should now take SPrite data into account to decide which batch to add it to
-        if Sprite.TexType is default, add to BatchDefaultTex, if custom then add to BatchCustomTex
+    Real problem: Why does drawing batch with custom texture first not draw some fractals??
+        swapping default and custom batch drawing order (drawing default first and custom second) 
+        draws correctly
 
-        To test, create new custom texture, and then enable drawing of BatchCustomTex
-    
+    Benchmarking - use website to drag/drop JSON file
+        look at Instrumentor class (and utility classes) on Hazel/Debug
+            build it incrementally and compile as you go 
+            -Instrumentor constructor and static Get() method
+            -Instrumentor data struct and the WriteProfile() method (this is the JSON stuff)
 
-    Idea: create a Batch class, and have renderer own two batches: default texture and custom texture
-        in renderer DrawScene(), can Bind buffers, set data (include models/texture) and draw Batch 1
-                            and then  Bind buffers, set data (incuding models/texture), and draw batch 2
-    
-    Finish Fractal::MakeEntityData(....)
+    We don't need to use multiple textures per draw call (at the moment anyway)
+        Since only 1 texSampler is used in my shader, all textures can be bound to slot 1
+        Using more than two (texSampler1 and texSampler2, for example) will require slots
+            for example binding texsampler1 to slot 1, and texsampler2 to slot 2 (requires setting active texture slot, then binding texture)
+
+    Finish Fractal::MakeEntityData(....) to make Fractal constructor delegate to private constructor to match Entity constructor parameters
         needs to copy texture data from default texture to custom texture
-
-    update Texture so that we can load 1 or 2 textures when drawing (.png sprite sheet or the custom sprite sheet for fractals)
-        requires two different draw calls for each of the textures
-    
-
-    Need to update renderer and have two lists of Entities to draw:
-        - ones using default texture sheet
-        - ones using custom texture sheet (just the fractals)
-
-    Have Fractals of different sizes display - will need new textures
-        use delegated constructors to fix constructor parameter problem
+        glCopyImageSubData(...) is convenient function to do this!!! So I don't need to write my own - thank god
 
     Rewrite Fractal constructor (and class)
         the Fractal(fractal size, index, pos): Entity(...)
@@ -65,8 +60,6 @@ Fractals - the big one here.  The last large piece to get back to working status
     let's keep the singleton for now, but I might get rid of it later
 
 
-    Benchmarking - use website to drag/drop JSON file
-        will be interesting to see what slows down when laptop is unplugged
 
     1. Get Fractals responding to user input
         how should the inputdispatcher process inputs??

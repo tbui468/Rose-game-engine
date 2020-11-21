@@ -64,7 +64,7 @@ class Entity {
         float m_ToAlpha {1.0f};
 
      private: //these guys shouldn't change after being set
-        Sprite m_SpriteData {{0, 0}, {0, 0}};
+        Sprite m_SpriteData {{0, 0}, {0, 0}, TextureType::None};
         glm::vec2 m_Size {1.0f, 1.0f};
         glm::vec4 m_BoundingBox {0.0f, 0.0f, 0.0f, 0.0f};
 };

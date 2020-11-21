@@ -21,5 +21,7 @@
 #include "InputType.h"
 #include "CommandCode.h"
 
+#include "Instrumentor.h"
+
 
 #endif //ROSE

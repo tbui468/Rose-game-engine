@@ -5,15 +5,16 @@
 
 
 int main(int, char**) {
+    rose::Application* app;
 
+    {
+        app = rose::Application::GetApplication();
 
-    //rose::Application* app = new rose::Application();
-    rose::Application* app = rose::Application::GetApplication();
+        std::shared_ptr<rose::Layer> layer = std::make_shared<sqs::MenuLayer>(); 
 
-    std::shared_ptr<rose::Layer> layer = std::make_shared<sqs::MenuLayer>(); 
-
-    app->SetClearColor(glm::ivec3(253, 246, 227));
-    app->SetLayer(layer);
+        app->SetClearColor(glm::ivec3(253, 246, 227));
+        app->SetLayer(layer);
+    }
 
     app->Run();
     app->Shutdown();

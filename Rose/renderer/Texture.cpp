@@ -1,19 +1,33 @@
+#include <iostream>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 
 #include "renderer/Texture.h"
 
+
 namespace rose {
 
 Texture::Texture(int texSlot) {
     glGenTextures(1, &m_RendererID);
-    glActiveTexture(GL_TEXTURE0 + texSlot);
-    glBindTexture(GL_TEXTURE_2D, m_RendererID);
     m_TextureSlot = texSlot;
+    Bind();
+}
+
+
+void Texture::Bind() {
+    //glActiveTexture(GL_TEXTURE0 + m_TextureSlot);
+    glBindTexture(GL_TEXTURE_2D, m_RendererID);
+/*
+    GLenum err;
+    while((err = glGetError()) != GL_NO_ERROR) {
+        std::cout << err;
+    }*/
 }
 
 
 void Texture::LoadTexture(const std::string& path) {
+    
     stbi_set_flip_vertically_on_load(true);
     int32_t channels;
     uint8_t *data = stbi_load(path.c_str(), &m_Width, &m_Height, &channels, 0);
@@ -30,15 +44,6 @@ void Texture::LoadTexture(const std::string& path) {
 
 }
 
-
-const Sprite& Texture::GetSprite(const std::string& key) const {
-    assert(m_SpriteData.count(key) > 0);
-    return m_SpriteData.at(key);
-}
-
-void Texture::AddSprite(std::string key, Sprite sprite) {
-    m_SpriteData.insert(std::make_pair<std::string, Sprite>(std::move(key), std::move(sprite)));
-}
 
 
 }

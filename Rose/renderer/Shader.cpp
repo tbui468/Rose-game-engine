@@ -1,5 +1,6 @@
 #include "renderer/Shader.h"
-#include <cstdio>
+#include <iostream>
+#include <vector>
 
 namespace rose {
 
@@ -14,7 +15,7 @@ namespace rose {
         //vertex shader compilation/check
         glShaderSource(m_VertexShaderID, 1, &vertexShaderCode, NULL);
         glCompileShader(m_VertexShaderID);
-/*
+
         glGetShaderiv(m_VertexShaderID, GL_COMPILE_STATUS, &result);
         glGetShaderiv(m_VertexShaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
         if(infoLogLength > 0) {
@@ -23,12 +24,12 @@ namespace rose {
             printf("%s\n", vertexShaderError.data());
         }else{
             std::cout << "Vertex shader compiled!" << std::endl;
-        }*/
+        }
 
         //fragment shader compilation/check
         glShaderSource(m_FragmentShaderID, 1, &fragmentShaderCode, NULL);
         glCompileShader(m_FragmentShaderID);
-/*
+
         glGetShaderiv(m_FragmentShaderID, GL_COMPILE_STATUS, &result);
         glGetShaderiv(m_FragmentShaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
         if(infoLogLength > 0) {
@@ -37,7 +38,7 @@ namespace rose {
             printf("%s\n", fragmentShaderError.data());
         }else{
             std::cout << "Fragment shader compiled!" << std::endl;
-        }*/
+        }
 
 
         m_RendererID = glCreateProgram();
@@ -58,7 +59,7 @@ namespace rose {
     void Shader::SetUniformMatF(const char* name, int count, const float* data) {
         glUniformMatrix4fv(glGetUniformLocation(m_RendererID, name), count, GL_FALSE, data);
     }
-    void Shader::SetUniformI(const char* name, int data) {
+    void Shader::SetUniformI(const char* name, GLint data) {
         glUniform1i(glGetUniformLocation(m_RendererID, name), data);
     }
 

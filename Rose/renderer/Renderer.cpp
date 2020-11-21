@@ -1,5 +1,6 @@
 #include "renderer/Renderer.h"
 
+
 #include "glm/gtx/string_cast.hpp"
 #include "Globals.h"
 
@@ -61,27 +62,52 @@ namespace rose {
 
 
         m_Shader = std::make_shared<Shader>(vertexShaderCode, fragmentShaderCode);
+        m_Shader1 = std::make_shared<Shader>(vertexShaderCode, fragmentShaderCode);
 
 
 
-        m_Texture = std::make_shared<Texture>(0);
-        m_Texture->LoadTexture(exePath + "../../assets/textureSheet.png");
-        m_Texture->AddSprite("StartButton", { glm::ivec2(0, 96), glm::ivec2(64, 32)});
-        m_Texture->AddSprite("QuitButton", { glm::ivec2(64, 0), glm::ivec2(64, 32)});
-        m_Texture->AddSprite("CloseButton", { glm::ivec2(96, 96), glm::ivec2(32, 32)});
+        m_TextureDefault = std::make_shared<Texture>(0);
+        m_TextureDefault->LoadTexture(exePath + "../../assets/test.png");
+
+        m_TextureCustom = std::make_shared<Texture>(0);
+        m_TextureCustom->LoadTexture(exePath + "../../assets/test2.png");
 
 
         m_ProjWidth = 480.0f * g_Scale;
         m_ProjHeight = 270.0f * g_Scale;
         m_Projection = glm::ortho(-m_ProjWidth / 2, m_ProjWidth / 2, -m_ProjHeight / 2, m_ProjHeight / 2, -1.0f, 1.0f);
 
-        m_BatchDefaultTex = std::make_shared<Batch>(m_Texture, m_Shader, m_Projection);
-        //m_BatchCustomTex = std::make_shared<Batch>(m_Texture, m_Shader, m_Projection);
+
+        m_BatchCustomTex = std::make_shared<Batch>(m_TextureCustom, m_Shader1, m_Projection);
+        m_BatchDefaultTex = std::make_shared<Batch>(m_TextureDefault, m_Shader, m_Projection);
+
+        //checking stuff
+        int maxUniformVectors;
+        glGetIntegerv(GL_MAX_VERTEX_UNIFORM_VECTORS, &maxUniformVectors);
+        std::cout << "Max uniform vectors: " << maxUniformVectors << std::endl;
     }
 
 
     void Renderer::AddEntity(const Entity* entity) {
-        m_BatchDefaultTex->AddQuad(entity);
+        const Sprite& sprite = entity->GetSprite();
+
+        switch(sprite.TexType) {
+            case TextureType::None: 
+                std::cout << "Texture type not specifided" << std::endl; 
+                assert(false); 
+                break;
+            case TextureType::Default:
+                m_BatchDefaultTex->AddQuad(entity);
+                break;
+            case TextureType::Custom: 
+                m_BatchCustomTex->AddQuad(entity);
+                break;
+            default:
+                std::cout << "Texture type not specified" << std::endl;
+                assert(false);
+                break;
+        }
+        
     }
 
 
@@ -93,36 +119,41 @@ namespace rose {
     void Renderer::DrawScene() {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0); //this is the vertex positions
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float))); //this is the tex coords
-        glVertexAttribIPointer(2, 1, GL_INT, sizeof(Vertex), (void*)(5 * sizeof(float))); //this is the tex coords
-/*
-        m_Shader->Bind();
-        m_Shader->SetUniformMatF("projection", 1, (const float*)glm::value_ptr(m_Projection));
-        m_Shader->SetUniformMatF("models", m_Models.size(), (const float*)glm::value_ptr(m_Models.at(0)));
-        m_Shader->SetUniformI("texSampler", 0);
 
-        m_VertexBuffer->Bind();
-        m_VertexBuffer->SetData();
-        m_IndexBuffer->Bind();
-        m_IndexBuffer->SetData();
+        if(m_BatchCustomTex->GetIndexCount() > 0) {
+            m_BatchCustomTex->Bind();
+            glDrawElements(GL_TRIANGLES, m_BatchCustomTex->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
+            m_BatchCustomTex->ClearBuffers();
+            std::cout << "Custom";
+            GLenum err;
+            while((err = glGetError()) != GL_NO_ERROR) {
+                std::cout << err << std::endl;
+            }
+        }
 
-        glDrawElements(GL_TRIANGLES, m_IndexBuffer->Count(), GL_UNSIGNED_INT, (void*)0); //this should draw from index buffer (and corresponding vertex buffer)*/
+
+        if(m_BatchDefaultTex->GetIndexCount() > 0) {
+            m_BatchDefaultTex->Bind();
+            glDrawElements(GL_TRIANGLES, m_BatchDefaultTex->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
+            m_BatchDefaultTex->ClearBuffers();
+            std::cout << "Default";
+            GLenum err;
+            while((err = glGetError()) != GL_NO_ERROR) {
+                std::cout << err << std::endl;
+            }
+        }
+
         
-        m_BatchDefaultTex->Bind();
-        glDrawElements(GL_TRIANGLES, m_BatchDefaultTex->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
-        m_BatchDefaultTex->ClearBuffers();
-        /*
-        m_BatchCustomTex->Bind();
-        glDrawElements(GL_TRIANGLES, m_BatchCustomTex->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
-        m_BatchCustomTex->ClearBuffers();*/
-
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
+
+        
+
 
     }
 

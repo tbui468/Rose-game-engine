@@ -9,9 +9,9 @@ namespace sqs {
 
 
     MenuLayer::MenuLayer(): Layer() {
-        const rose::Sprite startSprite = {{0, 96}, {64, 32}};
-        const rose::Sprite quitSprite = {{64, 0}, {64, 32}};
-        const rose::Sprite closeSprite = {{96, 96}, {32, 32}};
+        const rose::Sprite startSprite = {{0, 96}, {64, 32}, rose::TextureType::Default};
+        const rose::Sprite quitSprite = {{64, 0}, {64, 32}, rose::TextureType::Default};
+        const rose::Sprite closeSprite = {{96, 96}, {32, 32}, rose::TextureType::Default};
 
         const glm::vec2 size = glm::vec2(64.0f, 32.0f);
         const glm::vec2 tinysize = glm::vec2(16.0f, 16.0f);

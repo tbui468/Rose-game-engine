@@ -20,7 +20,7 @@ namespace sqs {
         m_DestroyPuzzles = false;
 
         //create puzzles belong to this set
-        const rose::Sprite sprite = {{32, 32}, {32, 32}};
+        const rose::Sprite sprite = {{32, 32}, {32, 32}, rose::TextureType::Default};
         const glm::vec2 size = {32.0f, 32.0f};
         const glm::vec4 box = {0.0f, 0.0f, 32.0f, 32.0f};
         for(int i = 0; i < 8; ++i) {
@@ -34,7 +34,7 @@ namespace sqs {
         }
 
         //create puzzle icons
-        const rose::Sprite iconsprite = {{32, 32}, {8, 8}};
+        const rose::Sprite iconsprite = {{32, 32}, {8, 8}, rose::TextureType::Default};
         const glm::vec2 iconsize = {8.0f, 8.0f};
         const glm::vec4 iconbox = {0.0f, 0.0f, 8.0f, 8.0f};
         const float margin = 24.0f;
@@ -142,7 +142,7 @@ namespace sqs {
     std::vector<PuzzleSet*> PuzzleSet::s_PuzzleSets;
 
     void PuzzleSet::CreateSets() {
-        const rose::Sprite puzzleSetSprite = {{0, 0}, {32, 32}};
+        const rose::Sprite puzzleSetSprite = {{0, 0}, {32, 32}, rose::TextureType::Default};
         const glm::vec2 size = glm::vec2(32.0f, 32.0f);
         const glm::vec4 boundingBox = glm::vec4(0.0f, 0.0f, 32.0f, 32.0f);
         float topEdge = 135.0f;

@@ -2,10 +2,13 @@
 
 namespace sqs {
 
+
+
     Fractal::Fractal(int size, const glm::ivec2& index, const glm::vec2& pos) : Fractal(MakeEntityData(size, index, pos)) {
         m_Index = index;
         m_Size = size; 
     }
+
     Fractal::Fractal(rose::EntityData e): Entity(e.sprite, e.size, e.boundingBox, e.position) {}
 
 
@@ -22,10 +25,9 @@ namespace sqs {
 
 
     rose::EntityData Fractal::MakeEntityData(int size, const glm::ivec2& index, const glm::vec2& pos) const {
-
-        rose::Sprite sprite = {{0, 0}, {32 * size, 32}, rose::TextureType::Custom};
-        glm::vec2 entitySize = glm::vec2(32.0f * size, 32.0f * size);
-        glm::vec4 boundingBox = glm::vec4(0.0f, 0.0f, 32.0f * size, 32.0f * size);
+        rose::Sprite sprite = {{0, 0}, {32, 32}, rose::TextureType::Custom};
+        glm::vec2 entitySize = glm::vec2(32.0f, 32.0f);
+        glm::vec4 boundingBox = glm::vec4(0.0f, 0.0f, 32.0f, 32.0f);
         rose::EntityData e;
 
         e.sprite = sprite;
