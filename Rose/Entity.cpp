@@ -85,10 +85,15 @@ bool Entity::PointCollision(float pointX, float pointY) const {
 
 
 glm::mat4 Entity::GetModelMatrix() const {
+    /*
     glm::mat4 rotated = glm::rotate(glm::mat4(1.0f), m_Angle, glm::vec3(0.0f, 0.0f, 1.0f));
     glm::mat4 scaled = glm::scale(glm::mat4(1.0f), glm::vec3(m_Scale.x * m_Size.x, m_Scale.y * m_Size.y, 1.0f));
     glm::mat4 translated = glm::translate(glm::mat4(1.0f), glm::vec3(m_Pos.x, m_Pos.y, 0.0f));
-    return translated * scaled * rotated;
+    return translated * scaled * rotated;*/
+
+    glm::mat4 translated = glm::translate(glm::mat4(1.0f), glm::vec3(m_Pos.x, m_Pos.y, 0.0f));
+    glm::mat4 scaled = glm::scale(translated, glm::vec3(m_Scale.x * m_Size.x, m_Scale.y * m_Size.y, 1.0f));
+    return glm::rotate(scaled, m_Angle, glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
 

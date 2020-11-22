@@ -2,7 +2,8 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-    Center the Fractals
+    Hitting vector limit in shaders with current rendering technique (max models is 128 mat4; it crashes with 256; OpenGl only guarentees minimum of 256 vec4 = 64 mat4)
+        how about just multiplying vertex by model on CPU side?  
 
     Abstract Fractal texture creation / drawing into easier to use function calls
         what kind of API should I use in fractal instantiation????

@@ -13,10 +13,8 @@ Batch::Batch(const std::shared_ptr<Texture>& texture, const std::shared_ptr<Shad
     m_Projection = proj;
 
     m_VertexBuffer = std::make_shared<VertexBuffer>();
-//    m_VertexBuffer->Bind();
 
     m_IndexBuffer = std::make_shared<IndexBuffer>();
- //   m_IndexBuffer->Bind();
 }
 
 void Batch::AddQuad(const Entity* entity) {
@@ -28,10 +26,10 @@ void Batch::AddQuad(const Entity* entity) {
     glm::vec2 texCoordsStart = { sprite.TexCoords.x / texWidth, sprite.TexCoords.y / texHeight };
     glm::vec2 texCoordsEnd = {texCoordsStart.x + sprite.TexDimensions.x / texWidth, texCoordsStart.y + sprite.TexDimensions.y / texHeight};
 
-    m_VertexBuffer->AddVertex(glm::vec3(-0.5f, -0.5f, 0.0f), texCoordsStart, QuadCount());
-    m_VertexBuffer->AddVertex(glm::vec3(0.5f, -0.5f, 0.0f), {texCoordsEnd.x, texCoordsStart.y}, QuadCount());
-    m_VertexBuffer->AddVertex(glm::vec3(0.5f, 0.5f, 0.0f), texCoordsEnd, QuadCount());
-    m_VertexBuffer->AddVertex(glm::vec3(-0.5f, 0.5f, 0.0f), {texCoordsStart.x, texCoordsEnd.y}, QuadCount());
+    m_VertexBuffer->AddVertex(glm::vec3(model * glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f)), texCoordsStart);
+    m_VertexBuffer->AddVertex(glm::vec3(model * glm::vec4(0.5f, -0.5f, 0.0f, 1.0f)), {texCoordsEnd.x, texCoordsStart.y});
+    m_VertexBuffer->AddVertex(glm::vec3(model * glm::vec4(0.5f, 0.5f, 0.0f, 1.0f)), texCoordsEnd);
+    m_VertexBuffer->AddVertex(glm::vec3(model * glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f)), {texCoordsStart.x, texCoordsEnd.y});
 
     size_t indexPos = 4 * QuadCount();
     m_IndexBuffer->AddIndex(indexPos);
@@ -54,7 +52,6 @@ void Batch::Bind() {
 
     m_Shader->Bind();
     m_Shader->SetUniformMatF("projection", 1, (const float*)glm::value_ptr(m_Projection));
-    m_Shader->SetUniformMatF("models", m_Models.size(), (const float*)glm::value_ptr(m_Models.at(0)));
     m_Shader->SetUniformI("texSampler", GL_TEXTURE0);
 
     m_VertexBuffer->Bind();
@@ -62,7 +59,6 @@ void Batch::Bind() {
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0); //this is the vertex positions
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(3 * sizeof(float))); //this is the tex coords
-    glVertexAttribIPointer(2, 1, GL_INT, sizeof(Vertex), (void*)(5 * sizeof(float))); //this is the model index
 
     m_IndexBuffer->Bind();
     m_IndexBuffer->SetData();

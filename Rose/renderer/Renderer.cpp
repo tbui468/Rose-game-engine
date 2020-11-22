@@ -42,12 +42,10 @@ namespace rose {
             "#version 330 core\n"
             "layout(location = 0) in vec3 vertexPos;"
             "layout(location = 1) in vec2 texCoords;"
-            "layout(location = 2) in int modelIndex;"
             "uniform mat4 projection;"
-            "uniform mat4 models[128];"
             "out vec2 v_texCoords;"
             "void main() {"
-            "   gl_Position = projection * models[modelIndex] * vec4(vertexPos, 1.0);"
+            "   gl_Position = projection * vec4(vertexPos, 1.0);"
             "   v_texCoords = texCoords;"
             "}";
 
@@ -68,15 +66,8 @@ namespace rose {
 
         m_TextureDefault = std::make_shared<Texture>(exePath + "../../assets/textureSheet.png");
 
-        m_TextureCustom = std::make_shared<Texture>(128, 128); //temp dimension to test copying default texture directly
+        m_TextureCustom = std::make_shared<Texture>(256, 256); //temp dimension to test copying default texture directly
 
-        //want to call this multiple times - not just copy the entire texture
-        //this should create a 4 fractal shapes in the bottom left corner
-        /*
-        m_TextureCustom->CopySubTexture(glm::ivec2(0, 0), m_TextureDefault->GetID(), glm::ivec2(0, 0), 32, 32);
-        m_TextureCustom->CopySubTexture(glm::ivec2(0, 0), m_TextureDefault->GetID(), glm::ivec2(32, 0), 32, 32);
-        m_TextureCustom->CopySubTexture(glm::ivec2(0, 0), m_TextureDefault->GetID(), glm::ivec2(0, 32), 32, 32);
-        m_TextureCustom->CopySubTexture(glm::ivec2(0, 0), m_TextureDefault->GetID(), glm::ivec2(32, 32), 32, 32);*/
 
 
         m_ProjWidth = 480.0f * g_Scale;

@@ -8,7 +8,7 @@ Puzzle::Puzzle(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec
         Entity(sprite, size, boundingBox, pos) {
             m_Index = index; 
             int fractalSize = 1;
-            int gridSize = 4;
+            int gridSize = 8;
             for(int row = 0; row < gridSize; row += fractalSize) {
                 for(int col = 0; col < gridSize; col += fractalSize) {
                     m_Fractals.emplace_back(new Fractal(fractalSize, {col, row}, glm::ivec2(gridSize, gridSize), glm::vec2(x(), y())));

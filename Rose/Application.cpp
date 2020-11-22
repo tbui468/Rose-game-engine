@@ -38,7 +38,7 @@ namespace rose {
 
         std::cout << exePathString << std::endl;
 
-        bool fullScreen = false;
+        bool fullScreen = true;
         m_Window = std::make_shared<Window>(960, 540, fullScreen);
 
         bool vsync = false;
