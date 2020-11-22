@@ -66,11 +66,16 @@ namespace rose {
 
 
 
-        m_TextureDefault = std::make_shared<Texture>(0);
-        m_TextureDefault->LoadTexture(exePath + "../../assets/test.png");
+        m_TextureDefault = std::make_shared<Texture>(exePath + "../../assets/textureSheet.png");
 
-        m_TextureCustom = std::make_shared<Texture>(0);
-        m_TextureCustom->LoadTexture(exePath + "../../assets/test2.png");
+        m_TextureCustom = std::make_shared<Texture>(128, 128); //temp dimension to test copying default texture directly
+
+        //want to call this multiple times - not just copy the entire texture
+        //this should create a 4 fractal shapes in the bottom left corner
+        m_TextureCustom->CopySubTexture(glm::ivec2(0, 0), m_TextureDefault->GetID(), glm::ivec2(0, 0), 32, 32);
+        m_TextureCustom->CopySubTexture(glm::ivec2(0, 0), m_TextureDefault->GetID(), glm::ivec2(32, 0), 32, 32);
+        m_TextureCustom->CopySubTexture(glm::ivec2(0, 0), m_TextureDefault->GetID(), glm::ivec2(0, 32), 32, 32);
+        m_TextureCustom->CopySubTexture(glm::ivec2(0, 0), m_TextureDefault->GetID(), glm::ivec2(32, 32), 32, 32);
 
 
         m_ProjWidth = 480.0f * g_Scale;
@@ -128,11 +133,6 @@ namespace rose {
             m_BatchCustomTex->Bind();
             glDrawElements(GL_TRIANGLES, m_BatchCustomTex->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
             m_BatchCustomTex->ClearBuffers();
-            std::cout << "Custom";
-            GLenum err;
-            while((err = glGetError()) != GL_NO_ERROR) {
-                std::cout << err << std::endl;
-            }
         }
 
 
@@ -140,11 +140,6 @@ namespace rose {
             m_BatchDefaultTex->Bind();
             glDrawElements(GL_TRIANGLES, m_BatchDefaultTex->GetIndexCount(), GL_UNSIGNED_INT, (void*)0);
             m_BatchDefaultTex->ClearBuffers();
-            std::cout << "Default";
-            GLenum err;
-            while((err = glGetError()) != GL_NO_ERROR) {
-                std::cout << err << std::endl;
-            }
         }
 
         

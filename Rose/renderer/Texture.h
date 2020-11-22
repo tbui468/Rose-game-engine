@@ -26,19 +26,20 @@ struct Sprite {
 
 class Texture {
     public:
-        Texture(int texSlot);
+        Texture(int width, int height);
+        Texture(const std::string& path);
         virtual ~Texture() {}
-        void LoadTexture(const std::string& path);
-//        GLuint GetRendererID() const { return m_RendererID; }
         uint32_t GetWidth() const { return m_Width; }
         uint32_t GetHeight() const { return m_Height; }
-        int GetSlot() const { return m_TextureSlot; }
         void Bind();
+        void CopySubTexture(const glm::ivec2& startDest, GLuint srcID, const glm::ivec2& startSrc, int width, int height);
+        GLuint GetID() const { return m_RendererID; }
     private:
-        int32_t m_Width;
-        int32_t m_Height;
+        void LoadTexture(const std::string& path);
+    private:
+        int32_t m_Width {0};
+        int32_t m_Height {0};
         GLuint m_RendererID;
-        int m_TextureSlot;
 };
 
 

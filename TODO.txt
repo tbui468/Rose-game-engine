@@ -2,43 +2,20 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-    Real problem: Why does drawing batch with custom texture first not draw some fractals??
-        swapping default and custom batch drawing order (drawing default first and custom second) 
-        draws correctly
+    Have Fractals create custom textures on instantiation
+        can use GetApplication() to grab a handle to application, then grab a handle to renderer
+            loop through elements in fractal (Element.Empty, Element.Red, Element.Blue, etc)    
+                renderer->CopyTexture(elementType, fractalIndex) //fractalIndex is essentially the {col, row} we are iterating through
 
+        'CopyTexture' needs to look through a dictionary to find where each element type is in the default texture
+
+        create enum class for Fractal elements
+        
     Benchmarking - use website to drag/drop JSON file
         look at Instrumentor class (and utility classes) on Hazel/Debug
             build it incrementally and compile as you go 
             -Instrumentor constructor and static Get() method
             -Instrumentor data struct and the WriteProfile() method (this is the JSON stuff)
-
-    We don't need to use multiple textures per draw call (at the moment anyway)
-        Since only 1 texSampler is used in my shader, all textures can be bound to slot 1
-        Using more than two (texSampler1 and texSampler2, for example) will require slots
-            for example binding texsampler1 to slot 1, and texsampler2 to slot 2 (requires setting active texture slot, then binding texture)
-
-    Finish Fractal::MakeEntityData(....) to make Fractal constructor delegate to private constructor to match Entity constructor parameters
-        needs to copy texture data from default texture to custom texture
-        glCopyImageSubData(...) is convenient function to do this!!! So I don't need to write my own - thank god
-
-    Rewrite Fractal constructor (and class)
-        the Fractal(fractal size, index, pos): Entity(...)
-            size /bounding box that are passed to Entity(...) must be scaled by fractal size
-            Entity will need a SetSprite() function so that we can change sprites later
-                since the fractal sprite has to be custom made
-
-            Fractal needs to call CreateTexture in constructor, and then call SetSprite() to change sprite data (in self and Entity)
-
-            will need to create a second texture for custom sprite textures
-                can use the fractal index to signify the corner of sprite sheet
-                since fractals are limited to 8 x 8, we just need 32x32x64 sized sheet - a 256 x 256 sprite sheet is enough
-                when creating a new fractal sprite of size 2 at index (2, 1), texture coords will start at (64, 32), and have dimensions 64x64
-                need an API to create texture
-                CopyTexture(destinationDataStart, sourceDataStart, texWidth, texHeight);
-                will need to allocate buffer in texture class at the beginning
-                will need to bind appropriate texture when drawing
-                    could add extra data value to Sprite data - texture sheet0 or texture sheet 1 
-        
 
     Pinchout and pinchin Fractals to change sizes
         First get split working (since it's easier)
@@ -100,3 +77,5 @@ Everything is squished when the aspect ratio is not a 480x270 ratio
 Set build (x86 or x64) (or should this be a build option???)
 
 Build on linux virtual machine to test different compiler (GCC)
+
+Need to make sure MAX_VERTEX size in shaders are below hardware max 
