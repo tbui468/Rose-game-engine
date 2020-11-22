@@ -72,10 +72,11 @@ namespace rose {
 
         //want to call this multiple times - not just copy the entire texture
         //this should create a 4 fractal shapes in the bottom left corner
+        /*
         m_TextureCustom->CopySubTexture(glm::ivec2(0, 0), m_TextureDefault->GetID(), glm::ivec2(0, 0), 32, 32);
         m_TextureCustom->CopySubTexture(glm::ivec2(0, 0), m_TextureDefault->GetID(), glm::ivec2(32, 0), 32, 32);
         m_TextureCustom->CopySubTexture(glm::ivec2(0, 0), m_TextureDefault->GetID(), glm::ivec2(0, 32), 32, 32);
-        m_TextureCustom->CopySubTexture(glm::ivec2(0, 0), m_TextureDefault->GetID(), glm::ivec2(32, 32), 32, 32);
+        m_TextureCustom->CopySubTexture(glm::ivec2(0, 0), m_TextureDefault->GetID(), glm::ivec2(32, 32), 32, 32);*/
 
 
         m_ProjWidth = 480.0f * g_Scale;
@@ -150,6 +151,13 @@ namespace rose {
         
 
 
+    }
+
+
+    void Renderer::SetCustomTexture(const std::vector<SubTextureMapping>& subtextures) {
+        for(const SubTextureMapping& texMapping : subtextures) {
+            m_TextureCustom->CopySubTexture(texMapping.DesTexCoords, m_TextureDefault->GetID(), texMapping.SrcTexCoords, texMapping.TexDimensions.x, texMapping.TexDimensions.y);
+        }
     }
 
 }

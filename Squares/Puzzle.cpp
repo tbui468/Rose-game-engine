@@ -7,10 +7,11 @@ namespace sqs {
 Puzzle::Puzzle(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos, int index) :
         Entity(sprite, size, boundingBox, pos) {
             m_Index = index; 
-            
-            for(int row = 0; row < 2; ++row) {
-                for(int col = 0; col < 2; ++col) {
-                    m_Fractals.emplace_back(new Fractal(1, {col, row}, glm::ivec2(2, 2), glm::vec2(x(), y())));
+            int fractalSize = 1;
+            int gridSize = 4;
+            for(int row = 0; row < gridSize; row += fractalSize) {
+                for(int col = 0; col < gridSize; col += fractalSize) {
+                    m_Fractals.emplace_back(new Fractal(fractalSize, {col, row}, glm::ivec2(gridSize, gridSize), glm::vec2(x(), y())));
                 }
             }
         }

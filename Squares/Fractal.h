@@ -7,7 +7,7 @@ namespace sqs {
 
     class Puzzle;
 
-    enum class Element {
+    enum class FractalElement {
         Empty,
         Red,
         Blue
@@ -15,11 +15,11 @@ namespace sqs {
 
     class Fractal: public rose::Entity {
         public:
-            Fractal(int size, const glm::ivec2& index, const glm::ivec2& dim, const glm::vec2& puzzlePos);
+            Fractal(int size, const glm::ivec2& index, const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos);
             virtual ~Fractal() {}
             bool LeftFlick(rose::InputType input, float mousex, float mousey);
-            void SetIndex(const glm::ivec2& index);
             glm::ivec2 GetIndex() const { return m_Index; }
+            void SetIndex(const glm::ivec2& index) { m_Index = index; }
             int GetSize() const { return m_Size; }
         private:
             Fractal(rose::EntityData e);

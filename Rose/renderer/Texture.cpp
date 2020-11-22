@@ -54,8 +54,8 @@ void Texture::LoadTexture(const std::string& path) {
 
 
 void Texture::CopySubTexture(const glm::ivec2& startDest, GLuint srcID, const glm::ivec2& startSrc, int width, int height) {
-    glCopyImageSubData(srcID, GL_TEXTURE_2D, 0, startDest.x, startDest.y, 0, 
-                       GetID(), GL_TEXTURE_2D, 0, startSrc.x, startSrc.y, 0,
+    glCopyImageSubData(srcID, GL_TEXTURE_2D, 0, startSrc.x, startSrc.y, 0, 
+                       GetID(), GL_TEXTURE_2D, 0, startDest.x, startDest.y, 0,
                        width, height, 1);
 }
 

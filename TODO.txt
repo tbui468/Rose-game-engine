@@ -2,20 +2,17 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-    Have Fractals create custom textures on instantiation
-        can use GetApplication() to grab a handle to application, then grab a handle to renderer
-            loop through elements in fractal (Element.Empty, Element.Red, Element.Blue, etc)    
-                renderer->CopyTexture(elementType, fractalIndex) //fractalIndex is essentially the {col, row} we are iterating through
+    Center the Fractals
 
-        'CopyTexture' needs to look through a dictionary to find where each element type is in the default texture
+    Abstract Fractal texture creation / drawing into easier to use function calls
+        what kind of API should I use in fractal instantiation????
 
-        create enum class for Fractal elements
-        
     Benchmarking - use website to drag/drop JSON file
         look at Instrumentor class (and utility classes) on Hazel/Debug
             build it incrementally and compile as you go 
             -Instrumentor constructor and static Get() method
             -Instrumentor data struct and the WriteProfile() method (this is the JSON stuff)
+        
 
     Pinchout and pinchin Fractals to change sizes
         First get split working (since it's easier)

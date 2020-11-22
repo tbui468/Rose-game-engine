@@ -29,6 +29,7 @@ class Renderer {
         void SetClearColor(const glm::ivec3& color);
         float GetProjWidth() const { return m_ProjWidth; }
         float GetProjHeight() const { return m_ProjHeight; }
+        void SetCustomTexture(const std::vector<SubTextureMapping>& subtextures);
     private:
         float m_ProjWidth {0.0f};
         float m_ProjHeight {0.0f};

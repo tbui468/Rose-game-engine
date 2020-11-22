@@ -134,7 +134,7 @@ namespace sqs {
             for(Fractal* fractal: puzzle->GetFractals()) {
                 if(fractal->LeftFlick(input, mouse.x, mouse.y)) {
                     glm::ivec2 index = fractal->GetIndex();
-                    Fractal* otherFractal = puzzle->GetFractal(glm::ivec2(index.x - 1 * fractal->GetSize(), index.y)); //to get fractal to the left of current
+                    Fractal* otherFractal = puzzle->GetFractal(glm::ivec2(index.x - fractal->GetSize(), index.y)); //to get fractal to the left of current
                     if(otherFractal && fractal->GetSize() == otherFractal->GetSize()) {
                         puzzle->SwapFractals(fractal, otherFractal);
                         fractal->RotateBy(1.5708f);

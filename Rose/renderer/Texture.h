@@ -17,6 +17,13 @@ enum class TextureType {
     Custom
 };
 
+
+struct SubTextureMapping {
+    glm::ivec2 DesTexCoords; //to custom texture
+    glm::ivec2 SrcTexCoords; //from default texture
+    glm::ivec2 TexDimensions;
+};
+
 struct Sprite {
     glm::ivec2 TexCoords;
     glm::ivec2 TexDimensions;
