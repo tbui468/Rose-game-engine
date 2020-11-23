@@ -2,9 +2,11 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-    Implement Split() function for fractals
-        will need static function to calculate fractal postions based on size and index, and target size and target index
+    Split kind of works 
+        textures are not being created correctly (currently just becoming empty)
+        I'm just hacking the grid dimensions now
 
+    Instead of using a vector of FractalElements, use a matrix (since glm supports matrices up to size4x4, which is the biggest fractal size I'm using)
 
     Benchmarking - use website to drag/drop JSON file
         look at Instrumentor class (and utility classes) on Hazel/Debug

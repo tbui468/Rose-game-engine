@@ -17,6 +17,7 @@ class Puzzle: public rose::Entity {
         void Open();
         void Close();
         void SplitFractal(Fractal* fractal);
+        void RemoveFractal(Fractal* fractal);
         virtual void Draw() const override;
         virtual void MoveTo(const glm::vec2& pos) override;
         virtual void MoveBy(const glm::vec2& shift) override;

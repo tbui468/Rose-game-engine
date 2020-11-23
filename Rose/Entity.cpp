@@ -65,7 +65,7 @@ void Entity::OnAnimationEnd() {
 
 
 void Entity::Draw() const {
-    if(abs(x()) > 240 || abs(y()) > 135) return;
+    if(abs(x()) > 480 || abs(y()) > 270) return;
 
     Application* app = Application::GetApplication();
     std::shared_ptr<Renderer> renderer = app->GetRenderer();

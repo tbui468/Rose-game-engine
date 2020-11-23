@@ -81,7 +81,7 @@ namespace rose {
 
         while(!m_Quit) {
             {
-                InstrumentationTimer timer("update");
+//                InstrumentationTimer timer("update");
 
                 m_Last = m_Now;
                 m_Now = SDL_GetPerformanceCounter();
@@ -94,7 +94,7 @@ namespace rose {
                 m_Quit = m_Layer->Update(m_DeltaTime, input, mousePos);
             }
             {
-                InstrumentationTimer timer("draw");
+ //               InstrumentationTimer timer("draw");
                 m_Layer->Draw();
                 m_Renderer->DrawScene();
                 SDL_GL_SwapWindow(m_Window->GetHandle());
