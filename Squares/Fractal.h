@@ -23,6 +23,9 @@ namespace sqs {
             void SetIndex(const glm::ivec2& index) { m_Index = index; }
             int GetSize() const { return m_Size; }
             const std::vector<FractalElement>& GetElements() const { return m_Elements; }
+            virtual void OnAnimationEnd() override;
+            void UpdateSprite();
+            int GetPuzzleNumber() const { return m_PuzzleNumber; };
         public:
             static float UnitSize() { return s_UnitSize; }
             static float UnitMargin() { return s_UnitMargin; }
@@ -32,6 +35,8 @@ namespace sqs {
         private:
             Fractal(rose::EntityData e);
             static rose::EntityData MakeEntityData(const std::vector<FractalElement>& elements, const glm::ivec2& index, const glm::vec2& pos, int puzzleNumber);
+            static void UpdateTextureData(const std::vector<FractalElement>& elements, const glm::ivec2& index, int puzzleNumber);
+            static glm::ivec2 GetTextureStart(const glm::ivec2& index, int puzzleNumber);
             inline static float s_UnitSize = 32.0f;
             inline static float s_UnitMargin = 16.0f;
         private:

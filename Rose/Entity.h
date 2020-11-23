@@ -35,6 +35,7 @@ class Entity {
         virtual void OnAnimationUpdate(float t);
         virtual void OnAnimationEnd();
         virtual void Draw() const;
+        virtual void SetSprite(const Sprite& sprite) { m_SpriteData = sprite; }
     public:
         virtual bool LeftTap(InputType input, float x, float y) const;
         virtual bool PointCollision(float pointX, float pointY) const;

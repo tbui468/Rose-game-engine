@@ -21,14 +21,57 @@ namespace sqs {
         return false;
     }
 
+
+    glm::ivec2 Fractal::GetTextureStart(const glm::ivec2& index, int puzzleNumber) {
+        return glm::ivec2(index.x * UnitSize() + puzzleNumber * 256, 256 - (index.y + 1) * UnitSize()); 
+    }
+
     rose::EntityData Fractal::MakeEntityData(const std::vector<FractalElement>& elements, const glm::ivec2& index, const glm::vec2& pos, int puzzleNumber) {
+
+        UpdateTextureData(elements, index, puzzleNumber);
+
+        int size = floor(sqrt(elements.size() + 1));
+        float fWidth = UnitSize() * size;
+        float fHeight = UnitSize() * size;
+
+        glm::ivec2 texStart = GetTextureStart(index, puzzleNumber);
+
+        glm::vec2 entitySize = glm::vec2(fWidth, fHeight);
+        glm::vec4 boundingBox = glm::vec4(0.0f, 0.0f, fWidth, fHeight);
+        rose::EntityData e;
+
+        e.sprite = { {texStart.x, texStart.y - (size - 1) * UnitSize()}, {fWidth, fHeight}, rose::TextureType::Custom };
+        e.size = entitySize;
+        e.boundingBox = boundingBox;
+        e.position = pos;
+        
+        return e;
+    }
+
+
+    void Fractal::UpdateSprite() {
+        int size = GetSize();
+        float fWidth = UnitSize() * size;
+        float fHeight = UnitSize() * size;
+
+
+        glm::ivec2 texStart = GetTextureStart(GetIndex(), GetPuzzleNumber());
+
+
+        rose::Sprite sprite = { {texStart.x, texStart.y - (size - 1) * UnitSize()}, {fWidth, fHeight}, rose::TextureType::Custom };
+        Entity::SetSprite(sprite);
+    }
+
+
+    void Fractal::UpdateTextureData(const std::vector<FractalElement>& elements, const glm::ivec2& index, int puzzleNumber) {
+
         int size = floor(sqrt(elements.size() + 1));
         float fWidth = UnitSize() * size;
         float fHeight = UnitSize() * size;
 
         //texture stuff
         //textures start from bottom left, but starting textures from top left to fit fractal order (left to right, top to bottom)
-        glm::ivec2 texStart = glm::ivec2(index.x * UnitSize() + puzzleNumber * 256, 256 - (index.y + 1) * UnitSize()); 
+        glm::ivec2 texStart = GetTextureStart(index, puzzleNumber);
 
         std::shared_ptr<rose::Renderer> renderer = (rose::Application::GetApplication())->GetRenderer();
 
@@ -57,19 +100,7 @@ namespace sqs {
         }
 
         renderer->SetCustomTexture(texMapping);
-
-        glm::vec2 entitySize = glm::vec2(fWidth, fHeight);
-        glm::vec4 boundingBox = glm::vec4(0.0f, 0.0f, fWidth, fHeight);
-        rose::EntityData e;
-
-        e.sprite = { {texStart.x, texStart.y - (size - 1) * UnitSize()}, {fWidth, fHeight}, rose::TextureType::Custom};
-        e.size = entitySize;
-        e.boundingBox = boundingBox;
-        e.position = pos;
-        
-        return e;
     }
-
 
 
     glm::vec2 Fractal::GetCoords(const glm::ivec2& index, int size, const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos) {
@@ -96,5 +127,13 @@ namespace sqs {
             glm::ivec2 relativeIndex = glm::ivec2(index.x - targetIndex.x, index.y - targetIndex.y);
             return glm::vec2(targetTopLeft.x + relativeIndex.x * UnitSize(), targetTopLeft.y - relativeIndex.y * UnitSize());
     }
+
+
+    void Fractal::OnAnimationEnd() {
+        Entity::OnAnimationEnd();
+        UpdateTextureData(m_Elements, m_Index, m_PuzzleNumber);
+        UpdateSprite();
+    }
+
 
 }
