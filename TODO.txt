@@ -2,11 +2,21 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-    Split kind of works 
-        textures are not being created correctly (currently just becoming empty)
-        I'm just hacking the grid dimensions now
+    Fractals should own their data - puzzles only load in data from the save files, but don't keep track of anything after that
+        When checking if a puzzle is cleared, iterate through the Fractals in the active puzzle to check elements
 
-    Instead of using a vector of FractalElements, use a matrix (since glm supports matrices up to size4x4, which is the biggest fractal size I'm using)
+        How about data in textures???  This is causing problems...
+
+        On instantiation of a fractal, it updates texture based on data structure with element data that is passed in as parameter
+            where does this data structure come from???
+
+            When a puzzle is opened for the first time, this data is loaded from the save data
+            When a Fractal is split into smaller fractals, this data data comes from split Fractal member variable m_Elements
+            When a Fractal is formed from smaller subfractals, this data is composed of the smaller subfractal m_Elements
+
+            GetElements() can be used to get element data, but it's a vector (which makes it very confusing)
+            would an array be easier to maintain???
+
 
     Benchmarking - use website to drag/drop JSON file
         look at Instrumentor class (and utility classes) on Hazel/Debug

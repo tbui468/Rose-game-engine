@@ -134,10 +134,11 @@ namespace sqs {
             for(Fractal* fractal: puzzle->GetFractals()) {
                 if(fractal->LeftFlick(input, mouse.x, mouse.y)) {
                     glm::ivec2 index = fractal->GetIndex();
+                    std::cout << "x: " << index.x << ", y " << index.y << std::endl;
                     Fractal* otherFractal = puzzle->GetFractal(glm::ivec2(index.x - fractal->GetSize(), index.y)); //to get fractal to the left of current
                     if(otherFractal && fractal->GetSize() == otherFractal->GetSize()) { //move all this into MenuLayer::TransformFractal() later
                         puzzle->SwapFractals(fractal, otherFractal);
-                        fractal->RotateBy(1.5708f); 
+//                        fractal->RotateBy(1.5708f); 
                         SetAnimationStart();
                         break;
                     }

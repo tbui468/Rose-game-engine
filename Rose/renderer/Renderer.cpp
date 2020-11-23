@@ -66,7 +66,7 @@ namespace rose {
 
         m_TextureDefault = std::make_shared<Texture>(exePath + "../../assets/textureSheet.png");
 
-        m_TextureCustom = std::make_shared<Texture>(256, 256); //temp dimension to test copying default texture directly
+        m_TextureCustom = std::make_shared<Texture>(256 * 8, 256); //temp dimension to test copying default texture directly
 
 
 
@@ -147,7 +147,8 @@ namespace rose {
 
     void Renderer::SetCustomTexture(const std::vector<SubTextureMapping>& subtextures) {
         for(const SubTextureMapping& texMapping : subtextures) {
-            m_TextureCustom->CopySubTexture(texMapping.DesTexCoords, m_TextureDefault->GetID(), texMapping.SrcTexCoords, texMapping.TexDimensions.x, texMapping.TexDimensions.y);
+            m_TextureCustom->CopySubTexture(texMapping.DesTexCoords, m_TextureDefault->GetID(), 
+                                            texMapping.SrcTexCoords, texMapping.TexDimensions.x, texMapping.TexDimensions.y);
         }
     }
 

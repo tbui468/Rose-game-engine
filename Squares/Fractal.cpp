@@ -3,10 +3,13 @@
 
 namespace sqs {
 
-    Fractal::Fractal(const std::vector<FractalElement>& elements, const glm::ivec2& index, const glm::vec2& pos) 
-        : Fractal(MakeEntityData(elements, index, pos)){
+    
+    Fractal::Fractal(const std::vector<FractalElement>& elements, const glm::ivec2& index, const glm::vec2& pos, int puzzleNumber) 
+        : Fractal(MakeEntityData(elements, index, pos, puzzleNumber)){
             m_Size = floor(sqrt(elements.size() + 1));
             m_Index = index;
+            m_Elements = elements;
+            m_PuzzleNumber = puzzleNumber;
     }
 
     Fractal::Fractal(rose::EntityData e): Entity(e.sprite, e.size, e.boundingBox, e.position) {}
@@ -18,32 +21,36 @@ namespace sqs {
         return false;
     }
 
-    rose::EntityData Fractal::MakeEntityData(const std::vector<FractalElement>& elements, const glm::ivec2& index, const glm::vec2& pos) {
+    rose::EntityData Fractal::MakeEntityData(const std::vector<FractalElement>& elements, const glm::ivec2& index, const glm::vec2& pos, int puzzleNumber) {
         int size = floor(sqrt(elements.size() + 1));
         float fWidth = UnitSize() * size;
         float fHeight = UnitSize() * size;
 
         //texture stuff
-        glm::ivec2 texStart = glm::ivec2(index.x * UnitSize(), index.y * UnitSize());
-        rose::Sprite sprite = { texStart, {fWidth, fHeight}, rose::TextureType::Custom};
+        //textures start from bottom left, but starting textures from top left to fit fractal order (left to right, top to bottom)
+        glm::ivec2 texStart = glm::ivec2(index.x * UnitSize() + puzzleNumber * 256, 256 - (index.y + 1) * UnitSize()); 
 
         std::shared_ptr<rose::Renderer> renderer = (rose::Application::GetApplication())->GetRenderer();
 
         std::vector<rose::SubTextureMapping> texMapping;
 
-
         for(int row = 0; row < size; ++row) {
             for(int col = 0; col < size; ++col) {
-                texMapping.push_back({{texStart.x + col * UnitSize(), texStart.y + row * UnitSize()}, {0, 0}, {UnitSize(), UnitSize()}});
+                texMapping.push_back({{texStart.x + col * UnitSize(), texStart.y - row * UnitSize()}, {0, 0}, {UnitSize(), UnitSize()}}); //fractal frame
+                
                 //elements are drawn inside fractal frame, so start point is offset by 1 and side length is reduced by 2 in each dimension
                 switch(elements.at(row * size + col)) {
                     case FractalElement::Red:
-                        texMapping.push_back({{texStart.x + col * UnitSize() + 1, texStart.y + row * UnitSize() + 1}, 
+                        texMapping.push_back({{texStart.x + col * UnitSize() + 1, texStart.y - row * UnitSize() + 1}, 
                                              {UnitSize() + 1, 1}, {UnitSize() - 2, UnitSize() - 2}});
                         break;
                     case FractalElement::Blue:
-                        texMapping.push_back({{texStart.x + col * UnitSize() + 1, texStart.y + row * UnitSize() + 1}, 
+                        texMapping.push_back({{texStart.x + col * UnitSize() + 1, texStart.y - row * UnitSize() + 1}, 
                                              {UnitSize() + 1, UnitSize() + 1}, {UnitSize() - 2, UnitSize() - 2}});
+                        break;
+                    case FractalElement::Green:
+                        texMapping.push_back({{texStart.x + col * UnitSize() + 1, texStart.y - row * UnitSize() + 1}, 
+                                             {UnitSize() + 1, UnitSize() * 2 + 1}, {UnitSize() - 2, UnitSize() - 2}});
                         break;
                 }
             }
@@ -51,12 +58,11 @@ namespace sqs {
 
         renderer->SetCustomTexture(texMapping);
 
-
         glm::vec2 entitySize = glm::vec2(fWidth, fHeight);
         glm::vec4 boundingBox = glm::vec4(0.0f, 0.0f, fWidth, fHeight);
         rose::EntityData e;
 
-        e.sprite = sprite;
+        e.sprite = { {texStart.x, texStart.y - (size - 1) * UnitSize()}, {fWidth, fHeight}, rose::TextureType::Custom};
         e.size = entitySize;
         e.boundingBox = boundingBox;
         e.position = pos;
