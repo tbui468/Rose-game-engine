@@ -63,11 +63,16 @@ void Entity::OnAnimationEnd() {
     m_FromAlpha = m_Alpha;
 }
 
+
 void Entity::Draw() const {
+    if(abs(x()) > 240 || abs(y()) > 135) return;
+
     Application* app = Application::GetApplication();
     std::shared_ptr<Renderer> renderer = app->GetRenderer();
     renderer->AddEntity(this);
 }
+
+
 
 bool Entity::LeftTap(InputType input, float x, float y) const {
     if(input != InputType::LeftDown) return false;

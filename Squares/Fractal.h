@@ -15,7 +15,7 @@ namespace sqs {
 
     class Fractal: public rose::Entity {
         public:
-            Fractal(int size, const glm::ivec2& index, const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos);
+            Fractal(const std::vector<FractalElement>& elements, const glm::ivec2& index, const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos);
             virtual ~Fractal() {}
             bool LeftFlick(rose::InputType input, float mousex, float mousey);
             glm::ivec2 GetIndex() const { return m_Index; }
@@ -23,7 +23,8 @@ namespace sqs {
             int GetSize() const { return m_Size; }
         private:
             Fractal(rose::EntityData e);
-            static rose::EntityData MakeEntityData(int size, const glm::ivec2& index, const glm::ivec2& gridDim, const glm::vec2& puzzlePos);
+            static rose::EntityData MakeEntityData(const std::vector<FractalElement>& elements, 
+                                                   const glm::ivec2& index, const glm::ivec2& gridDim, const glm::vec2& puzzlePos);
         private:
             glm::ivec2 m_Index {0, 0};
             int m_Size {0};

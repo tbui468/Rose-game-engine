@@ -7,6 +7,7 @@
 
 #include "Application.h"
 #include "CommandCode.h"
+#include "Instrumentor.h"
 
 namespace rose {
 
@@ -38,7 +39,7 @@ namespace rose {
 
         std::cout << exePathString << std::endl;
 
-        bool fullScreen = true;
+        bool fullScreen = false;
         m_Window = std::make_shared<Window>(960, 540, fullScreen);
 
         bool vsync = false;
@@ -79,23 +80,25 @@ namespace rose {
 
 
         while(!m_Quit) {
-            m_Last = m_Now;
-            m_Now = SDL_GetPerformanceCounter();
-            m_DeltaTime = static_cast<double>((m_Now - m_Last) * 1000) / static_cast<double>(SDL_GetPerformanceFrequency());
+            {
+                InstrumentationTimer timer("update");
 
-            InputType input = GetInput();
-            glm::ivec2 mousePos = GetMousePos();
+                m_Last = m_Now;
+                m_Now = SDL_GetPerformanceCounter();
+                m_DeltaTime = static_cast<double>((m_Now - m_Last) * 1000) / static_cast<double>(SDL_GetPerformanceFrequency());
+                InputType input = GetInput();
+                glm::ivec2 mousePos = GetMousePos();
 
-            if(input == InputType::Quit) m_Quit = true;
-
-
-            m_Quit = m_Layer->Update(m_DeltaTime, input, mousePos);
-            m_Layer->Draw();
-
-
-            m_Renderer->DrawScene();
-
-            SDL_GL_SwapWindow(m_Window->GetHandle());
+                if(input == InputType::Quit) m_Quit = true;
+            
+                m_Quit = m_Layer->Update(m_DeltaTime, input, mousePos);
+            }
+            {
+                InstrumentationTimer timer("draw");
+                m_Layer->Draw();
+                m_Renderer->DrawScene();
+                SDL_GL_SwapWindow(m_Window->GetHandle());
+            }
         }
 
     }

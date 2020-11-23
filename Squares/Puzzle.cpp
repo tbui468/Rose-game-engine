@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "Rose.h"
 #include "Puzzle.h"
 #include "Fractal.h"
@@ -7,11 +9,16 @@ namespace sqs {
 Puzzle::Puzzle(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos, int index) :
         Entity(sprite, size, boundingBox, pos) {
             m_Index = index; 
-            int fractalSize = 1;
             int gridSize = 8;
+            std::vector<FractalElement> elements;
+            elements.push_back(FractalElement::Red);
+//            elements.push_back(FractalElement::Blue);
+ //           elements.push_back(FractalElement::Empty);
+  //          elements.push_back(FractalElement::Blue);
+            int fractalSize = floor(sqrt(elements.size() + 1));
             for(int row = 0; row < gridSize; row += fractalSize) {
                 for(int col = 0; col < gridSize; col += fractalSize) {
-                    m_Fractals.emplace_back(new Fractal(fractalSize, {col, row}, glm::ivec2(gridSize, gridSize), glm::vec2(x(), y())));
+                    m_Fractals.emplace_back(new Fractal(elements, {col, row}, glm::ivec2(gridSize, gridSize), glm::vec2(x(), y())));
                 }
             }
         }

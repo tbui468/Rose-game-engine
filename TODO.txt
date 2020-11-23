@@ -2,17 +2,17 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-    Hitting vector limit in shaders with current rendering technique (max models is 128 mat4; it crashes with 256; OpenGl only guarentees minimum of 256 vec4 = 64 mat4)
-        how about just multiplying vertex by model on CPU side?  
+    Implement Split() function for fractals
+        will need static function to calculate fractal postions based on size and index, and target size and target index
 
-    Abstract Fractal texture creation / drawing into easier to use function calls
-        what kind of API should I use in fractal instantiation????
 
     Benchmarking - use website to drag/drop JSON file
         look at Instrumentor class (and utility classes) on Hazel/Debug
             build it incrementally and compile as you go 
             -Instrumentor constructor and static Get() method
             -Instrumentor data struct and the WriteProfile() method (this is the JSON stuff)
+
+        can check virtual memory using windows functions - google the stackoverflow examples
         
 
     Pinchout and pinchin Fractals to change sizes
