@@ -136,4 +136,13 @@ namespace sqs {
     }
 
 
+    bool Fractal::Contains(const glm::ivec2& index) const {
+        if(index.x < m_Index.x) return false;
+        if(index.y < m_Index.y) return false;
+        if(index.x >= m_Index.x + m_Size) return false;
+        if(index.y >= m_Index.y + m_Size) return false;
+        return true;
+    }
+
+
 }

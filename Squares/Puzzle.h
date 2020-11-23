@@ -8,6 +8,14 @@ namespace sqs {
 
 class Fractal;
 
+
+struct FractalCorners {
+    Fractal* TopLeft;
+    Fractal* TopRight;
+    Fractal* BottomLeft;
+    Fractal* BottomRight;
+};
+
 class Puzzle: public rose::Entity {
     public:
         Puzzle(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos, int index);
@@ -26,6 +34,8 @@ class Puzzle: public rose::Entity {
         Fractal* GetFractal(const glm::ivec2& index) const;
         const std::vector<Fractal*>& GetFractals() const { return m_Fractals; }
         void SwapFractals(Fractal* fractalA, Fractal* fractalB);
+        FractalCorners FindFractalCorners(float mousex, float mousey) const;
+        void FormFractal(FractalCorners* fc);
     private:
         int m_Index;
         std::vector<Fractal*> m_Fractals;

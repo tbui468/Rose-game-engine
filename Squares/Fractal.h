@@ -7,6 +7,7 @@ namespace sqs {
 
     class Puzzle;
 
+
     enum class FractalElement {
         Empty,
         Red,
@@ -26,6 +27,7 @@ namespace sqs {
             virtual void OnAnimationEnd() override;
             void UpdateSprite();
             int GetPuzzleNumber() const { return m_PuzzleNumber; };
+            bool Contains(const glm::ivec2& index) const;
         public:
             static float UnitSize() { return s_UnitSize; }
             static float UnitMargin() { return s_UnitMargin; }

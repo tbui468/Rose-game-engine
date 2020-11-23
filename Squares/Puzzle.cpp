@@ -6,6 +6,13 @@
 
 namespace sqs {
 
+
+float PointDistance(const glm::ivec2& start, const glm::ivec2& end) {
+    float deltaXSqr = pow(start.x - end.x, 2);
+    float deltaYSqr = pow(start.y - end.y, 2);
+    return sqrt(deltaXSqr + deltaYSqr);
+}
+
 Puzzle::Puzzle(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos, int index) :
         Entity(sprite, size, boundingBox, pos) {
             m_Index = index; 
@@ -109,7 +116,7 @@ void Puzzle::Draw() const {
 
 Fractal* Puzzle::GetFractal(const glm::ivec2& index) const {
     for(Fractal* f: m_Fractals) {
-        if(f->GetIndex() == index) return f;
+        if(f->GetIndex() == index || f->Contains(index)) return f;
     }
     return nullptr;
 }
@@ -168,6 +175,71 @@ void Puzzle::RemoveFractal(Fractal* fractal) {
 
     m_Fractals.erase(iter);
     delete fractal;
+}
+
+FractalCorners Puzzle::FindFractalCorners(float mousex, float mousey) const {
+    FractalCorners fc = {nullptr, nullptr, nullptr, nullptr};
+    Fractal* closestF = nullptr;
+
+    for(Fractal* f: m_Fractals) {
+        if(!closestF) {
+            closestF = f;
+        }else{
+            float closestDis = PointDistance(glm::vec2(closestF->x(), closestF->y()), glm::vec2(mousex, mousey));
+            float thisDis = PointDistance(glm::vec2(f->x(), f->y()), glm::vec2(mousex, mousey));
+            if(thisDis < closestDis) closestF = f;
+        }
+    }
+
+    if(!closestF) return fc;
+
+
+    //determine which corner that fractal belongs to
+    glm::ivec2 index = closestF->GetIndex();
+    int size = closestF->GetSize();
+    Fractal* topLeft = nullptr;
+    Fractal* topRight = nullptr;
+    Fractal* bottomLeft = nullptr;
+    Fractal* bottomRight = nullptr;
+
+    if(closestF->x() - mousex < 0) { //closest fractal is on left of mouse
+        if(closestF->y() - mousey < 0) { //closest fractal is below mouse
+            bottomLeft = closestF;
+            bottomRight = GetFractal(glm::ivec2(index.x + size, index.y));
+            topLeft = GetFractal(glm::ivec2(index.x, index.y - size));
+            topRight = GetFractal(glm::ivec2(index.x + size, index.y - size));
+        }else{
+            topLeft = closestF;
+            topRight = GetFractal(glm::ivec2(index.x + size, index.y));
+            bottomLeft = GetFractal(glm::ivec2(index.x, index.y + size));
+            bottomRight = GetFractal(glm::ivec2(index.x + size, index.y + size));
+        }
+    }else{ //closest fractal is on right side of mouse
+        if(closestF->y() - mousey < 0) { //closest fractal is below mouse
+            bottomRight = closestF;
+            bottomLeft = GetFractal(glm::ivec2(index.x - 1, index.y));
+            topLeft = GetFractal(glm::ivec2(index.x - 1, index.y - 1));
+            topRight = GetFractal(glm::ivec2(index.x, index.y - 1));
+        }else{
+            topRight = closestF;
+            topLeft = GetFractal(glm::ivec2(index.x - size, index.y));
+            bottomLeft = GetFractal(glm::ivec2(index.x - size, index.y + size));
+            bottomRight = GetFractal(glm::ivec2(index.x, index.y + size));
+        }
+    }
+
+    if(topLeft && topLeft->GetSize() == size) fc.TopLeft = topLeft;
+    if(topRight && topRight->GetSize() == size) fc.TopRight = topRight;
+    if(bottomLeft && bottomLeft->GetSize() == size) fc.BottomLeft = bottomLeft;
+    if(bottomRight && bottomRight->GetSize() == size) fc.BottomRight = bottomRight;
+
+    return fc;
+}
+
+void Puzzle::FormFractal(FractalCorners* fc) {
+    //get each fractal corner and use GetCoordsForTarget(....) to find coords for a fractal of twice size with index at topleft fractal
+    //call MoveTo(....) on each of the fractals
+    //Set some variable /data in puzzle to destroy these four Fractals in OnAnimationEnd() and create a larger fractal in their place (also in OnAnimationEnd())
 }
 
 

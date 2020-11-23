@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "MenuLayer.h"
 #include "Button.h"
 #include "PuzzleSet.h"
@@ -6,6 +8,7 @@
 #include "Fractal.h"
 
 namespace sqs {
+
 
 
     MenuLayer::MenuLayer(): Layer() {
@@ -147,12 +150,14 @@ namespace sqs {
                     SetAnimationStart();
                     break;
                 }
-            } /*
-            if(Fractal::PinchIn(input, mouse.x, mouse.y)) {
-                FourFractals* ff = puzzle->GetFourFractals(mouse.x, mouse.y);
-                if(ff) FormFractal(ff);
-                SetAnimationStart();
-                break;
+            } 
+/*            if(Fractal::PinchIn(input, mouse.x, mouse.y)) {
+                FractalCorners fc = puzzle->FindFractalCorners(mouse.x, mouse.y); //fourFractals should be a pointer to a struct of Fractal pointers
+                if(fc.TopLeft && fc.TopRight && fc.BottomLeft && fc.BottomRight) {
+                    puzzle->FormFractal(fc); 
+                    SetAnimationStart();
+                }
+                //break; //this isn't inside a loop so it's not necessary
             }*/
         }
 
