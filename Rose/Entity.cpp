@@ -11,7 +11,10 @@ Entity::Entity(const Sprite& sprite, const glm::vec2& size, const glm::vec4& bou
     m_SpriteData = sprite;
     m_Size = g_Scale * size;
     m_BoundingBox = g_Scale * boundingBox;
+
     m_Pos = g_Scale * pos;
+    m_FromPos = m_Pos;
+    m_ToPos = m_Pos;
 }
 
 void Entity::MoveTo(const glm::vec2& _pos) {

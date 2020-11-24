@@ -31,7 +31,7 @@ namespace sqs {
         public:
             static float UnitSize() { return s_UnitSize; }
             static float UnitMargin() { return s_UnitMargin; }
-            static glm::vec2 GetCoordsForTarget(const glm::ivec2& unitindex, const glm::ivec2& targetIndex, int targetSize, 
+            static glm::vec2 GetCoordsForTarget(const glm::ivec2& unitindex, int size, const glm::ivec2& targetIndex, int targetSize, 
                                                 const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos);
             static glm::vec2 GetCoords(const glm::ivec2& index, int size, const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos);
         private:

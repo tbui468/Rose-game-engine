@@ -2,12 +2,9 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-    GetFractalCorners buggy
-        how to test if it's working?
-        then try to fix it so that the tests work
+    SPlitting a 4x4 creates 4 1x1 instead of the expected 4 2x2s
 
-    Implement FormFractals(FractalCorners* fc) in Puzzle class
-        then test by implementing user input to trigger the command 
+    Textures for Forming fractals not working
 
     Generalize splitting and forming fractals to allow sizes between 1 and 4, inclusive
 

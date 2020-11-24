@@ -10,10 +10,10 @@ class Fractal;
 
 
 struct FractalCorners {
-    Fractal* TopLeft;
-    Fractal* TopRight;
-    Fractal* BottomLeft;
-    Fractal* BottomRight;
+    Fractal* TopLeft {nullptr};
+    Fractal* TopRight {nullptr};
+    Fractal* BottomLeft {nullptr};
+    Fractal* BottomRight {nullptr};
 };
 
 class Puzzle: public rose::Entity {
@@ -25,7 +25,7 @@ class Puzzle: public rose::Entity {
         void Open();
         void Close();
         void SplitFractal(Fractal* fractal);
-        void RemoveFractal(Fractal* fractal);
+        std::vector<Fractal*>::iterator GetFractalIterator(Fractal* fractal);
         virtual void Draw() const override;
         virtual void MoveTo(const glm::vec2& pos) override;
         virtual void MoveBy(const glm::vec2& shift) override;
@@ -41,6 +41,7 @@ class Puzzle: public rose::Entity {
     private:
         int m_Index;
         std::vector<Fractal*> m_Fractals;
+        FractalCorners m_FractalCorners {nullptr, nullptr, nullptr, nullptr};
         bool m_IsOpen {false};
         glm::ivec2 m_Dimensions {0, 0};
 

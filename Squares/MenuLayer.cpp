@@ -154,18 +154,10 @@ namespace sqs {
                 }
             } 
 
-            Fractal* f = puzzle->GetClosestFractal(mouse.x, mouse.y);
-            if(f) std::cout << f->GetIndex().x << ", " << f->GetIndex().y << std::endl;
-
 
             //temp: testing formatin gof fractals to contrast splitting of them
             if(input == rose::InputType::RightDown) {
                 FractalCorners fc = puzzle->FindFractalCorners(mouse.x, mouse.y); //fourFractals should be a pointer to a struct of Fractal pointers
-                /*
-                std::cout << "Top Left" << fc.TopLeft << std::endl;
-                std::cout << "Top Right" << fc.TopRight << std::endl;
-                std::cout << "Bottom Left" << fc.BottomLeft << std::endl;
-                std::cout << "Bottom Right" << fc.BottomRight << std::endl;*/
                 if(fc.TopLeft && fc.TopRight && fc.BottomLeft && fc.BottomRight) {
                     puzzle->FormFractal(fc); 
                     SetAnimationStart();

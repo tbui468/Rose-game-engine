@@ -114,14 +114,12 @@ namespace sqs {
 
 
     //give the index of a fractals, find its coordinates IF it were a part of the target fractal (with the given index and size)
-    glm::vec2 Fractal::GetCoordsForTarget(const glm::ivec2& index, const glm::ivec2& targetIndex, int targetSize, 
+    glm::vec2 Fractal::GetCoordsForTarget(const glm::ivec2& index, int size, const glm::ivec2& targetIndex, int targetSize, 
                                           const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos) {
 
             glm::vec2 targetCenter = GetCoords(targetIndex, targetSize, puzzleDim, puzzlePos);
 
-            float targetHalfWidth = UnitSize() * (targetSize - 1) * 0.5f; //distance between centers of the fractals on left/right edges (or top/bottom)
-
-//            float halfWidth = UnitSize() * (size - 1) * 0.5f;
+            float targetHalfWidth = size * UnitSize() * (targetSize / size - 1) * 0.5f; //distance between centers of the fractals on left/right edges (or top/bottom)
 
             glm::vec2 targetTopLeft = glm::vec2(targetCenter.x - targetHalfWidth, targetCenter.y + targetHalfWidth); //center of top left fractal
 

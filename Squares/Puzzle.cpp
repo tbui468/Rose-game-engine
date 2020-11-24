@@ -99,6 +99,44 @@ void Puzzle::OnAnimationEnd() {
     for(Fractal* f: m_Fractals) {
         if(f) f->OnAnimationEnd();
     }
+
+
+    if(m_FractalCorners.TopLeft) {
+    
+        glm::ivec2 index = m_FractalCorners.TopLeft->GetIndex();
+        int size = m_FractalCorners.TopLeft->GetSize();
+        //temp:
+        //glm::vec2 coords = glm::vec2(0.0f, 0.0f);
+        glm::vec2 coords = Fractal::GetCoords(index, size * 2, GetDimensions(), glm::vec2(x(), y()));
+        std::vector<FractalElement> elements;
+        for(int i = 0; i < size * size * 4; ++i) {
+            elements.push_back(FractalElement::Green);
+        }
+
+        m_Fractals.emplace_back(new Fractal(elements, index, coords, GetIndex()));
+
+        std::vector<Fractal*>::iterator topLeft = GetFractalIterator(m_FractalCorners.TopLeft);
+        m_Fractals.erase(topLeft);
+        delete m_FractalCorners.TopLeft; 
+        m_FractalCorners.TopLeft = nullptr;
+
+        std::vector<Fractal*>::iterator topRight = GetFractalIterator(m_FractalCorners.TopRight);
+        m_Fractals.erase(topRight);
+        delete m_FractalCorners.TopRight; 
+        m_FractalCorners.TopRight = nullptr;
+
+        std::vector<Fractal*>::iterator bottomLeft = GetFractalIterator(m_FractalCorners.BottomLeft);
+        m_Fractals.erase(bottomLeft);
+        delete m_FractalCorners.BottomLeft; 
+        m_FractalCorners.BottomLeft = nullptr;
+
+        std::vector<Fractal*>::iterator bottomRight = GetFractalIterator(m_FractalCorners.BottomRight);
+        m_Fractals.erase(bottomRight);
+        delete m_FractalCorners.BottomRight; 
+        m_FractalCorners.BottomRight = nullptr;
+
+
+    }
 }
 void Puzzle::OnAnimationUpdate(float t) {
     Entity::OnAnimationUpdate(t);
@@ -135,12 +173,11 @@ void Puzzle::SplitFractal(Fractal* fractal) {
     //find fractal in m_Fractals and delete it
     //instantiate four subfractals and add them to m_Fractals
     glm::ivec2 index = fractal->GetIndex();
-    std::cout << "x: " << index.x << ", y: " << index.y << std::endl;
     int subFractalSize = fractal->GetSize() / 2;
-    glm::vec2 startCoords0 = Fractal::GetCoordsForTarget(glm::ivec2(index.x, index.y) , index, fractal->GetSize(), m_Dimensions, glm::vec2(x(), y()));
-    glm::vec2 startCoords1 = Fractal::GetCoordsForTarget(glm::ivec2(index.x + subFractalSize, index.y) , index, fractal->GetSize(), m_Dimensions, glm::vec2(x(), y()));
-    glm::vec2 startCoords2 = Fractal::GetCoordsForTarget(glm::ivec2(index.x, index.y + subFractalSize) , index, fractal->GetSize(), m_Dimensions, glm::vec2(x(), y()));
-    glm::vec2 startCoords3 = Fractal::GetCoordsForTarget(glm::ivec2(index.x + subFractalSize, index.y + subFractalSize) , index, fractal->GetSize(), m_Dimensions, glm::vec2(x(), y()));
+    glm::vec2 startCoords0 = Fractal::GetCoordsForTarget(glm::ivec2(index.x, index.y), subFractalSize, index, fractal->GetSize(), m_Dimensions, glm::vec2(x(), y()));
+    glm::vec2 startCoords1 = Fractal::GetCoordsForTarget(glm::ivec2(index.x + subFractalSize, index.y) , subFractalSize, index, fractal->GetSize(), m_Dimensions, glm::vec2(x(), y()));
+    glm::vec2 startCoords2 = Fractal::GetCoordsForTarget(glm::ivec2(index.x, index.y + subFractalSize) , subFractalSize, index, fractal->GetSize(), m_Dimensions, glm::vec2(x(), y()));
+    glm::vec2 startCoords3 = Fractal::GetCoordsForTarget(glm::ivec2(index.x + subFractalSize, index.y + subFractalSize) , subFractalSize, index, fractal->GetSize(), m_Dimensions, glm::vec2(x(), y()));
 
     //todo: this code only works for 2x2 - how to generalize to allow splitting 4x4
     Fractal* fractal0 = new Fractal({fractal->GetElements().at(0)}, {index.x, index.y}, glm::vec2(startCoords0.x, startCoords0.y), GetIndex());
@@ -163,19 +200,20 @@ void Puzzle::SplitFractal(Fractal* fractal) {
     fractal2->MoveTo(endCoords2);
     fractal3->MoveTo(endCoords3);
 
-    RemoveFractal(fractal);
-    
+    std::vector<Fractal*>::iterator iter = GetFractalIterator(fractal);
+    m_Fractals.erase(iter);
+    delete fractal; 
 }
 
-void Puzzle::RemoveFractal(Fractal* fractal) {
+
+std::vector<Fractal*>::iterator Puzzle::GetFractalIterator(Fractal* fractal) {
     std::vector<Fractal*>::iterator iter = m_Fractals.end();
 
     for(std::vector<Fractal*>::iterator i = m_Fractals.begin(); i < m_Fractals.end(); ++i) {
         if(&(*(*i)) == &(*fractal)) iter = i;
     }
 
-    m_Fractals.erase(iter);
-    delete fractal;
+    return iter;
 }
 
 
@@ -197,7 +235,7 @@ Fractal* Puzzle::GetClosestFractal(float mousex, float mousey) const {
 }
 
 FractalCorners Puzzle::FindFractalCorners(float mousex, float mousey) const {
-    FractalCorners fc = {nullptr, nullptr, nullptr, nullptr};
+    FractalCorners fc;
 
     Fractal* closestF = GetClosestFractal(mousex, mousey);
 
@@ -227,9 +265,9 @@ FractalCorners Puzzle::FindFractalCorners(float mousex, float mousey) const {
     }else{ //closest fractal is on right side of mouse
         if(closestF->y() - mousey < 0) { //closest fractal is below mouse
             bottomRight = closestF;
-            bottomLeft = GetFractal(glm::ivec2(index.x - 1, index.y));
-            topLeft = GetFractal(glm::ivec2(index.x - 1, index.y - 1));
-            topRight = GetFractal(glm::ivec2(index.x, index.y - 1));
+            bottomLeft = GetFractal(glm::ivec2(index.x - size, index.y));
+            topLeft = GetFractal(glm::ivec2(index.x - size, index.y - size));
+            topRight = GetFractal(glm::ivec2(index.x, index.y - size));
         }else{
             topRight = closestF;
             topLeft = GetFractal(glm::ivec2(index.x - size, index.y));
@@ -248,18 +286,22 @@ FractalCorners Puzzle::FindFractalCorners(float mousex, float mousey) const {
 
 void Puzzle::FormFractal(FractalCorners fc) {
     glm::ivec2 targetIndex = fc.TopLeft->GetIndex();
-    int targetSize = fc.TopLeft->GetSize() * 2;
-    glm::vec2 topLeftEndCoords = Fractal::GetCoordsForTarget(fc.TopLeft->GetIndex(), targetIndex, targetSize, m_Dimensions, glm::vec2(x(), y()));
+    int subFractalSize = fc.TopLeft->GetSize();
+    int targetSize = subFractalSize * 2;
+
+    glm::vec2 topLeftEndCoords = Fractal::GetCoordsForTarget(fc.TopLeft->GetIndex(), subFractalSize, targetIndex, targetSize, m_Dimensions, glm::vec2(x(), y()));
     fc.TopLeft->MoveTo(topLeftEndCoords);
-    glm::vec2 topRightEndCoords = Fractal::GetCoordsForTarget(fc.TopLeft->GetIndex(), targetIndex, targetSize, m_Dimensions, glm::vec2(x(), y()));
+    glm::vec2 topRightEndCoords = Fractal::GetCoordsForTarget(fc.TopRight->GetIndex(), subFractalSize, targetIndex, targetSize, m_Dimensions, glm::vec2(x(), y()));
     fc.TopRight->MoveTo(topRightEndCoords);
-    glm::vec2 bottomLeftEndCoords = Fractal::GetCoordsForTarget(fc.TopLeft->GetIndex(), targetIndex, targetSize, m_Dimensions, glm::vec2(x(), y()));
+    glm::vec2 bottomLeftEndCoords = Fractal::GetCoordsForTarget(fc.BottomLeft->GetIndex(), subFractalSize, targetIndex, targetSize, m_Dimensions, glm::vec2(x(), y()));
     fc.BottomLeft->MoveTo(bottomLeftEndCoords);
-    glm::vec2 bottomRightEndCoords = Fractal::GetCoordsForTarget(fc.TopLeft->GetIndex(), targetIndex, targetSize, m_Dimensions, glm::vec2(x(), y()));
+    glm::vec2 bottomRightEndCoords = Fractal::GetCoordsForTarget(fc.BottomRight->GetIndex(), subFractalSize, targetIndex, targetSize, m_Dimensions, glm::vec2(x(), y()));
     fc.BottomRight->MoveTo(bottomRightEndCoords);
-    //Set some variable /data in puzzle to destroy these four Fractals in OnAnimationEnd() and create a larger fractal in their place (also in OnAnimationEnd())
-        //remove the pointers from m_Fractals, and put them in m_SubFractals.  On animation end, create a larger fractal from the data is these four, 
-        //and destroy the four fractals and clear m_SubFractals
+
+    m_FractalCorners.TopLeft = fc.TopLeft;
+    m_FractalCorners.TopRight = fc.TopRight;
+    m_FractalCorners.BottomLeft = fc.BottomLeft;
+    m_FractalCorners.BottomRight = fc.BottomRight;
 }
 
 
