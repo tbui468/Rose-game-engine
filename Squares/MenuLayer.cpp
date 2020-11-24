@@ -135,7 +135,8 @@ namespace sqs {
 
         if(Puzzle* puzzle = GetOpenPuzzle()) {
             for(Fractal* fractal: puzzle->GetFractals()) {
-                if(fractal->LeftFlick(input, mouse.x, mouse.y)) {
+                if(fractal->LeftFlick(input, mouse.x, mouse.y)) { //currently set to right tap bc I'm too lazy to process inputs to register a flick now
+                   /* 
                     glm::ivec2 index = fractal->GetIndex();
                     std::cout << "x: " << index.x << ", y " << index.y << std::endl;
                     Fractal* otherFractal = puzzle->GetFractal(glm::ivec2(index.x - fractal->GetSize(), index.y)); //to get fractal to the left of current
@@ -144,23 +145,33 @@ namespace sqs {
 //                        fractal->RotateBy(1.5708f); 
                         SetAnimationStart();
                         break;
-                    }
+                    }*/
+                //break; //this isn't inside a loop so it's not necessary
                 }else if(fractal->LeftTap(input, mouse.x, mouse.y) && fractal->GetSize() > 1) {
                     SplitFractal(fractal);
                     SetAnimationStart();
                     break;
                 }
             } 
-/*            if(Fractal::PinchIn(input, mouse.x, mouse.y)) {
+
+            Fractal* f = puzzle->GetClosestFractal(mouse.x, mouse.y);
+            if(f) std::cout << f->GetIndex().x << ", " << f->GetIndex().y << std::endl;
+
+
+            //temp: testing formatin gof fractals to contrast splitting of them
+            if(input == rose::InputType::RightDown) {
                 FractalCorners fc = puzzle->FindFractalCorners(mouse.x, mouse.y); //fourFractals should be a pointer to a struct of Fractal pointers
+                /*
+                std::cout << "Top Left" << fc.TopLeft << std::endl;
+                std::cout << "Top Right" << fc.TopRight << std::endl;
+                std::cout << "Bottom Left" << fc.BottomLeft << std::endl;
+                std::cout << "Bottom Right" << fc.BottomRight << std::endl;*/
                 if(fc.TopLeft && fc.TopRight && fc.BottomLeft && fc.BottomRight) {
                     puzzle->FormFractal(fc); 
                     SetAnimationStart();
                 }
-                //break; //this isn't inside a loop so it's not necessary
-            }*/
+            }
         }
-
 
 
         if(m_Parameter < 1.0f && m_Start) {

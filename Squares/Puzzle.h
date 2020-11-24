@@ -35,11 +35,14 @@ class Puzzle: public rose::Entity {
         const std::vector<Fractal*>& GetFractals() const { return m_Fractals; }
         void SwapFractals(Fractal* fractalA, Fractal* fractalB);
         FractalCorners FindFractalCorners(float mousex, float mousey) const;
-        void FormFractal(FractalCorners* fc);
+        Fractal* GetClosestFractal(float mousex, float mousey) const;
+        void FormFractal(FractalCorners fc);
+        const glm::ivec2& GetDimensions() const { return m_Dimensions; }
     private:
         int m_Index;
         std::vector<Fractal*> m_Fractals;
         bool m_IsOpen {false};
+        glm::ivec2 m_Dimensions {0, 0};
 
     //static members/functions
     public:

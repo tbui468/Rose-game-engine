@@ -2,14 +2,20 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-   
+    GetFractalCorners buggy
+        how to test if it's working?
+        then try to fix it so that the tests work
+
     Implement FormFractals(FractalCorners* fc) in Puzzle class
         then test by implementing user input to trigger the command 
+
+    Generalize splitting and forming fractals to allow sizes between 1 and 4, inclusive
+
+    Generalize puzzle dimensions to allow non-square puzzles (there are a bunch of 4x4 magic numbers sprinkled throughout my hacky code) 
 
     Fractals should update texture and spritedata on every transformation 
         (currently in OnANimationEnd(), but that's every inefficient)
         create a transform() function that calls the texture/sprite update functions
-        
 
     Benchmarking - use website to drag/drop JSON file
         look at Instrumentor class (and utility classes) on Hazel/Debug
@@ -19,14 +25,6 @@ Fractals - the big one here.  The last large piece to get back to working status
 
         can check virtual memory using windows functions - google the stackoverflow examples
         
-
-    Pinchout and pinchin Fractals to change sizes
-        First get split working (since it's easier)
-            Write Puzzle::Split(Fractal* f)
-            Will need to change Fractal constructor to allow different fractal sizes 
-                this will require a way to create new textures....this might be tricky
-            will need to write static Fractal functions that calculate fractal location based on size and target size
-                
 
     Entity uses the singleton GetApplication() to draw
         Make a RenderCommand purely static class so that Entity can call it without needing access to application/renderer

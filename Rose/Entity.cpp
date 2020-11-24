@@ -81,6 +81,8 @@ bool Entity::LeftTap(InputType input, float x, float y) const {
 }
 
 bool Entity::PointCollision(float pointX, float pointY) const {
+    pointX *= g_Scale;
+    pointY *= g_Scale;
     if(pointX < m_Pos.x + m_BoundingBox.x - m_BoundingBox.z * .5f) return false;
     if(pointY < m_Pos.y + m_BoundingBox.y - m_BoundingBox.w * .5f) return false;
     if(pointX > m_Pos.x + m_BoundingBox.x + m_BoundingBox.z * .5f) return false;

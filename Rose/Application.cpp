@@ -39,7 +39,7 @@ namespace rose {
 
         std::cout << exePathString << std::endl;
 
-        bool fullScreen = true;
+        bool fullScreen = false;
         m_Window = std::make_shared<Window>(960, 540, fullScreen);
 
         bool vsync = false;
@@ -147,6 +147,9 @@ namespace rose {
         //mouse coords * (world space / screen space ratio)
         mouseCoords.x *= (GetProjWidth() / GetWindowWidth());
         mouseCoords.y *= (GetProjHeight() / GetWindowHeight());
+
+        mouseCoords.x *= 1.0f / g_Scale;
+        mouseCoords.y *= 1.0f / g_Scale;
 
         return mouseCoords;
     }
