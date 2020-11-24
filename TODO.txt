@@ -2,16 +2,20 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-    SPlitting a 4x4 creates 4 1x1 instead of the expected 4 2x2s
 
     Textures for Forming fractals not working
+        I'm setting them all to green for the moment
+        shouldn't need to make any changes to the textures for Forming and Splitting (since it doesn't change texture coords of individual fractals)
+            But the current system of storing data in vectors containing fractal element data is confusing
+
+        solution: make a grid class that has operations to perform rotation and reflection
 
     Generalize splitting and forming fractals to allow sizes between 1 and 4, inclusive
 
     Generalize puzzle dimensions to allow non-square puzzles (there are a bunch of 4x4 magic numbers sprinkled throughout my hacky code) 
 
     Fractals should update texture and spritedata on every transformation 
-        (currently in OnANimationEnd(), but that's every inefficient)
+        (currently in OnAnimationEnd(), but that's every inefficient)
         create a transform() function that calls the texture/sprite update functions
 
     Benchmarking - use website to drag/drop JSON file
@@ -22,20 +26,6 @@ Fractals - the big one here.  The last large piece to get back to working status
 
         can check virtual memory using windows functions - google the stackoverflow examples
         
-
-    Entity uses the singleton GetApplication() to draw
-        Make a RenderCommand purely static class so that Entity can call it without needing access to application/renderer
-            RenderCommand::StartScene() should also call RenderCommand::Clear() and any OpenGL commands needed before drawing
-            RenderCommand::AddQuad() //just adds vertices/indices.  called by Entites in Layer::Update(....)
-            RenderCommand::Draw() 
-            RenderCommand::EndScene(); //should clear the index/vertex buffers/swap screen buffers and do anyother cleanup needed for OpenGL
-
-    Renderer is bound to a context (the Window).  So who should own what?
-
-    let's keep the singleton for now, but I might get rid of it later
-
-
-
     1. Get Fractals responding to user input
         how should the inputdispatcher process inputs??
             write out the API I want to use in Squares.cpp to process all inputs coming in from Rose engine

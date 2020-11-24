@@ -1,12 +1,12 @@
 #include "Fractal.h"
 #include "Puzzle.h"
+#include "Grid.h"
 
 namespace sqs {
 
     
-    Fractal::Fractal(const std::vector<FractalElement>& elements, const glm::ivec2& index, const glm::vec2& pos, int puzzleNumber) 
+    Fractal::Fractal(Grid<FractalElement> elements, const glm::ivec2& index, const glm::vec2& pos, int puzzleNumber) 
         : Fractal(MakeEntityData(elements, index, pos, puzzleNumber)){
-            m_Size = floor(sqrt(elements.size() + 1));
             m_Index = index;
             m_Elements = elements;
             m_PuzzleNumber = puzzleNumber;
@@ -26,11 +26,11 @@ namespace sqs {
         return glm::ivec2(index.x * UnitSize() + puzzleNumber * 256, 256 - (index.y + 1) * UnitSize()); 
     }
 
-    rose::EntityData Fractal::MakeEntityData(const std::vector<FractalElement>& elements, const glm::ivec2& index, const glm::vec2& pos, int puzzleNumber) {
+    rose::EntityData Fractal::MakeEntityData(const Grid<FractalElement>& elements, const glm::ivec2& index, const glm::vec2& pos, int puzzleNumber) {
 
         UpdateTextureData(elements, index, puzzleNumber);
 
-        int size = floor(sqrt(elements.size() + 1));
+        int size = elements.GetSize();
         float fWidth = UnitSize() * size;
         float fHeight = UnitSize() * size;
 
@@ -63,9 +63,9 @@ namespace sqs {
     }
 
 
-    void Fractal::UpdateTextureData(const std::vector<FractalElement>& elements, const glm::ivec2& index, int puzzleNumber) {
+    void Fractal::UpdateTextureData(const Grid<FractalElement>& elements, const glm::ivec2& index, int puzzleNumber) {
 
-        int size = floor(sqrt(elements.size() + 1));
+        int size = elements.GetSize();
         float fWidth = UnitSize() * size;
         float fHeight = UnitSize() * size;
 
@@ -82,7 +82,7 @@ namespace sqs {
                 texMapping.push_back({{texStart.x + col * UnitSize(), texStart.y - row * UnitSize()}, {0, 0}, {UnitSize(), UnitSize()}}); //fractal frame
                 
                 //elements are drawn inside fractal frame, so start point is offset by 1 and side length is reduced by 2 in each dimension
-                switch(elements.at(row * size + col)) {
+                switch(elements.At(col, row)) {
                     case FractalElement::Red:
                         texMapping.push_back({{texStart.x + col * UnitSize() + 1, texStart.y - row * UnitSize() + 1}, 
                                              {UnitSize() + 1, 1}, {UnitSize() - 2, UnitSize() - 2}});
@@ -139,8 +139,8 @@ namespace sqs {
     bool Fractal::Contains(const glm::ivec2& index) const {
         if(index.x < m_Index.x) return false;
         if(index.y < m_Index.y) return false;
-        if(index.x >= m_Index.x + m_Size) return false;
-        if(index.y >= m_Index.y + m_Size) return false;
+        if(index.x >= m_Index.x + GetSize()) return false;
+        if(index.y >= m_Index.y + GetSize()) return false;
         return true;
     }
 
