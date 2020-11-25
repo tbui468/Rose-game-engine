@@ -2,13 +2,12 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
+    TODO: 2 things before anything
+        -GetSubElementsI, IMat2 and IMat4 - currently return identity matrices
 
-    Textures for Forming fractals not working
-        I'm setting them all to green for the moment
-        shouldn't need to make any changes to the textures for Forming and Splitting (since it doesn't change texture coords of individual fractals)
-            But the current system of storing data in vectors containing fractal element data is confusing
+        -Puzzle class OnAnimationEnd() - currently returning an imat4 identity matrix
 
-        solution: make a grid class that has operations to perform rotation and reflection
+
 
     Generalize splitting and forming fractals to allow sizes between 1 and 4, inclusive
 
@@ -67,3 +66,5 @@ Set build (x86 or x64) (or should this be a build option???)
 Build on linux virtual machine to test different compiler (GCC)
 
 Need to make sure MAX_VERTEX size in shaders are below hardware max 
+
+

@@ -4,6 +4,14 @@
 #include <vector>
 
 namespace sqs {
+/*
+    template <typename T>
+    struct GridCorners {
+        Grid<T> TopLeft;
+        Grid<T> TopRight;
+        Grid<T> BottomLeft;
+        Grid<T> BottomRight;
+    };*/
 
     template <class T>
     class Grid {
@@ -26,7 +34,7 @@ namespace sqs {
                 m_Elements = elements;
                 m_Size = floor(sqrt(elements.size() + 1));
             }
-            std::vector<T> GetSubElements(const glm::ivec2& start, int size) const {
+            Grid<T> GetSubElements(const glm::ivec2& start, int size) const {
                 std::vector<T> subElements;
 
                 for(int row = start.y; row < start.y + size; ++row) {
@@ -35,8 +43,12 @@ namespace sqs {
                     }
                 }
 
-                return subElements;
+                return Grid<T>(subElements);
             }
+            /*
+            static Grid<T> FormGrid(GridCorners gc) {
+                return gc.TopLeft;
+            }*/
         private:
             std::vector<T> m_Elements;
             int m_Size {0};

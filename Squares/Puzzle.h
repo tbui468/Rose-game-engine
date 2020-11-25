@@ -3,17 +3,16 @@
 
 #include <array>
 #include "Rose.h"
+#include "Fractal.h"
 
 namespace sqs {
 
-class Fractal;
-
 
 struct FractalCorners {
-    Fractal* TopLeft {nullptr};
-    Fractal* TopRight {nullptr};
-    Fractal* BottomLeft {nullptr};
-    Fractal* BottomRight {nullptr};
+    BaseFractal* TopLeft {nullptr};
+    BaseFractal* TopRight {nullptr};
+    BaseFractal* BottomLeft {nullptr};
+    BaseFractal* BottomRight {nullptr};
 };
 
 class Puzzle: public rose::Entity {
@@ -24,23 +23,23 @@ class Puzzle: public rose::Entity {
         bool IsOpen() const { return m_IsOpen; }
         void Open();
         void Close();
-        void SplitFractal(Fractal* fractal);
-        std::vector<Fractal*>::iterator GetFractalIterator(Fractal* fractal);
+        void SplitFractal(BaseFractal* fractal);
+        std::vector<BaseFractal*>::iterator GetFractalIterator(BaseFractal* fractal);
         virtual void Draw() const override;
         virtual void MoveTo(const glm::vec2& pos) override;
         virtual void MoveBy(const glm::vec2& shift) override;
         virtual void OnAnimationEnd() override;
         virtual void OnAnimationUpdate(float t) override;
-        Fractal* GetFractal(const glm::ivec2& index) const;
-        const std::vector<Fractal*>& GetFractals() const { return m_Fractals; }
-        void SwapFractals(Fractal* fractalA, Fractal* fractalB);
+        BaseFractal* GetFractal(const glm::ivec2& index) const;
+        const std::vector<BaseFractal*>& GetFractals() const { return m_Fractals; }
+        void SwapFractals(BaseFractal* fractalA, BaseFractal* fractalB);
         FractalCorners FindFractalCorners(float mousex, float mousey) const;
-        Fractal* GetClosestFractal(float mousex, float mousey) const;
+        BaseFractal* GetClosestFractal(float mousex, float mousey) const;
         void FormFractal(FractalCorners fc);
         const glm::ivec2& GetDimensions() const { return m_Dimensions; }
     private:
         int m_Index;
-        std::vector<Fractal*> m_Fractals;
+        std::vector<BaseFractal*> m_Fractals;
         FractalCorners m_FractalCorners {nullptr, nullptr, nullptr, nullptr};
         bool m_IsOpen {false};
         glm::ivec2 m_Dimensions {0, 0};

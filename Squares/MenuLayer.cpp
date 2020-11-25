@@ -12,6 +12,9 @@ namespace sqs {
 
 
     MenuLayer::MenuLayer(): Layer() {
+        Fractal<int> f0(1, glm::ivec2(0, 0), glm::vec2(0.0f, 0.0f), 0);
+        Fractal<glm::imat2> f1(glm::imat2(0), glm::ivec2(0, 0), glm::vec2(0.0f, 0.0f), 0);
+        Fractal<glm::imat4> f2(glm::imat4(0), glm::ivec2(0, 0), glm::vec2(0.0f, 0.0f), 0);
         const rose::Sprite startSprite = {{0, 96}, {64, 32}, rose::TextureType::Default};
         const rose::Sprite quitSprite = {{64, 0}, {64, 32}, rose::TextureType::Default};
         const rose::Sprite closeSprite = {{96, 96}, {32, 32}, rose::TextureType::Default};
@@ -85,7 +88,7 @@ namespace sqs {
         SetAnimationStart();
     }
 
-    void MenuLayer::SplitFractal(Fractal* fractal) {
+    void MenuLayer::SplitFractal(BaseFractal* fractal) {
         Puzzle* puzzle = GetOpenPuzzle();
         puzzle->SplitFractal(fractal);
         SetAnimationStart();
@@ -134,7 +137,7 @@ namespace sqs {
         }
 
         if(Puzzle* puzzle = GetOpenPuzzle()) {
-            for(Fractal* fractal: puzzle->GetFractals()) {
+            for(BaseFractal* fractal: puzzle->GetFractals()) {
                 if(fractal->LeftFlick(input, mouse.x, mouse.y)) { //currently set to right tap bc I'm too lazy to process inputs to register a flick now
                    /* 
                     glm::ivec2 index = fractal->GetIndex();
@@ -147,7 +150,7 @@ namespace sqs {
                         break;
                     }*/
                 //break; //this isn't inside a loop so it's not necessary
-                }else if(fractal->LeftTap(input, mouse.x, mouse.y) && fractal->GetSize() > 1) {
+                }else if(fractal->LeftTap(input, mouse.x, mouse.y) && !dynamic_cast<Fractal<int>*>(fractal)) { //dynamic cast is checking if fractal size == 1 
                     SplitFractal(fractal);
                     SetAnimationStart();
                     break;

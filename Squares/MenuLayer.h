@@ -2,13 +2,13 @@
 #define MENU_LAYER_H
 
 #include "Rose.h"
+#include "Fractal.h"
 
 namespace sqs {
 
     class Button;
     class PuzzleSet;
     class Puzzle;
-    class Fractal;
 
     class MenuLayer: public rose::Layer {
         public:
@@ -26,7 +26,7 @@ namespace sqs {
             void ClosePuzzleSet(PuzzleSet* puzzleSet);
             void OpenPuzzle(Puzzle* puzzle);
             void SetAnimationStart();
-            void SplitFractal(Fractal* fractal);
+            void SplitFractal(BaseFractal* fractal);
         private:
             Button* m_QuitButton;
             Button* m_StartButton;
