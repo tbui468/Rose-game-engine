@@ -89,25 +89,32 @@ void Puzzle::OnAnimationEnd() {
             Fractal<int>* topRight = dynamic_cast<Fractal<int>*>(m_FractalCorners.TopRight);
             Fractal<int>* bottomLeft = dynamic_cast<Fractal<int>*>(m_FractalCorners.BottomLeft);
             Fractal<int>* bottomRight = dynamic_cast<Fractal<int>*>(m_FractalCorners.BottomRight);
-            glm::imat2 mat{ topLeft->GetSubElementsI({index.x, index.y}),
-                            topRight->GetSubElementsI({index.x + 1, index.y}),
-                            bottomLeft->GetSubElementsI({index.x, index.y + 1}),
-                            bottomRight->GetSubElementsI({index.x + 1, index.y + 1})};
+            
+            glm::imat2 mat{ topLeft->GetSubElementsI({0, 0}),
+                            topRight->GetSubElementsI({0, 0}),
+                            bottomLeft->GetSubElementsI({0, 0}),
+                            bottomRight->GetSubElementsI({0, 0})};
 
             m_Fractals.emplace_back(new Fractal<glm::imat2>(mat, index, coords, GetIndex()));
         }else if(size == 2) {
-            //make a imat4 of elements in subfractals
-            Fractal<glm::imat2>* topLeft = dynamic_cast<Fractal<glm::imat2>*>(m_FractalCorners.TopLeft);
-            Fractal<glm::imat2>* topRight = dynamic_cast<Fractal<glm::imat2>*>(m_FractalCorners.TopRight);
-            Fractal<glm::imat2>* bottomLeft = dynamic_cast<Fractal<glm::imat2>*>(m_FractalCorners.BottomLeft);
-            Fractal<glm::imat2>* bottomRight = dynamic_cast<Fractal<glm::imat2>*>(m_FractalCorners.BottomRight);
-            /*
-            glm::imat4 mat{ topLeft->GetSubElementsIMat2({index.x, index.y}),
-                            topRight->GetSubElementsIMat2({index.x + 2, index.y}),
-                            bottomLeft->GetSubElementsIMat2({index.x, index.y + 2}),
-                            bottomRight->GetSubElementsIMat2({index.x + 2, index.y + 2})};*/
 
-            glm::imat4 mat(1);
+            glm::imat2 mat00 = dynamic_cast<Fractal<glm::imat2>*>(m_FractalCorners.TopLeft)->GetSubElementsIMat2({0, 0});
+            glm::imat2 mat10 = dynamic_cast<Fractal<glm::imat2>*>(m_FractalCorners.TopRight)->GetSubElementsIMat2({0, 0});
+            glm::imat2 mat01 = dynamic_cast<Fractal<glm::imat2>*>(m_FractalCorners.BottomLeft)->GetSubElementsIMat2({0, 0});
+            glm::imat2 mat11 = dynamic_cast<Fractal<glm::imat2>*>(m_FractalCorners.BottomRight)->GetSubElementsIMat2({0, 0});
+
+            int arr[16];
+
+            for(int row = 0; row < 2; ++row) {
+                for(int col = 0; col < 2; ++col) {
+                    arr[(0 + col) + 4 * (0 + row)] = glm::value_ptr(mat00)[row * 2 + col];  
+                    arr[(2 + col) + 4 * (0 + row)] = glm::value_ptr(mat10)[row * 2 + col];  
+                    arr[(0 + col) + 4 * (2 + row)] = glm::value_ptr(mat01)[row * 2 + col];  
+                    arr[(2 + col) + 4 * (2 + row)] = glm::value_ptr(mat11)[row * 2 + col];  
+                }
+            }
+
+            glm::imat4 mat = glm::make_mat4(arr);
 
             m_Fractals.emplace_back(new Fractal<glm::imat4>(mat, index, coords, GetIndex()));
         }else{
@@ -195,25 +202,26 @@ void Puzzle::SplitFractal(BaseFractal* fractal) {
 
     if(subFractalSize == 1) {
         Fractal<glm::imat2>* f = dynamic_cast<Fractal<glm::imat2>*>(fractal);
-        fractal0 = new Fractal(f->GetSubElementsI({index.x, index.y}), {index.x, index.y}, 
+        fractal0 = new Fractal(f->GetSubElementsI({0, 0}), {index.x, index.y}, 
                                glm::vec2(startCoords0.x, startCoords0.y), GetIndex());
-        fractal1 = new Fractal(f->GetSubElementsI({index.x + subFractalSize, index.y}), {index.x + subFractalSize, index.y}, 
+        fractal1 = new Fractal(f->GetSubElementsI({subFractalSize, 0}), {index.x + subFractalSize, index.y}, 
                                glm::vec2(startCoords1.x, startCoords1.y), GetIndex());
-        fractal2 = new Fractal(f->GetSubElementsI({index.x, index.y + subFractalSize}), {index.x, index.y + subFractalSize}, 
+        fractal2 = new Fractal(f->GetSubElementsI({0, subFractalSize}), {index.x, index.y + subFractalSize}, 
                                glm::vec2(startCoords2.x, startCoords2.y), GetIndex());
-        fractal3 = new Fractal(f->GetSubElementsI({index.x + subFractalSize, index.y + subFractalSize}), {index.x + subFractalSize, index.y + subFractalSize},
+        fractal3 = new Fractal(f->GetSubElementsI({subFractalSize, subFractalSize}), {index.x + subFractalSize, index.y + subFractalSize},
                                glm::vec2(startCoords3.x, startCoords3.y), GetIndex());
     }else if(subFractalSize == 2) {
         Fractal<glm::imat4>* f = dynamic_cast<Fractal<glm::imat4>*>(fractal);
-        fractal0 = new Fractal(f->GetSubElementsIMat2({index.x, index.y}), {index.x, index.y}, 
+        fractal0 = new Fractal(f->GetSubElementsIMat2({0, 0}), {index.x, index.y}, 
                                glm::vec2(startCoords0.x, startCoords0.y), GetIndex());
-        fractal1 = new Fractal(f->GetSubElementsIMat2({index.x + subFractalSize, index.y}), {index.x + subFractalSize, index.y},
+        fractal1 = new Fractal(f->GetSubElementsIMat2({subFractalSize, 0}), {index.x + subFractalSize, index.y},
                                glm::vec2(startCoords1.x, startCoords1.y), GetIndex());
-        fractal2 = new Fractal(f->GetSubElementsIMat2({index.x, index.y + subFractalSize}), {index.x, index.y + subFractalSize}, 
+        fractal2 = new Fractal(f->GetSubElementsIMat2({0, subFractalSize}), {index.x, index.y + subFractalSize}, 
                                glm::vec2(startCoords2.x, startCoords2.y), GetIndex());
-        fractal3 = new Fractal(f->GetSubElementsIMat2({index.x + subFractalSize, index.y + subFractalSize}), {index.x + subFractalSize, index.y + subFractalSize}, 
+        fractal3 = new Fractal(f->GetSubElementsIMat2({subFractalSize, subFractalSize}), {index.x + subFractalSize, index.y + subFractalSize}, 
                                glm::vec2(startCoords3.x, startCoords3.y), GetIndex());
     }else {
+        std::cout << "Subfractal size" << std::endl;
         assert(false);
     }
     

@@ -2,14 +2,6 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
 Fractals - the big one here.  The last large piece to get back to working status
 
-    TODO: 2 things before anything
-        -GetSubElementsI, IMat2 and IMat4 - currently return identity matrices
-
-        -Puzzle class OnAnimationEnd() - currently returning an imat4 identity matrix
-
-
-
-    Generalize splitting and forming fractals to allow sizes between 1 and 4, inclusive
 
     Generalize puzzle dimensions to allow non-square puzzles (there are a bunch of 4x4 magic numbers sprinkled throughout my hacky code) 
 

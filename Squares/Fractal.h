@@ -4,6 +4,7 @@
 #include "Rose.h"
 #include "BaseFractal.h"
 #include <glm/gtc/matrix_integer.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace sqs {
 
@@ -13,7 +14,7 @@ namespace sqs {
     int GetFractalSize(BaseFractal* f);
 
     enum class FractalElement {
-        Empty,
+        Empty = 0,
         Red,
         Blue,
         Green
@@ -65,36 +66,31 @@ namespace sqs {
                 return true;
             }
 
-            int GetSubElementsI(const glm::ivec2& start) const {
-                //return m_Elements;
-                return 1;
+            int GetSubElementsI(const glm::ivec2& startOffset) const {
+                const int* ptr = (const int*)&m_Elements;
+                return ptr[startOffset.y * GetFractalSize((BaseFractal*)this) + startOffset.x];
             }
 
-            glm::imat2 GetSubElementsIMat2(const glm::ivec2& start) const {
-                /*
+            glm::imat2 GetSubElementsIMat2(const glm::ivec2& startOffset) const {
                 int arr[4];
-                for(int row = start.y; row < start.y + 2; ++row) {
-                    for(int col = start.x; col < start.x + 2; ++col) {
-                        arr[(row - start.y) * 2 + (col - start.x)] = m_Elements[row * 2 + col];
+                const int* ptr = (const int*)&m_Elements;
+                for(int row = startOffset.y; row < startOffset.y + 2; ++row) {
+                    for(int col = startOffset.x; col < startOffset.x + 2; ++col) {
+                        arr[(row - startOffset.y) * 2 + (col - startOffset.x)] = ptr[row * GetFractalSize((BaseFractal*)this) + col];
                     }
                 }
-                return glm::make_imat2(arr);
-                */
-                //temp: 
-                return glm::imat2(0);
+                return glm::make_mat2(arr);
             }
 
-            glm::imat4 GetSubElementsIMat4(const glm::ivec2& start) const {
-                /*
+            glm::imat4 GetSubElementsIMat4(const glm::ivec2& startOffset) const {
                 int arr[16];
-                for(int row = start.y; row < start.y + 4; ++row) {
-                    for(int col = start.x; col < start.x + 4; ++col) {
-                        arr[(row - start.y) * 4 + (col - start.x)] = m_Elements[row * 4 + col];
+                const int* ptr = (const int*)&m_Elements;
+                for(int row = startOffset.y; row < startOffset.y + 4; ++row) {
+                    for(int col = startOffset.x; col < startOffset.x + 4; ++col) {
+                        arr[(row - startOffset.y) * 4 + (col - startOffset.x)] = ptr[row * GetFractalSize((BaseFractal*)this) + col];
                     }
                 }
-                return glm::make_imat4(arr);*/
-                //temp: 
-                return glm::imat4(0);
+                return glm::make_mat4(arr);
             }
 
         private:
