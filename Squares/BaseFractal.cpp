@@ -25,7 +25,8 @@ namespace sqs {
 
     glm::vec2 BaseFractal::GetCoords(const glm::ivec2& index, int size, const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos) {
         float puzzleWidth = (puzzleDim.x - 1) * (UnitSize() + UnitMargin()); //this gives us width/height if all fractals are 1x1
-        glm::vec2 topLeftGrid = glm::vec2(puzzlePos.x - puzzleWidth / 2.0f, puzzlePos.y + puzzleWidth/ 2.0f); //this gives center of topleft fractal
+        float puzzleHeight = (puzzleDim.y - 1) * (UnitSize() + UnitMargin());
+        glm::vec2 topLeftGrid = glm::vec2(puzzlePos.x - puzzleWidth / 2.0f, puzzlePos.y + puzzleHeight/ 2.0f); //this gives center of topleft fractal
         glm::vec2 topLeftFractal = glm::vec2(topLeftGrid.x + index.x * (UnitSize() + UnitMargin()), 
                 topLeftGrid.y - index.y * (UnitSize() + UnitMargin()));
         float fractalWidth = (size - 1) * (UnitSize() + UnitMargin());

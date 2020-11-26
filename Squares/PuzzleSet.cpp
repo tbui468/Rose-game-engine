@@ -26,11 +26,17 @@ namespace sqs {
             m_PuzzleList.emplace_back(new Puzzle(&elements[0], glm::ivec2(2, 2), glm::vec2(360.0f + Puzzle::GetSpacing() * i, 0.0f), i));
         }
 
-        FractalElement elements1[] = {FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty, 
+        FractalElement elements1[] = {FractalElement::Block, FractalElement::Green, FractalElement::Blue, FractalElement::Empty, 
                                       FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty,
-                                      FractalElement::Red};
-        for(int i = 4; i < 8; ++i) {
+                                      FractalElement::Block};
+        for(int i = 4; i < 6; ++i) {
             m_PuzzleList.emplace_back(new Puzzle(&elements1[0], glm::ivec2(3, 3), glm::vec2(360.0f + Puzzle::GetSpacing() * i, 0.0f), i));
+        }
+
+        FractalElement elements2[] = {FractalElement::Block, FractalElement::Green, FractalElement::Blue, FractalElement::Empty, 
+                                      FractalElement::Red, FractalElement::Green, FractalElement::Block, FractalElement::Empty};
+        for(int i = 6; i < 8; ++i) {
+            m_PuzzleList.emplace_back(new Puzzle(&elements2[0], glm::ivec2(4, 2), glm::vec2(360.0f + Puzzle::GetSpacing() * i, 0.0f), i));
         }
 
         OpenPuzzle(m_PuzzleList.at(0));

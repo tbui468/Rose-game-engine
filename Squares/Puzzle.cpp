@@ -22,8 +22,10 @@ Puzzle::Puzzle(FractalElement* elements, const glm::ivec2& dimensions, const glm
         for(int row = 0; row < dimensions.y; ++row) {
             for(int col = 0; col < dimensions.x; ++col) {
                 FractalElement element = elements[row * dimensions.x + col];
-                glm::vec2 startCoords = BaseFractal::GetCoords({col, row}, 1, m_Dimensions, glm::vec2(x(), y()));
-                m_Fractals.emplace_back(new Fractal<int>((int)element, {col, row}, glm::vec2(startCoords.x, startCoords.y), GetIndex()));
+                if(element != FractalElement::Block) {
+                    glm::vec2 startCoords = BaseFractal::GetCoords({col, row}, 1, m_Dimensions, glm::vec2(x(), y()));
+                    m_Fractals.emplace_back(new Fractal<int>((int)element, {col, row}, glm::vec2(startCoords.x, startCoords.y), GetIndex()));
+                }
             }
         }
 }
