@@ -15,6 +15,7 @@ namespace sqs {
 
     enum class FractalElement {
         Empty = 0,
+        Block,
         Red,
         Blue,
         Green

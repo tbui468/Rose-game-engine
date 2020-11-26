@@ -59,10 +59,8 @@ target_include_directories(Squares PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR
 target_link_libraries(Squares Rose)
 #target_compile_options(Squares PRIVATE "/analyze")
 
-
 add_custom_command(TARGET Squares POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${SDL_LIB_DIR}/SDL2.dll"
     $<TARGET_FILE_DIR:Squares>)
-
 

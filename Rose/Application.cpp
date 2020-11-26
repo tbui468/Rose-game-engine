@@ -29,10 +29,12 @@ namespace rose {
         m_Quit = true;
     }
 
+
     Application::Application() {
         if(SDL_Init(SDL_INIT_VIDEO) != 0) {
             std::cout << "SDL_Init error!!!" << SDL_GetError() << std::endl;
         }
+
 
         char* exePath = GetExecutablePath();
         std::string exePathString(exePath);
@@ -90,6 +92,8 @@ namespace rose {
                 glm::ivec2 mousePos = GetMousePos();
 
                 if(input == InputType::Quit) m_Quit = true;
+
+                //if(input == InputType::LeftDown) play sound here
             
                 m_Quit = m_Layer->Update(m_DeltaTime, input, mousePos);
             }

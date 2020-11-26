@@ -35,6 +35,7 @@ namespace sqs {
         m_Entities.push_back((rose::Entity*)m_QuitButton);
         m_Entities.push_back((rose::Entity*)m_CloseButton);
         for(PuzzleSet* ps: PuzzleSet::GetSets()) m_Entities.push_back((rose::Entity*)ps);
+
     }
 
     MenuLayer::~MenuLayer() {

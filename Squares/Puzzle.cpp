@@ -13,27 +13,20 @@ float PointDistance(const glm::ivec2& start, const glm::ivec2& end) {
     return sqrt(deltaXSqr + deltaYSqr);
 }
 
-Puzzle::Puzzle(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos, int index) :
-        Entity(sprite, size, boundingBox, pos) {
-            m_Index = index; 
-            m_Dimensions = {4 , 4}; //temp: hard coding dimensions for now
+Puzzle::Puzzle(FractalElement* elements, const glm::ivec2& dimensions, const glm::vec2& pos, int index) 
+   : Entity(GetSprite(), GetObjectSize(), GetBoundingBox(), pos) {
+        m_Index = index;
+        m_Dimensions = dimensions;
 
-            glm::imat2 mat0{ FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty };
-            glm::vec2 startCoords0 = BaseFractal::GetCoords({0, 0}, 2, m_Dimensions, glm::vec2(x(), y()));
-            m_Fractals.emplace_back(new Fractal<glm::imat2>(mat0, {0, 0}, glm::vec2(startCoords0.x, startCoords0.y), GetIndex()));
-
-            glm::imat2 mat1{ FractalElement::Red, FractalElement::Red, FractalElement::Red, FractalElement::Red };
-            glm::vec2 startCoords1 = BaseFractal::GetCoords({2, 0}, 2, m_Dimensions, glm::vec2(x(), y()));
-            m_Fractals.emplace_back(new Fractal<glm::imat2>(mat1, {2, 0}, glm::vec2(startCoords1.x, startCoords1.y), GetIndex()));
-
-            glm::imat2 mat2{ FractalElement::Green, FractalElement::Green, FractalElement::Green, FractalElement::Green };
-            glm::vec2 startCoords2 = BaseFractal::GetCoords({0, 2}, 2, m_Dimensions, glm::vec2(x(), y()));
-            m_Fractals.emplace_back(new Fractal<glm::imat2>(mat2, {0, 2}, glm::vec2(startCoords2.x, startCoords2.y), GetIndex()));
-
-            glm::imat2 mat3{ FractalElement::Blue, FractalElement::Blue, FractalElement::Blue, FractalElement::Blue };
-            glm::vec2 startCoords = BaseFractal::GetCoords({2, 2}, 2, m_Dimensions, glm::vec2(x(), y()));
-            m_Fractals.emplace_back(new Fractal<glm::imat2>(mat3, {2, 2}, glm::vec2(startCoords.x, startCoords.y), GetIndex()));
+        //make a bunch of 1x1 fractals as starting point for all puzzles
+        for(int row = 0; row < dimensions.y; ++row) {
+            for(int col = 0; col < dimensions.x; ++col) {
+                FractalElement element = elements[row * dimensions.x + col];
+                glm::vec2 startCoords = BaseFractal::GetCoords({col, row}, 1, m_Dimensions, glm::vec2(x(), y()));
+                m_Fractals.emplace_back(new Fractal<int>((int)element, {col, row}, glm::vec2(startCoords.x, startCoords.y), GetIndex()));
+            }
         }
+}
 
 
 Puzzle::~Puzzle() {

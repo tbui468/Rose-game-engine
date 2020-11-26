@@ -1,9 +1,21 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-Fractals - the big one here.  The last large piece to get back to working status
+    THE BIG THREE:
+        1. Audio - FMOD (spend the mornings one this)
+        2. Save/load system - SDL_GetPrefPath
+        3. Core Features - transformations/splitting/forming and puzzle clear/puzzleset clear
 
+    Implement block fractals (invisible ones)
 
-    Generalize puzzle dimensions to allow non-square puzzles (there are a bunch of 4x4 magic numbers sprinkled throughout my hacky code) 
+    Implement all transformations + fractal changes with temporary controls to test entire gameplay system
+
+    PuzzleClear/PuzzleSetClear status and checks on transformations
+
+    Save/Load system for puzzles and progress
+
+    Undo system (which requires save/load system in place)
+
+    Add visual touches, like blurred fractals in front/behind play field that move along with puzzles to give illusion of depth and provide more animations
 
     Fractals should update texture and spritedata on every transformation 
         (currently in OnAnimationEnd(), but that's every inefficient)
