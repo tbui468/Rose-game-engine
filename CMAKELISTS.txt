@@ -24,6 +24,8 @@ set (SDL_LIB_DIR ${CMAKE_SOURCE_DIR}/vendor/sdl/SDL2-2.0.12/lib/x64)
 set (GLAD_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendor/glad/include)
 set (GLM_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendor/glm/glm-0.9.9.8)
 set (STB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendor/stb/include)
+set (FMOD_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendor/FMOD\ SoundSystem/FMOD\ Studio\ API\ Windows/api/core/inc)
+set (FMOD_LIB_DIR ${CMAKE_SOURCE_DIR}/vendor/FMOD\ SoundSystem/FMOD\ Studio\ API\ Windows/api/core/lib/x64)
 set (ROSE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Rose)
 
 
@@ -39,8 +41,13 @@ add_library(Rose STATIC
     "Rose/renderer/Batch.cpp"
     "Rose/renderer/Shader.cpp")
 #target_compile_options(Rose PRIVATE "/analyze")
-target_include_directories(Rose PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${STB_INCLUDE_DIR} ${ROSE_INCLUDE_DIR} ${GLM_INCLUDE_DIR})
-target_link_libraries(Rose ${SDL_LIB_DIR}/SDL2main.lib ${SDL_LIB_DIR}/SDL2.lib Glad)
+target_include_directories(Rose PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${STB_INCLUDE_DIR} ${ROSE_INCLUDE_DIR} ${GLM_INCLUDE_DIR} ${FMOD_INCLUDE_DIR})
+target_link_libraries(Rose 
+    ${SDL_LIB_DIR}/SDL2main.lib 
+    ${SDL_LIB_DIR}/SDL2.lib 
+    Glad 
+    ${FMOD_LIB_DIR}/fmod_vc.lib
+    ${FMOD_LIB_DIR}/fmodL_vc.lib)
 
 add_library(Glad STATIC "vendor/glad/src/glad.c")
 target_include_directories(Glad PRIVATE ${GLAD_INCLUDE_DIR})
@@ -62,5 +69,6 @@ target_link_libraries(Squares Rose)
 add_custom_command(TARGET Squares POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${SDL_LIB_DIR}/SDL2.dll"
+    "${FMOD_LIB_DIR}/fmod.dll"
     $<TARGET_FILE_DIR:Squares>)
 

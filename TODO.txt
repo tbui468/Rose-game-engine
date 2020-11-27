@@ -2,6 +2,8 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
     THE BIG THREE:
         1. Audio - FMOD (spend the mornings one this)
+            Get music (at least 1) and sound effects (at least 2) integrated into application
+            once it all works, abstract (shouldn't require much since the current FMOD system is quite simple)
         2. Save/load system - SDL_GetPrefPath
         3. Core Features - transformations/splitting/forming and puzzle clear/puzzleset clear
 
