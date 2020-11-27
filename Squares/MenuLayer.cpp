@@ -95,80 +95,8 @@ namespace sqs {
         SetAnimationStart();
     }
 
-    bool MenuLayer::Update(double deltaTime, rose::InputType rawInput, const glm::ivec2& mousePos) {
-        rose::InputType input = rawInput;
-        //process raw inputs here to accept double taps/flicks
-
-        glm::vec2 mouse = {static_cast<float>(mousePos.x), static_cast<float>(mousePos.y)};
-
-        if(m_Parameter <1.0f) input = rose::InputType::None; //temp: to avoid retting animations
-
-
-        //process inputs - return true to quit application
-        if(m_QuitButton->LeftTap(input, mouse.x, mouse.y) || input == rose::InputType::Quit) return true;
-
-        if(m_StartButton->LeftTap(input, mouse.x, mouse.y)) {
-            OpenPuzzleSetMenu();
-        }
-
-
-        if(m_CloseButton->LeftTap(input, mouse.x, mouse.y)) {
-            PuzzleSet* openPuzzleSet = GetOpenPuzzleSet();
-
-            if(openPuzzleSet) {
-                ClosePuzzleSet(openPuzzleSet);
-            }else{
-                OpenMainMenu();
-            }
-
-        }
-
-
-        for(PuzzleSet* ps : PuzzleSet::GetSets()) {
-            if(ps->LeftTap(input, mouse.x, mouse.y)) {
-                OpenPuzzleSet(ps);
-                break;
-            }
-            for(PuzzleIcon* icon: ps->GetPuzzleIcons()) {
-                if(icon->LeftTap(input, mouse.x, mouse.y)) {
-                    OpenPuzzle(icon->GetPuzzle());
-                    break;
-                }
-            }
-        }
-
-        if(Puzzle* puzzle = GetOpenPuzzle()) {
-            for(BaseFractal* fractal: puzzle->GetFractals()) {
-                if(fractal->LeftFlick(input, mouse.x, mouse.y)) { //currently set to right tap bc I'm too lazy to process inputs to register a flick now
-                   /* 
-                    glm::ivec2 index = fractal->GetIndex();
-                    std::cout << "x: " << index.x << ", y " << index.y << std::endl;
-                    Fractal* otherFractal = puzzle->GetFractal(glm::ivec2(index.x - fractal->GetSize(), index.y)); //to get fractal to the left of current
-                    if(otherFractal && fractal->GetSize() == otherFractal->GetSize()) { //move all this into MenuLayer::TransformFractal() later
-                        puzzle->SwapFractals(fractal, otherFractal);
-//                        fractal->RotateBy(1.5708f); 
-                        SetAnimationStart();
-                        break;
-                    }*/
-                //break; //this isn't inside a loop so it's not necessary
-                }else if(fractal->LeftTap(input, mouse.x, mouse.y) && !dynamic_cast<Fractal<int>*>(fractal)) { //dynamic cast is checking if fractal size == 1 
-                    SplitFractal(fractal);
-                    SetAnimationStart();
-                    break;
-                }
-            } 
-
-
-            //temp: testing formatin gof fractals to contrast splitting of them
-            if(input == rose::InputType::RightDown) {
-                FractalCorners fc = puzzle->FindFractalCorners(mouse.x, mouse.y); //fourFractals should be a pointer to a struct of Fractal pointers
-                if(fc.TopLeft && fc.TopRight && fc.BottomLeft && fc.BottomRight) {
-                    puzzle->FormFractal(fc); 
-                    SetAnimationStart();
-                }
-            }
-        }
-
+    bool MenuLayer::Update(double deltaTime, const std::array<bool, rose::g_MaxKeys>& keys, const std::array<bool, rose::g_MaxMouseButtons>& mouseKeys , 
+                           const glm::vec2& mouse) {
 
         if(m_Parameter < 1.0f && m_Start) {
             m_Parameter += static_cast<float>(deltaTime) * .0010f;
@@ -176,10 +104,108 @@ namespace sqs {
                 for(rose::Entity* e: m_Entities) e->OnAnimationEnd();
             }else{
                 for(rose::Entity* e: m_Entities) e->OnAnimationUpdate(Sigmoid(m_Parameter));
+                return false; //skip remainder of Update function if animation is still playing
             }
         }
 
+        if(m_QuitButton->PointCollision(mouse.x, mouse.y) && mouseKeys.at(rose::MouseEvents::LeftButton)) return true;
+
+        if(m_StartButton->PointCollision(mouse.x, mouse.y) && mouseKeys.at(rose::MouseEvents::LeftButton)) {
+            OpenPuzzleSetMenu();
+        }
+
+
+        if(m_CloseButton->PointCollision(mouse.x, mouse.y) && mouseKeys.at(rose::MouseEvents::LeftButton)) {
+            PuzzleSet* openPuzzleSet = GetOpenPuzzleSet();
+
+            if(openPuzzleSet) {
+                ClosePuzzleSet(openPuzzleSet);
+            }else{
+                OpenMainMenu();
+            }
+        }
+
+
+        for(PuzzleSet* ps : PuzzleSet::GetSets()) {
+            if(ps->PointCollision(mouse.x, mouse.y) && mouseKeys.at(rose::MouseEvents::LeftButton)) {
+                OpenPuzzleSet(ps);
+                break;
+            }
+            for(PuzzleIcon* icon: ps->GetPuzzleIcons()) {
+                if(icon->PointCollision(mouse.x, mouse.y) && mouseKeys.at(rose::MouseEvents::LeftButton)) {
+                    OpenPuzzle(icon->GetPuzzle());
+                    break;
+                }
+            }
+        }
+
+        
+        if(Puzzle* puzzle = GetOpenPuzzle()) {
+
+            if(mouseKeys.at(rose::MouseEvents::RightButton)) {
+                FractalCorners fc = puzzle->FindFractalCorners(mouse.x, mouse.y); //fourFractals should be a pointer to a struct of Fractal pointers
+                if(fc.TopLeft && fc.TopRight && fc.BottomLeft && fc.BottomRight) {
+                    puzzle->FormFractal(fc); 
+                    SetAnimationStart();
+                }
+            }
+
+            for(BaseFractal* fractal: puzzle->GetFractals()) {
+                if(fractal->PointCollision(mouse.x, mouse.y)) { 
+                    glm::ivec2 index = fractal->GetIndex();
+                    if(keys.at(SDLK_a)) { //translate left
+                        BaseFractal* otherFractal = puzzle->GetFractal(glm::ivec2(index.x - GetFractalSize(fractal), index.y)); //to get fractal to the left of current
+                        if(otherFractal && GetFractalSize(fractal) == GetFractalSize(otherFractal)) { //move all this into MenuLayer::TransformFractal() later
+                            puzzle->SwapFractals(fractal, otherFractal);
+                            SetAnimationStart();
+                            break;
+                        }
+                    }else if(keys.at(SDLK_d)) { //translate right
+                        BaseFractal* otherFractal = puzzle->GetFractal(glm::ivec2(index.x + GetFractalSize(fractal), index.y)); 
+                        if(otherFractal && GetFractalSize(fractal) == GetFractalSize(otherFractal)) { 
+                            puzzle->SwapFractals(fractal, otherFractal);
+                            SetAnimationStart();
+                            break;
+                        }
+                    }else if(keys.at(SDLK_w)) { //translate up
+                        BaseFractal* otherFractal = puzzle->GetFractal(glm::ivec2(index.x, index.y - GetFractalSize(fractal)));
+                        if(otherFractal && GetFractalSize(fractal) == GetFractalSize(otherFractal)) { 
+                            puzzle->SwapFractals(fractal, otherFractal);
+                            SetAnimationStart();
+                            break;
+                        }
+                    }else if(keys.at(SDLK_s)) { //translate down
+                        BaseFractal* otherFractal = puzzle->GetFractal(glm::ivec2(index.x, index.y + GetFractalSize(fractal)));
+                        if(otherFractal && GetFractalSize(fractal) == GetFractalSize(otherFractal)) { 
+                            puzzle->SwapFractals(fractal, otherFractal);
+                            SetAnimationStart();
+                            break;
+                        }
+                    }else if(keys.at(SDLK_q)) { //rotate ccw
+                        if(GetFractalSize(fractal) > 1) { 
+                            puzzle->RotateFractalCCW(fractal);
+                            SetAnimationStart();
+                            break;
+                        }
+                    }else if(keys.at(SDLK_e)) { //rotate cw
+                        if(GetFractalSize(fractal) > 1) { 
+                            puzzle->RotateFractalCW(fractal);
+                            SetAnimationStart();
+                            break;
+                        }
+                    }else if(mouseKeys.at(rose::MouseEvents::LeftButton) && GetFractalSize(fractal) != 1) {
+                        SplitFractal(fractal);
+                        SetAnimationStart();
+                        break;
+                    }
+                }
+            } 
+
+
+        }
+
         return false;
+
     }
 
 

@@ -34,15 +34,18 @@ class Puzzle: public rose::Entity {
         static rose::Sprite GetSprite() { return s_Sprite; }
         static glm::vec2 GetObjectSize() { return s_ObjectSize; }
         static glm::vec4 GetBoundingBox() { return s_BoundingBox; }
-    public: //fractal functions
-        void SplitFractal(BaseFractal* fractal);
-        void FormFractal(FractalCorners fc);
+    public: //fractal utility functions
         FractalCorners FindFractalCorners(float mousex, float mousey) const;
         BaseFractal* GetClosestFractal(float mousex, float mousey) const;
         BaseFractal* GetFractal(const glm::ivec2& index) const;
         const std::vector<BaseFractal*>& GetFractals() const { return m_Fractals; }
-        void SwapFractals(BaseFractal* fractalA, BaseFractal* fractalB);
         std::vector<BaseFractal*>::iterator GetFractalIterator(BaseFractal* fractal);
+    public: //fractal transformations
+        void SplitFractal(BaseFractal* fractal);
+        void FormFractal(FractalCorners fc);
+        void SwapFractals(BaseFractal* fractalA, BaseFractal* fractalB);
+        void RotateFractalCW(BaseFractal* fractal);
+        void RotateFractalCCW(BaseFractal* fractal);
     private:
         int m_Index;
         std::vector<BaseFractal*> m_Fractals;

@@ -1,12 +1,23 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
+#include <array>
+
 #include "Window.h"
 #include "renderer/Renderer.h"
 #include "Layer.h"
 #include "Entity.h"
+#include "Globals.h"
 
 namespace rose {
+
+enum MouseEvents {
+    LeftButton = 0,
+    RightButton,
+    MiddleButton, 
+    ScrollWheelUp,
+    ScrollWheelDown
+};
 
 class Application {
     public:
@@ -15,7 +26,8 @@ class Application {
         void Run();
         void Shutdown() const;
         void Quit();
-        InputType GetInput() const;
+        //InputType GetInput() const;
+        bool PollInputs();
         glm::ivec2 GetMousePos() const;
         int32_t GetWindowWidth() const { return m_Window->GetWidth(); }
         int32_t GetWindowHeight() const { return m_Window->GetHeight(); }
@@ -37,6 +49,8 @@ class Application {
         double m_DeltaTime;
         uint64_t m_Now {0};
         uint64_t m_Last {0};
+        std::array<bool, g_MaxKeys> m_Keys = {false};
+        std::array<bool, g_MaxMouseButtons> m_Mouse = {false};
 };
 
 }

@@ -14,7 +14,7 @@ namespace sqs {
         public:
             MenuLayer();
             virtual ~MenuLayer();
-            virtual bool Update(double deltaTime, rose::InputType input, const glm::ivec2& mousePos) override;
+            virtual bool Update(double deltaTime, const std::array<bool, rose::g_MaxKeys>& keys, const std::array<bool, rose::g_MaxMouseButtons>& mouse , const glm::vec2& mousePos) override;
             Puzzle* GetOpenPuzzle() const;
             PuzzleSet* GetOpenPuzzleSet() const;
             virtual void Draw() override;

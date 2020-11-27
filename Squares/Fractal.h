@@ -46,6 +46,12 @@ namespace sqs {
                 UpdateSprite();
             }
 
+            virtual void RotateBy(float angle) override {
+                Entity::RotateBy(angle);
+                //update m_Elements here by rotating them
+                //the actual update of the texture will occur
+            }
+
             void UpdateSprite() {
                 int size = GetSize();
                 float fWidth = UnitSize() * size;

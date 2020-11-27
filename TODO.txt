@@ -3,26 +3,33 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
     THE BIG THREE:
         1. Audio - FMOD (spend the mornings one this)
             Get music (at least 1) and sound effects (at least 2) integrated into application
-            once it all works, abstract (shouldn't require much since the current FMOD system is quite simple)
+            once it all works, abstract the necessary bits(shouldn't be much abstraction beyond init()/shutdown() since the current FMOD system is quite simple)
+                init and shutdown can actually be left here in Application.cpp.  Just need to make the loading/playing/freeing sound 
+                    API available in Layers
+
         2. Save/load system - SDL_GetPrefPath
+            Save/Load system for puzzles and progress
+            Undo system (which requires save/load system in place)
+
         3. Core Features - transformations/splitting/forming and puzzle clear/puzzleset clear
+            Application::GetInputs() should return an array of SDL_keys (don't really need to abstract the keycodes) set to true or false
 
-    Implement different temporary input types to test: 
-        use WASD QEZX for translation/rotation/reflection
-        use right /left mouse taps to change fractal sizes (current setup is fine)
+            Puzzle constructor doesn't really need a position parametere - just put it inside the puzzle class as a static variable to clean things up
 
-    Implement all transformations + fractal changes with temporary controls to test entire gameplay system
-        will need to implement transformation of m_Elements for reflection/rotation
+            The processing of inputs can be left to the client side stuff in Squares
 
-    InputQueue to allow user to queue up commands while the previous animation is still finishing
+            Implement different temporary input types to test: 
+                use WASD QEZX for translation/rotation/reflection
+                use right /left mouse taps to change fractal sizes (current setup is fine)
 
-    PuzzleClear/PuzzleSetClear status and checks on transformations
+            Implement all transformations + fractal changes with temporary controls to test entire gameplay system
+                will need to implement transformation of m_Elements for reflection/rotation
+
+            InputQueue to allow user to queue up commands while the previous animation is still finishing
+
+            PuzzleClear/PuzzleSetClear status and checks on transformations
 
     Add visual touches, like blurred fractals in front/behind play field that move along with puzzles to give illusion of depth and provide more animations
-
-    Save/Load system for puzzles and progress
-
-    Undo system (which requires save/load system in place)
 
     Fractals should update texture and spritedata on every transformation 
         (currently in OnAnimationEnd(), but that's every inefficient)

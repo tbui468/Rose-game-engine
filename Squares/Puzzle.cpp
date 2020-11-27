@@ -340,5 +340,13 @@ void Puzzle::FormFractal(FractalCorners fc) {
     m_FractalCorners.BottomRight = fc.BottomRight;
 }
 
+void Puzzle::RotateFractalCW(BaseFractal* fractal) {
+    fractal->RotateBy(-1.5708);
+}
+
+void Puzzle::RotateFractalCCW(BaseFractal* fractal) {
+    fractal->RotateBy(1.5708);
+}
+
 
 }

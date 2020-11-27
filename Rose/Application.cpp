@@ -43,12 +43,6 @@ namespace rose {
             std::cout << "SDL_Init error!!!" << SDL_GetError() << std::endl;
         }
 
-
-        char* exePath = GetExecutablePath();
-        std::string exePathString(exePath);
-
-        std::cout << exePathString << std::endl;
-
         //temp:
         //////////////////FMOD TEST//////////////////////
         //COM needs to be initialized and unizitialized for windows systems
@@ -75,19 +69,15 @@ namespace rose {
 
         FMOD::Sound* sound;
         //FMOD_CREATESOUNDEXINFO exinfo;
+        std::string exePathString(GetExecutablePath());
         result = system->createSound((exePathString + "../../assets/sound/pluck.wav").c_str(), 
                 FMOD_DEFAULT, NULL, &sound);
-
-        FMOD::Channel* channel;
-        result = system->playSound(sound, NULL, false, &channel);
 /*
-        System::createSound(...) will return sound handle
-        System::playSound(...) will return channel handle
-        ChannelControl::isPlaying(...) to monitor channel, channel handle will be = FMOD_ERR_INVALID_HANDLE 
-            when sound has ended
-*/
+        FMOD::Channel* channel;
+        result = system->playSound(sound, NULL, false, &channel);*/
 
 
+        //ChannelControl::isPlaying(...) to monitor channel, channel handle will be = FMOD_ERR_INVALID_HANDLE
 
         bool fullScreen = false;
         m_Window = std::make_shared<Window>(960, 540, fullScreen);
@@ -121,13 +111,9 @@ namespace rose {
 
     void Application::Run() {
 
-
-        //delta time
         m_Now = SDL_GetPerformanceCounter();
         m_Last = 0;
         m_DeltaTime = 0.0;
-
-
 
         while(!m_Quit) {
             {
@@ -136,15 +122,14 @@ namespace rose {
                 m_Last = m_Now;
                 m_Now = SDL_GetPerformanceCounter();
                 m_DeltaTime = static_cast<double>((m_Now - m_Last) * 1000) / static_cast<double>(SDL_GetPerformanceFrequency());
-                InputType input = GetInput();
-                glm::ivec2 mousePos = GetMousePos();
 
-                if(input == InputType::Quit) m_Quit = true;
+                if(PollInputs()) break;
 
-                //if(input == InputType::LeftDown) play sound here
-            
-                m_Quit = m_Layer->Update(m_DeltaTime, input, mousePos);
+                glm::ivec2 mousei = GetMousePos();
+
+                if(m_Layer->Update(m_DeltaTime, m_Keys, m_Mouse, glm::vec2(static_cast<float>(mousei.x), static_cast<float>(mousei.y)))) break;
             }
+
             {
  //               InstrumentationTimer timer("draw");
                 m_Layer->Draw();
@@ -155,34 +140,40 @@ namespace rose {
 
     }
 
+    bool Application::PollInputs() {
+        for(bool b: m_Keys) b = false;
+        for(bool b: m_Mouse) b = false;
 
-    InputType Application::GetInput() const {
         SDL_Event event;
 
         while(SDL_PollEvent(&event)) {
             switch(event.type) {
                 case SDL_QUIT: 
-                    return InputType::Quit; 
+                    return true;
+                    break;
+                case SDL_KEYDOWN:
+                    m_Keys.at(event.key.keysym.sym) = true;
+                    break;
+                case SDL_KEYUP:
+                    m_Keys.at(event.key.keysym.sym) = false;
                     break;
                 case SDL_MOUSEBUTTONDOWN: 
                     if(event.button.button == SDL_BUTTON_LEFT)
-                        return InputType::LeftDown;
+                        m_Mouse.at(MouseEvents::LeftButton) = true;
                     else if(event.button.button == SDL_BUTTON_RIGHT)
-                        return InputType::RightDown;
+                        m_Mouse.at(MouseEvents::RightButton) = true;
                     break;
                 case SDL_MOUSEBUTTONUP: 
                     if(event.button.button == SDL_BUTTON_LEFT)
-                        return InputType::LeftUp;
+                        m_Mouse.at(MouseEvents::LeftButton) = false;
                     else if(event.button.button == SDL_BUTTON_RIGHT)
-                        return InputType::RightUp;
-                    break;
-                default: 
-                    return InputType::None; 
+                        m_Mouse.at(MouseEvents::RightButton) = false;
                     break;
             }
         }
 
-        return InputType::None;
+        return false;
+
     }
 
 
