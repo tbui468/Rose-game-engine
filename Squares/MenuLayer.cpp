@@ -193,6 +193,18 @@ namespace sqs {
                             SetAnimationStart();
                             break;
                         }
+                    }else if(keys.at(SDLK_x)) { //reflect across x-axis
+                        if(GetFractalSize(fractal) > 1) { 
+                            puzzle->ReflectFractalX(fractal);
+                            SetAnimationStart();
+                            break;
+                        }
+                    }else if(keys.at(SDLK_z)) { //reflect across y-axis
+                        if(GetFractalSize(fractal) > 1) { 
+                            puzzle->ReflectFractalY(fractal);
+                            SetAnimationStart();
+                            break;
+                        }
                     }else if(mouseKeys.at(rose::MouseEvents::LeftButton) && GetFractalSize(fractal) != 1) {
                         SplitFractal(fractal);
                         SetAnimationStart();

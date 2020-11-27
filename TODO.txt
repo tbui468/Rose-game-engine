@@ -12,18 +12,10 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
             Undo system (which requires save/load system in place)
 
         3. Core Features - transformations/splitting/forming and puzzle clear/puzzleset clear
-            Application::GetInputs() should return an array of SDL_keys (don't really need to abstract the keycodes) set to true or false
 
             Puzzle constructor doesn't really need a position parametere - just put it inside the puzzle class as a static variable to clean things up
 
             The processing of inputs can be left to the client side stuff in Squares
-
-            Implement different temporary input types to test: 
-                use WASD QEZX for translation/rotation/reflection
-                use right /left mouse taps to change fractal sizes (current setup is fine)
-
-            Implement all transformations + fractal changes with temporary controls to test entire gameplay system
-                will need to implement transformation of m_Elements for reflection/rotation
 
             InputQueue to allow user to queue up commands while the previous animation is still finishing
 
@@ -31,53 +23,6 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
     Add visual touches, like blurred fractals in front/behind play field that move along with puzzles to give illusion of depth and provide more animations
 
-    Fractals should update texture and spritedata on every transformation 
-        (currently in OnAnimationEnd(), but that's every inefficient)
-        create a transform() function that calls the texture/sprite update functions
-
-    Benchmarking - use website to drag/drop JSON file
-        look at Instrumentor class (and utility classes) on Hazel/Debug
-            build it incrementally and compile as you go 
-            -Instrumentor constructor and static Get() method
-            -Instrumentor data struct and the WriteProfile() method (this is the JSON stuff)
-
-        can check virtual memory using windows functions - google the stackoverflow examples
-        
-    1. Get Fractals responding to user input
-        how should the inputdispatcher process inputs??
-            write out the API I want to use in Squares.cpp to process all inputs coming in from Rose engine
-            then declare/implement those functions
-            InputDispatcher will also need to keep track of animation timing...
-                it might be a good idea to pull all that stuff scattered all over the Layer Update() function 
-                into the InputDispatcher to process
-                function calls can then be used on the InputDispatcher to get necessary data
-
-    2. Forming larger fractals and splitting into smaller fractals (this should be a command called by puzzle)
-
-    1. Get Fractals data to read from external JSON
-            how are JSON files formatted????
-    2. Get Fractals data to write to external JSON
-
-    1. Translations of fractals
-    2. Rotations of fractals
-    3. Reflections of fractals
-
-
-Allow window scaling when the application is active
-    should check online for reference material on how to change SDL2 window sizes (event)
-
-Everything is squished when the aspect ratio is not a 480x270 ratio
-    how do I fix this?  I want everything to look that same (eg same height/width ratio) regardless of window ratio
-    Two things:
-        1. Currently, the projection matrix in renderer is hard coded to 480x270 - need to change this to accomodate aspect ratio of window
-        2. Currently, Squares.cpp uses 480x270 world space (related to projection) need to change this to accomodate aspect ratio of window
-        3. Need to accomodate window scaling too
-
-    Tests: (all squares should be squares, and rectangles should be 2:1)
-        1. Check fullscreen
-        2. Check windowed with 480x270 aspect ratio
-        3. Check windowed with aspect ratio of 2:1
-        4. Check windowed with aspect ratio of 1:2
 
 Set build (x86 or x64) (or should this be a build option???)
 

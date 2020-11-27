@@ -21,9 +21,12 @@ namespace sqs {
 
         //create puzzles belong to this set
         //temp: need to load from default data/load save data
-        FractalElement elements[] = {FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty};
+        FractalElement elements[] = {FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty, 
+                                     FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty,
+                                     FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty,
+                                     FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty};
         for(int i = 0; i < 2; ++i) {
-            m_PuzzleList.emplace_back(new Puzzle(&elements[0], glm::ivec2(2, 2), glm::vec2(360.0f + Puzzle::GetSpacing() * i, 0.0f), i));
+            m_PuzzleList.emplace_back(new Puzzle(&elements[0], glm::ivec2(4, 4), glm::vec2(360.0f + Puzzle::GetSpacing() * i, 0.0f), i));
         }
 
         FractalElement elements0[] = {FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty, 

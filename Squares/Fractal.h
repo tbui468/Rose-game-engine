@@ -42,14 +42,194 @@ namespace sqs {
             
             virtual void OnAnimationEnd() override {
                 Entity::OnAnimationEnd();
+                //setting fractal angles  and scale back to 0 to avoid saving states
+                m_Angle = 0.0f;
+                m_ToAngle = 0.0f;
+                m_FromAngle = 0.0f;
+                m_FromScale = {1.0f, 1.0f};
+                m_Scale = {1.0f, 1.0f};
+                m_ToScale = {1.0f, 1.0f};
                 UpdateTextureData(m_Elements, GetIndex(), m_PuzzleNumber);
                 UpdateSprite();
             }
 
+            virtual void ScaleTo(const glm::vec2& scale) override {
+                Entity::ScaleTo(scale);
+
+                if(GetFractalSize(this) == 1) return;
+
+                if(GetFractalSize(this) == 2) {
+                    if(scale.y < 0) { //x-axis reflection
+                        int topLeft = GetSubElementsI({0, 1});
+                        int topRight = GetSubElementsI({1, 1});
+                        int bottomLeft = GetSubElementsI({0, 0});
+                        int bottomRight = GetSubElementsI({1, 0});
+                        SetElements({topLeft, topRight, bottomLeft, bottomRight});
+                    }else{
+                        int topLeft = GetSubElementsI({1, 0});
+                        int topRight = GetSubElementsI({0, 0});
+                        int bottomLeft = GetSubElementsI({1, 1});
+                        int bottomRight = GetSubElementsI({0, 1});
+                        SetElements({topLeft, topRight, bottomLeft, bottomRight});
+                    }
+                    return;
+                }
+
+                if(GetFractalSize(this) == 4) {
+                    if(scale.y < 0) { //x-axis reflection
+                        int e00 = GetSubElementsI({0, 3});
+                        int e10 = GetSubElementsI({1, 3});
+                        int e20 = GetSubElementsI({2, 3});
+                        int e30 = GetSubElementsI({3, 3});
+
+                        int e01 = GetSubElementsI({0, 2});
+                        int e11 = GetSubElementsI({1, 2});
+                        int e21 = GetSubElementsI({2, 2});
+                        int e31 = GetSubElementsI({3, 2});
+
+                        int e02 = GetSubElementsI({0, 1});
+                        int e12 = GetSubElementsI({1, 1});
+                        int e22 = GetSubElementsI({2, 1});
+                        int e32 = GetSubElementsI({3, 1});
+
+                        int e03 = GetSubElementsI({0, 0});
+                        int e13 = GetSubElementsI({1, 0});
+                        int e23 = GetSubElementsI({2, 0});
+                        int e33 = GetSubElementsI({3, 0});
+
+                        SetElements({e00, e10, e20, e30,
+                                     e01, e11, e21, e31,
+                                     e02, e12, e22, e32,
+                                     e03, e13, e23, e33});
+                    }else{ //y-axis reflection
+                        int e00 = GetSubElementsI({3, 0});
+                        int e10 = GetSubElementsI({2, 0});
+                        int e20 = GetSubElementsI({1, 0});
+                        int e30 = GetSubElementsI({0, 0});
+
+                        int e01 = GetSubElementsI({3, 1});
+                        int e11 = GetSubElementsI({2, 1});
+                        int e21 = GetSubElementsI({1, 1});
+                        int e31 = GetSubElementsI({0, 1});
+
+                        int e02 = GetSubElementsI({3, 2});
+                        int e12 = GetSubElementsI({2, 2});
+                        int e22 = GetSubElementsI({1, 2});
+                        int e32 = GetSubElementsI({0, 2});
+
+                        int e03 = GetSubElementsI({3, 3});
+                        int e13 = GetSubElementsI({2, 3});
+                        int e23 = GetSubElementsI({1, 3});
+                        int e33 = GetSubElementsI({0, 3});
+
+                        SetElements({e00, e10, e20, e30,
+                                     e01, e11, e21, e31,
+                                     e02, e12, e22, e32,
+                                     e03, e13, e23, e33});
+                    }
+                    return;
+                }
+            }
+
+
             virtual void RotateBy(float angle) override {
                 Entity::RotateBy(angle);
-                //update m_Elements here by rotating them
-                //the actual update of the texture will occur
+
+                if(GetFractalSize(this) == 1) return;
+
+                if(GetFractalSize(this) == 2) {
+                    if(angle < 0) { //clockwise
+                        int topLeft = GetSubElementsI({0, 1});
+                        int topRight = GetSubElementsI({0, 0});
+                        int bottomLeft = GetSubElementsI({1, 1});
+                        int bottomRight = GetSubElementsI({1, 0});
+                        SetElements({topLeft, topRight, bottomLeft, bottomRight});
+                    }else{
+                        int topLeft = GetSubElementsI({1, 0});
+                        int topRight = GetSubElementsI({1, 1});
+                        int bottomLeft = GetSubElementsI({0, 0});
+                        int bottomRight = GetSubElementsI({0, 1});
+                        SetElements({topLeft, topRight, bottomLeft, bottomRight});
+                    }
+                    return;
+                }
+
+                if(GetFractalSize(this) == 4) {
+                    if(angle < 0) { //clockwise
+                        int e00 = GetSubElementsI({0, 3});
+                        int e10 = GetSubElementsI({0, 2});
+                        int e20 = GetSubElementsI({0, 1});
+                        int e30 = GetSubElementsI({0, 0});
+
+                        int e01 = GetSubElementsI({1, 3});
+                        int e11 = GetSubElementsI({1, 2});
+                        int e21 = GetSubElementsI({1, 1});
+                        int e31 = GetSubElementsI({1, 0});
+
+                        int e02 = GetSubElementsI({2, 3});
+                        int e12 = GetSubElementsI({2, 2});
+                        int e22 = GetSubElementsI({2, 1});
+                        int e32 = GetSubElementsI({2, 0});
+
+                        int e03 = GetSubElementsI({3, 3});
+                        int e13 = GetSubElementsI({3, 2});
+                        int e23 = GetSubElementsI({3, 1});
+                        int e33 = GetSubElementsI({3, 0});
+
+                        SetElements({e00, e10, e20, e30,
+                                     e01, e11, e21, e31,
+                                     e02, e12, e22, e32,
+                                     e03, e13, e23, e33});
+                    }else{
+                        int e00 = GetSubElementsI({3, 0});
+                        int e10 = GetSubElementsI({3, 1});
+                        int e20 = GetSubElementsI({3, 2});
+                        int e30 = GetSubElementsI({3, 3});
+
+                        int e01 = GetSubElementsI({2, 0});
+                        int e11 = GetSubElementsI({2, 1});
+                        int e21 = GetSubElementsI({2, 2});
+                        int e31 = GetSubElementsI({2, 3});
+
+                        int e02 = GetSubElementsI({1, 0});
+                        int e12 = GetSubElementsI({1, 1});
+                        int e22 = GetSubElementsI({1, 2});
+                        int e32 = GetSubElementsI({1, 3});
+
+                        int e03 = GetSubElementsI({0, 0});
+                        int e13 = GetSubElementsI({0, 1});
+                        int e23 = GetSubElementsI({0, 2});
+                        int e33 = GetSubElementsI({0, 3});
+
+                        SetElements({e00, e10, e20, e30,
+                                     e01, e11, e21, e31,
+                                     e02, e12, e22, e32,
+                                     e03, e13, e23, e33});
+                    }
+                    return;
+                }
+
+            }
+
+            void SetElements(int elements) {
+                int* ptr = (int*)&m_Elements;
+                *(ptr) = elements;
+            }
+
+            void SetElements(glm::imat2 elements) {
+                int* ptr = (int*)&m_Elements;
+                int* ptrIn = (int*)&elements;
+                for(int i = 0; i < 4; ++i) {
+                    *(ptr + i) = *(ptrIn + i);
+                }
+            }
+
+            void SetElements(glm::imat4 elements) {
+                int* ptr = (int*)&m_Elements;
+                int* ptrIn = (int*)&elements;
+                for(int i = 0; i < 16; ++i) {
+                    *(ptr + i) = *(ptrIn + i);
+                }
             }
 
             void UpdateSprite() {

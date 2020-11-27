@@ -52,17 +52,19 @@ class Entity {
         glm::vec2 m_Pos {0.0f, 0.0f};
         glm::vec2 m_ToPos {0.0f, 0.0f};
 
-        glm::vec2 m_FromScale {1.0f, 1.0f};
-        glm::vec2 m_Scale {1.0f, 1.0f};
-        glm::vec2 m_ToScale {1.0f, 1.0f};
-
-        float m_ToAngle {0.0f};
-        float m_Angle {0.0f};
-        float m_FromAngle {0.0f};
 
         float m_FromAlpha {1.0f};
         float m_Alpha {1.0f};
         float m_ToAlpha {1.0f};
+
+     protected: //to allow fractal class to reset to 0.0f in OnAnimationEnd() to avoid saving angle/scale states
+        float m_ToAngle {0.0f};
+        float m_Angle {0.0f};
+        float m_FromAngle {0.0f};
+
+        glm::vec2 m_FromScale {1.0f, 1.0f};
+        glm::vec2 m_Scale {1.0f, 1.0f};
+        glm::vec2 m_ToScale {1.0f, 1.0f};
 
      private: //these guys shouldn't change after being set
         Sprite m_SpriteData {{0, 0}, {0, 0}, TextureType::None};

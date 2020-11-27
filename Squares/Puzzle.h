@@ -46,6 +46,8 @@ class Puzzle: public rose::Entity {
         void SwapFractals(BaseFractal* fractalA, BaseFractal* fractalB);
         void RotateFractalCW(BaseFractal* fractal);
         void RotateFractalCCW(BaseFractal* fractal);
+        void ReflectFractalX(BaseFractal* fractal);
+        void ReflectFractalY(BaseFractal* fractal);
     private:
         int m_Index;
         std::vector<BaseFractal*> m_Fractals;

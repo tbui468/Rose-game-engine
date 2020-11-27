@@ -348,5 +348,13 @@ void Puzzle::RotateFractalCCW(BaseFractal* fractal) {
     fractal->RotateBy(1.5708);
 }
 
+void Puzzle::ReflectFractalX(BaseFractal* fractal) {
+    fractal->ScaleTo({1.0f, -1.0f});
+}
+
+void Puzzle::ReflectFractalY(BaseFractal* fractal) {
+    fractal->ScaleTo({-1.0f, 1.0f});
+}
+
 
 }
