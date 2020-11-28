@@ -21,31 +21,32 @@ namespace sqs {
 
         //create puzzles belong to this set
         //temp: need to load from default data/load save data
+        /*
         FractalElement elements[] = {FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty, 
                                      FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty,
                                      FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty,
                                      FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty};
         for(int i = 0; i < 2; ++i) {
-            m_PuzzleList.emplace_back(new Puzzle(&elements[0], glm::ivec2(4, 4), glm::vec2(360.0f + Puzzle::GetSpacing() * i, 0.0f), i));
-        }
+            m_PuzzleList.emplace_back(new Puzzle(&elements[0], glm::ivec2(4, 4), m_PuzzleList.size()));
+        }*/
 
         FractalElement elements0[] = {FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty, 
                                       FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty};
-        for(int i = 2; i < 4; ++i) {
-            m_PuzzleList.emplace_back(new Puzzle(&elements0[0], glm::ivec2(2, 4), glm::vec2(360.0f + Puzzle::GetSpacing() * i, 0.0f), i));
+        for(int i = 0; i < 2; ++i) {
+            m_PuzzleList.emplace_back(new Puzzle(&elements0[0], glm::ivec2(2, 4), m_PuzzleList.size()));
         }
 
         FractalElement elements1[] = {FractalElement::Block, FractalElement::Green, FractalElement::Blue, FractalElement::Empty, 
                                       FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty,
                                       FractalElement::Block};
-        for(int i = 4; i < 6; ++i) {
-            m_PuzzleList.emplace_back(new Puzzle(&elements1[0], glm::ivec2(3, 3), glm::vec2(360.0f + Puzzle::GetSpacing() * i, 0.0f), i));
+        for(int i = 0; i < 2; ++i) {
+            m_PuzzleList.emplace_back(new Puzzle(&elements1[0], glm::ivec2(3, 3), m_PuzzleList.size()));
         }
 
         FractalElement elements2[] = {FractalElement::Block, FractalElement::Green, FractalElement::Blue, FractalElement::Empty, 
                                       FractalElement::Red, FractalElement::Green, FractalElement::Block, FractalElement::Empty};
-        for(int i = 6; i < 8; ++i) {
-            m_PuzzleList.emplace_back(new Puzzle(&elements2[0], glm::ivec2(4, 2), glm::vec2(360.0f + Puzzle::GetSpacing() * i, 0.0f), i));
+        for(int i = 0; i < 2; ++i) {
+            m_PuzzleList.emplace_back(new Puzzle(&elements2[0], glm::ivec2(4, 2), m_PuzzleList.size()));
         }
 
         OpenPuzzle(m_PuzzleList.at(0));
@@ -60,7 +61,7 @@ namespace sqs {
         const glm::vec2 iconsize = {8.0f, 8.0f};
         const glm::vec4 iconbox = {0.0f, 0.0f, 8.0f, 8.0f};
         const float margin = 24.0f;
-        const int iconCount = 8;
+        const int iconCount = m_PuzzleList.size();
         const float halfLength = (iconCount - 1) * margin / 2.0f;
 
         for(int i = 0; i < iconCount; ++i) {

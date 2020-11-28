@@ -8,6 +8,7 @@
 #include "Layer.h"
 #include "Entity.h"
 #include "Globals.h"
+#include "Audio.h"
 
 namespace rose {
 
@@ -36,17 +37,19 @@ class Application {
         void SetClearColor(const glm::ivec3& color);
         double GetDeltaTime() const { return m_DeltaTime; }
         static Application* GetApplication();
-        std::shared_ptr<Renderer> GetRenderer() const;
-    private:
-        Application(); //making it private only because singleton for now
+        std::shared_ptr<Renderer> GetRenderer() const { return m_Renderer; }
+        std::shared_ptr<Audio> GetAudio() const { return m_Audio; }
         char* GetExecutablePath() const;
     private:
-        bool m_Quit = false;
-        std::shared_ptr<Window> m_Window;
-        std::shared_ptr<Renderer> m_Renderer;
-        std::shared_ptr<Layer> m_Layer;
+        Application(); //making it private only because singleton for now
+    private:
+        bool m_Quit {false};
+        std::shared_ptr<Window> m_Window {nullptr};
+        std::shared_ptr<Renderer> m_Renderer {nullptr};
+        std::shared_ptr<Audio> m_Audio {nullptr};
+        std::shared_ptr<Layer> m_Layer {nullptr};
         inline static Application* s_Application {nullptr};
-        double m_DeltaTime;
+        double m_DeltaTime {0.0};
         uint64_t m_Now {0};
         uint64_t m_Last {0};
         std::array<bool, g_MaxKeys> m_Keys = {false};

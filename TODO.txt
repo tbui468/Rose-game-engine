@@ -7,21 +7,33 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
                 init and shutdown can actually be left here in Application.cpp.  Just need to make the loading/playing/freeing sound 
                     API available in Layers
 
+            How to get audio system inside layer?  Could pass a pointer 
+
+            Have Application object initialize audio system
+                then allow user to create sounds from asset paths
+
+            Make Audio class
+
         2. Save/load system - SDL_GetPrefPath
             Save/Load system for puzzles and progress
             Undo system (which requires save/load system in place)
 
         3. Core Features - transformations/splitting/forming and puzzle clear/puzzleset clear
 
-            Puzzle constructor doesn't really need a position parametere - just put it inside the puzzle class as a static variable to clean things up
+            Move PuzzleIcon code in PuzzleSet constructor to PuzzleIcon class
 
-            The processing of inputs can be left to the client side stuff in Squares
+            PuzzleClear/PuzzleSetClear status and checks on transformations (Don't hide these checks deep inside the puzzlesets or puzzle classses)
+                since it comes right after a transformation, should perform the check in the same place in MenuLayer (right before setting animation start parameters)
+                    and set a flag somewhere (in MenuLayer would be best) if the puzzle is cleared
+                then after the transformation animation is done, go straight to the cleared puzzle animation (do something similar for clearing puzzlesets)
 
-            InputQueue to allow user to queue up commands while the previous animation is still finishing
+            Moves per puzzle limit
 
-            PuzzleClear/PuzzleSetClear status and checks on transformations
+            Shaders and special effects as rewards for clearing puzzles
 
-    Add visual touches, like blurred fractals in front/behind play field that move along with puzzles to give illusion of depth and provide more animations
+            Add visual touches
+                like blurred fractals in front/behind play field that move along with puzzles to give illusion of depth and provide more animations
+                blurry dust motes (or something similar) floating in the background - maybe have selecting puzzles motion affect these motes
 
 
 Set build (x86 or x64) (or should this be a build option???)

@@ -17,7 +17,7 @@ struct FractalCorners {
 
 class Puzzle: public rose::Entity {
     public:
-        Puzzle(FractalElement* elements, const glm::ivec2& dimension, const glm::vec2& pos, int index);
+        Puzzle(FractalElement* elements, const glm::ivec2& dimension, int index);
         virtual ~Puzzle();
         int GetIndex() const { return m_Index; }
         bool IsOpen() const { return m_IsOpen; }
@@ -31,6 +31,7 @@ class Puzzle: public rose::Entity {
         const glm::ivec2& GetDimensions() const { return m_Dimensions; }
     public:
         static float GetSpacing() { return s_SPACING; }
+        static float GetInitOffset() { return s_InitOffset; }
         static rose::Sprite GetSprite() { return s_Sprite; }
         static glm::vec2 GetObjectSize() { return s_ObjectSize; }
         static glm::vec4 GetBoundingBox() { return s_BoundingBox; }
@@ -56,6 +57,7 @@ class Puzzle: public rose::Entity {
         glm::ivec2 m_Dimensions {0, 0};
     private:
         inline static float s_SPACING {240.0f};
+        inline static float s_InitOffset {360.0f};
         inline static rose::Sprite s_Sprite {{32, 32}, {32, 32}, rose::TextureType::Default};
         inline static glm::vec2 s_ObjectSize {32.0f, 32.0f};
         inline static glm::vec4 s_BoundingBox {0.0f, 0.0f, 32.0f, 32.0f};

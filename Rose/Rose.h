@@ -9,6 +9,8 @@
 
 #include "Globals.h"
 #include "Application.h"
+#include "Audio.h"
+#include "Sound.h"
 #include "Layer.h"
 #include "Window.h"
 #include "Camera.h"

@@ -9,9 +9,10 @@
 
 namespace sqs {
 
-
-
     MenuLayer::MenuLayer(): Layer() {
+        
+        m_Sound = new rose::Sound("sound/pluck.wav");
+
         Fractal<int> f0(1, glm::ivec2(0, 0), glm::vec2(0.0f, 0.0f), 0);
         Fractal<glm::imat2> f1(glm::imat2(0), glm::ivec2(0, 0), glm::vec2(0.0f, 0.0f), 0);
         Fractal<glm::imat4> f2(glm::imat4(0), glm::ivec2(0, 0), glm::vec2(0.0f, 0.0f), 0);
@@ -114,7 +115,6 @@ namespace sqs {
             OpenPuzzleSetMenu();
         }
 
-
         if(m_CloseButton->PointCollision(mouse.x, mouse.y) && mouseKeys.at(rose::MouseEvents::LeftButton)) {
             PuzzleSet* openPuzzleSet = GetOpenPuzzleSet();
 
@@ -124,7 +124,6 @@ namespace sqs {
                 OpenMainMenu();
             }
         }
-
 
         for(PuzzleSet* ps : PuzzleSet::GetSets()) {
             if(ps->PointCollision(mouse.x, mouse.y) && mouseKeys.at(rose::MouseEvents::LeftButton)) {
@@ -170,6 +169,7 @@ namespace sqs {
                     }else if(keys.at(SDLK_w)) { //translate up
                         BaseFractal* otherFractal = puzzle->GetFractal(glm::ivec2(index.x, index.y - GetFractalSize(fractal)));
                         if(otherFractal && GetFractalSize(fractal) == GetFractalSize(otherFractal)) { 
+                            m_Sound->Play();
                             puzzle->SwapFractals(fractal, otherFractal);
                             SetAnimationStart();
                             break;

@@ -31,6 +31,7 @@ namespace sqs {
             Button* m_QuitButton;
             Button* m_StartButton;
             Button* m_CloseButton;
+            rose::Sound* m_Sound;
 
             std::vector<rose::Entity*> m_Entities;
 

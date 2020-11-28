@@ -13,8 +13,9 @@ float PointDistance(const glm::ivec2& start, const glm::ivec2& end) {
     return sqrt(deltaXSqr + deltaYSqr);
 }
 
-Puzzle::Puzzle(FractalElement* elements, const glm::ivec2& dimensions, const glm::vec2& pos, int index) 
-   : Entity(GetSprite(), GetObjectSize(), GetBoundingBox(), pos) {
+//Puzzle::Puzzle(FractalElement* elements, const glm::ivec2& dimensions, const glm::vec2& pos, int index) 
+Puzzle::Puzzle(FractalElement* elements, const glm::ivec2& dimensions, int index) 
+   : Entity(GetSprite(), GetObjectSize(), GetBoundingBox(), glm::vec2(GetInitOffset() + GetSpacing() * index, 0.0f)) {
         m_Index = index;
         m_Dimensions = dimensions;
 

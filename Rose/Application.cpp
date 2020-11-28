@@ -2,20 +2,16 @@
 
 #include <SDL.h>
 
-//fmod and COM
-#include <combaseapi.h>
-#include <fmod.h>
-#include <fmod.hpp>
-#include <fmod_errors.h>
-
-//puttint FMOD headers before glad.h triggers APIENTRY redefinition warning
-#include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Application.h"
 #include "CommandCode.h"
 #include "Instrumentor.h"
+
+
+//puttint FMOD headers before glad.h triggers APIENTRY redefinition warning
+#include <glad/glad.h>
 
 namespace rose {
 
@@ -28,10 +24,6 @@ namespace rose {
         return s_Application;
     }
 
-    std::shared_ptr<Renderer> Application::GetRenderer() const {
-        assert(s_Application);
-        return m_Renderer;
-    }
 
     void Application::Quit() {
         m_Quit = true;
@@ -43,47 +35,14 @@ namespace rose {
             std::cout << "SDL_Init error!!!" << SDL_GetError() << std::endl;
         }
 
-        //temp:
-        //////////////////FMOD TEST//////////////////////
-        //COM needs to be initialized and unizitialized for windows systems
-        //not uninitializing COM is a memory leak
-        CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 
-        FMOD_RESULT result;
-        FMOD::System* system = NULL;
-        //create system object
-        result = FMOD::System_Create(&system);
-        if(result != FMOD_OK) {
-            CoUninitialize();
-            printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
-            exit(-1);
-        }
-
-        //init fmod
-        result = system->init(512, FMOD_INIT_NORMAL, 0);
-        if(result != FMOD_OK) {
-            CoUninitialize();
-            printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
-            exit(-1);
-        }
-
-        FMOD::Sound* sound;
-        //FMOD_CREATESOUNDEXINFO exinfo;
-        std::string exePathString(GetExecutablePath());
-        result = system->createSound((exePathString + "../../assets/sound/pluck.wav").c_str(), 
-                FMOD_DEFAULT, NULL, &sound);
-/*
-        FMOD::Channel* channel;
-        result = system->playSound(sound, NULL, false, &channel);*/
-
-
-        //ChannelControl::isPlaying(...) to monitor channel, channel handle will be = FMOD_ERR_INVALID_HANDLE
+        m_Audio = std::make_shared<Audio>();
 
         bool fullScreen = false;
         m_Window = std::make_shared<Window>(960, 540, fullScreen);
 
         bool vsync = false;
-        m_Renderer = std::make_shared<Renderer>(m_Window, vsync, exePathString);
+        m_Renderer = std::make_shared<Renderer>(m_Window, vsync, GetExecutablePath());
 
     }
 
@@ -201,7 +160,7 @@ namespace rose {
 
 
     void Application::Shutdown() const {
-        CoUninitialize();
+        m_Audio->Shutdown();
         SDL_DestroyWindow(m_Window->GetHandle());
         SDL_Quit();
     }

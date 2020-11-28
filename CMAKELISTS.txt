@@ -33,6 +33,8 @@ add_library(Rose STATIC
     "Rose/Globals.cpp"
     "Rose/Entity.cpp"
     "Rose/Application.cpp"
+    "Rose/Audio.cpp"
+    "Rose/Sound.cpp"
     "Rose/Camera.cpp"
     "Rose/renderer/Renderer.cpp"
     "Rose/renderer/VertexBuffer.cpp"
@@ -62,7 +64,7 @@ add_executable(Squares
     "Squares/InputDispatcher.cpp"
     "Squares/Fractal.cpp"
     "Squares/BaseFractal.cpp")
-target_include_directories(Squares PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${GLM_INCLUDE_DIR} ${ROSE_INCLUDE_DIR})
+target_include_directories(Squares PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${GLM_INCLUDE_DIR} ${ROSE_INCLUDE_DIR} ${FMOD_INCLUDE_DIR})
 target_link_libraries(Squares Rose)
 #target_compile_options(Squares PRIVATE "/analyze")
 
