@@ -4,6 +4,7 @@ project(Squares VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
+
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -std=c++11")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_DEBUG} -g")
@@ -19,26 +20,72 @@ endif()
 
 
 set (SDL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendor/sdl/SDL2-2.0.12/include)
-set (SDL_LIB_DIR ${CMAKE_SOURCE_DIR}/vendor/sdl/SDL2-2.0.12/lib/x64)
 set (GLAD_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendor/glad/include)
-set (SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+set (GLM_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendor/glm/glm-0.9.9.8)
+set (STB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendor/stb/include)
+set (FMOD_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendor/FMOD\ SoundSystem/FMOD\ Studio\ API\ Windows/api/core/inc)
+set (ROSE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Rose)
+set (NLOHMANN_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/vendor/nlohmann)
+
+set (SDL_LIB_DIR ${CMAKE_SOURCE_DIR}/vendor/sdl/SDL2-2.0.12/lib/x64)
+set (FMOD_LIB_DIR ${CMAKE_SOURCE_DIR}/vendor/FMOD\ SoundSystem/FMOD\ Studio\ API\ Windows/api/core/lib/x64)
 
 
-add_library(Rose STATIC "src/InputQueue.cpp" "src/Entity.cpp" "src/Application.cpp" "src/renderer/Renderer.cpp")
-target_include_directories(Rose PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR} ${SRC_DIR})
-target_link_libraries(Rose ${SDL_LIB_DIR}/SDL2main.lib ${SDL_LIB_DIR}/SDL2.lib Glad)
+add_library(Rose STATIC 
+    "Rose/Globals.cpp"
+    "Rose/Entity.cpp"
+    "Rose/Application.cpp"
+    "Rose/Audio.cpp"
+    "Rose/Sound.cpp"
+    "Rose/Camera.cpp"
+    "Rose/renderer/Renderer.cpp"
+    "Rose/renderer/VertexBuffer.cpp"
+    "Rose/renderer/IndexBuffer.cpp"
+    "Rose/renderer/Texture.cpp"
+    "Rose/renderer/Batch.cpp"
+    "Rose/renderer/Shader.cpp")
+#target_compile_options(Rose PRIVATE "/analyze")
+target_include_directories(Rose PRIVATE 
+    ${SDL_INCLUDE_DIR}
+    ${GLAD_INCLUDE_DIR}
+    ${STB_INCLUDE_DIR}
+    ${ROSE_INCLUDE_DIR}
+    ${GLM_INCLUDE_DIR}
+    ${FMOD_INCLUDE_DIR}
+    ${NLOHMANN_INCLUDE_DIR})
+target_link_libraries(Rose 
+    ${SDL_LIB_DIR}/SDL2main.lib 
+    ${SDL_LIB_DIR}/SDL2.lib 
+    Glad 
+    ${FMOD_LIB_DIR}/fmod_vc.lib
+    ${FMOD_LIB_DIR}/fmodL_vc.lib)
 
 add_library(Glad STATIC "vendor/glad/src/glad.c")
 target_include_directories(Glad PRIVATE ${GLAD_INCLUDE_DIR})
 
-add_executable(Squares "src/Squares.cpp")
-target_include_directories(Squares PRIVATE ${SDL_INCLUDE_DIR} ${GLAD_INCLUDE_DIR})
+add_executable(Squares 
+    "Squares/Squares.cpp"
+    "Squares/MenuLayer.cpp"
+    "Squares/Button.cpp"
+    "Squares/Puzzle.cpp"
+    "Squares/PuzzleIcon.cpp"
+    "Squares/PuzzleSet.cpp"
+    "Squares/InputDispatcher.cpp"
+    "Squares/Fractal.cpp"
+    "Squares/BaseFractal.cpp")
+target_include_directories(Squares PRIVATE 
+    ${SDL_INCLUDE_DIR}
+    ${GLAD_INCLUDE_DIR}
+    ${GLM_INCLUDE_DIR}
+    ${ROSE_INCLUDE_DIR}
+    ${FMOD_INCLUDE_DIR}
+    ${NLOHMANN_INCLUDE_DIR})
 target_link_libraries(Squares Rose)
-
+#target_compile_options(Squares PRIVATE "/analyze")
 
 add_custom_command(TARGET Squares POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${SDL_LIB_DIR}/SDL2.dll"
+    "${FMOD_LIB_DIR}/fmod.dll"
     $<TARGET_FILE_DIR:Squares>)
-
 
