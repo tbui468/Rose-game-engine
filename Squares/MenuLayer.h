@@ -3,6 +3,7 @@
 
 #include "Rose.h"
 #include "Fractal.h"
+#include "PuzzleSet.h"
 
 namespace sqs {
 
@@ -14,7 +15,8 @@ namespace sqs {
         public:
             MenuLayer();
             virtual ~MenuLayer();
-            virtual bool Update(double deltaTime, const std::array<bool, rose::g_MaxKeys>& keys, const std::array<bool, rose::g_MaxMouseButtons>& mouse , const glm::vec2& mousePos) override;
+            virtual bool Update(double deltaTime, const std::array<bool, rose::g_MaxKeys>& keys, const std::array<bool, 
+                                rose::g_MaxMouseButtons>& mouse , const glm::vec2& mousePos) override;
             Puzzle* GetOpenPuzzle() const;
             PuzzleSet* GetOpenPuzzleSet() const;
             virtual void Draw() override;
@@ -27,6 +29,8 @@ namespace sqs {
             void OpenPuzzle(Puzzle* puzzle);
             void SetAnimationStart();
             void SplitFractal(BaseFractal* fractal);
+        private:
+            void LoadPuzzleData(const std::string& path, std::vector<PuzzleSetData>* puzzleSetList);
         private:
             Button* m_QuitButton;
             Button* m_StartButton;

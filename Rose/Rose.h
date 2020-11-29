@@ -6,6 +6,7 @@
 #include <memory>
 #include <assert.h>
 #include <SDL.h>
+#include <json.hpp>
 
 #include "Globals.h"
 #include "Application.h"
