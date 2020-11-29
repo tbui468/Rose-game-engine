@@ -5,9 +5,7 @@
 namespace sqs {
 
 
-    PuzzleSet::PuzzleSet(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos): 
-        Entity(sprite, size, boundingBox, pos) {
-        }
+    PuzzleSet::PuzzleSet(PuzzleSetData puzzleSetData, const glm::vec2& pos): Entity(s_Sprite, s_ObjectSize, s_BoundingBox, pos), m_PuzzleSetData(puzzleSetData) {}
 
 
     PuzzleSet::~PuzzleSet() {
@@ -19,35 +17,13 @@ namespace sqs {
         Close(); //temp: just to make sure we don't open too many puzzles
         m_DestroyPuzzles = false;
 
-        //create puzzles belong to this set
-        //temp: need to load from default data/load save data
-        /*
-        FractalElement elements[] = {FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty, 
-                                     FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty,
-                                     FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty,
-                                     FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty};
-        for(int i = 0; i < 2; ++i) {
-            m_PuzzleList.emplace_back(new Puzzle(&elements[0], glm::ivec2(4, 4), m_PuzzleList.size()));
-        }*/
+        int puzzleCount = m_PuzzleSetData.Puzzles.size();
 
-        FractalElement elements0[] = {FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty, 
-                                      FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty};
-        for(int i = 0; i < 2; ++i) {
-            m_PuzzleList.emplace_back(new Puzzle(&elements0[0], glm::ivec2(2, 4), m_PuzzleList.size()));
+        for(int i = 0; i < puzzleCount; ++i) {
+            PuzzleData puzzleData = m_PuzzleSetData.Puzzles.at(i);
+            m_PuzzleList.emplace_back(new Puzzle(puzzleData.Elements.data(), glm::ivec2(puzzleData.Width, puzzleData.Height), m_PuzzleList.size()));
         }
 
-        FractalElement elements1[] = {FractalElement::Block, FractalElement::Green, FractalElement::Blue, FractalElement::Empty, 
-                                      FractalElement::Red, FractalElement::Green, FractalElement::Blue, FractalElement::Empty,
-                                      FractalElement::Block};
-        for(int i = 0; i < 2; ++i) {
-            m_PuzzleList.emplace_back(new Puzzle(&elements1[0], glm::ivec2(3, 3), m_PuzzleList.size()));
-        }
-
-        FractalElement elements2[] = {FractalElement::Block, FractalElement::Green, FractalElement::Blue, FractalElement::Empty, 
-                                      FractalElement::Red, FractalElement::Green, FractalElement::Block, FractalElement::Empty};
-        for(int i = 0; i < 2; ++i) {
-            m_PuzzleList.emplace_back(new Puzzle(&elements2[0], glm::ivec2(4, 2), m_PuzzleList.size()));
-        }
 
         OpenPuzzle(m_PuzzleList.at(0));
 
@@ -55,17 +31,9 @@ namespace sqs {
             if(puzzle) puzzle->MoveBy({-360.0f, 0.0f});
         }
 
-        //create puzzle icons
-        //todo: move this to static variables in puzzleIcon class
-        const rose::Sprite iconsprite = {{32, 32}, {8, 8}, rose::TextureType::Default};
-        const glm::vec2 iconsize = {8.0f, 8.0f};
-        const glm::vec4 iconbox = {0.0f, 0.0f, 8.0f, 8.0f};
-        const float margin = 24.0f;
-        const int iconCount = m_PuzzleList.size();
-        const float halfLength = (iconCount - 1) * margin / 2.0f;
 
-        for(int i = 0; i < iconCount; ++i) {
-            m_PuzzleIconList.emplace_back(new PuzzleIcon(iconsprite, iconsize, iconbox, glm::vec2(-halfLength + margin * i, 150.0f), m_PuzzleList.at(i)));
+        for(int i = 0; i < m_PuzzleList.size(); ++i) {
+            m_PuzzleIconList.emplace_back(new PuzzleIcon(m_PuzzleList.at(i), m_PuzzleList.size()));
         }
 
         for(PuzzleIcon* icon: m_PuzzleIconList) {
@@ -159,25 +127,6 @@ namespace sqs {
         for(PuzzleIcon* icon: m_PuzzleIconList) {
             if(icon) icon->Draw();
         }
-    }
-
-    //////////static functions and variables
-    std::vector<PuzzleSet*> PuzzleSet::s_PuzzleSets;
-
-    void PuzzleSet::CreateSets() {
-        const rose::Sprite puzzleSetSprite = {{0, 0}, {32, 32}, rose::TextureType::Default};
-        const glm::vec2 size = glm::vec2(32.0f, 32.0f);
-        const glm::vec4 boundingBox = glm::vec4(0.0f, 0.0f, 32.0f, 32.0f);
-        float topEdge = 135.0f;
-
-        PuzzleSet::s_PuzzleSets.emplace_back(new PuzzleSet(puzzleSetSprite, size, boundingBox, glm::vec2(-32.0f, topEdge + 32.0f)));
-        PuzzleSet::s_PuzzleSets.emplace_back(new PuzzleSet(puzzleSetSprite, size, boundingBox, glm::vec2(0.0f, topEdge + 32.0f)));
-        PuzzleSet::s_PuzzleSets.emplace_back(new PuzzleSet(puzzleSetSprite, size, boundingBox, glm::vec2(32.0f, topEdge + 32.0f)));
-    }
-
-    std::vector<PuzzleSet*>& PuzzleSet::GetSets() {
-        if(PuzzleSet::s_PuzzleSets.empty()) PuzzleSet::CreateSets();
-        return PuzzleSet::s_PuzzleSets;
     }
 
 

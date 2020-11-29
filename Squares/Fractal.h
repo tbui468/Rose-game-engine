@@ -18,7 +18,13 @@ namespace sqs {
         Block,
         Red,
         Blue,
-        Green
+        Green,
+        RedEntry,
+        RedExit,
+        BlueEntry,
+        BlueExit,
+        GreenEntry,
+        GreenExit
     };
 
     template <class T>

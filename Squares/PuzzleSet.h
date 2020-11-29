@@ -2,18 +2,21 @@
 #define PUZZLE_SET_H
 
 #include "Rose.h"
+#include "Puzzle.h"
 
 namespace sqs {
 
 class PuzzleIcon;
-class Puzzle;
+
+struct PuzzleSetData {
+    std::vector<PuzzleData> Puzzles;
+};
 
 class PuzzleSet: public rose::Entity {
     public:
-        PuzzleSet(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos);
+        PuzzleSet(PuzzleSetData puzzleSetData, const glm::vec2& pos);
         virtual ~PuzzleSet();
         void Open();
-        //void OpenPuzzle(int index);
         void OpenPuzzle(Puzzle* puzzle);
         void Close();
         bool IsOpen() const;
@@ -27,11 +30,11 @@ class PuzzleSet: public rose::Entity {
         std::vector<Puzzle*> m_PuzzleList;
         std::vector<PuzzleIcon*> m_PuzzleIconList;
         bool m_DestroyPuzzles {false};
-    public:
-        static std::vector<PuzzleSet*>& GetSets();
-        static void CreateSets();
+        PuzzleSetData m_PuzzleSetData;
     private:
-        static std::vector<PuzzleSet*> s_PuzzleSets;
+        inline static rose::Sprite s_Sprite {{0, 0}, {32, 32}, rose::TextureType::Default};
+        inline static glm::vec2 s_ObjectSize {32.0f, 32.0f};
+        inline static glm::vec4 s_BoundingBox {0.0f, 0.0f, 32.0f, 32.0f};
 };
 
 }

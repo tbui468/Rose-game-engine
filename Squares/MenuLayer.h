@@ -34,6 +34,7 @@ namespace sqs {
             rose::Sound* m_Sound;
 
             std::vector<rose::Entity*> m_Entities;
+            std::vector<PuzzleSet*> m_PuzzleSets;
 
             float m_Parameter {1.0f};
             bool m_Start {false};

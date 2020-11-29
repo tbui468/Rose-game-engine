@@ -7,6 +7,12 @@
 
 namespace sqs {
 
+struct PuzzleData {
+    int Width;
+    int Height;
+    std::vector<FractalElement> Elements;
+};
+
 
 struct FractalCorners {
     BaseFractal* TopLeft {nullptr};

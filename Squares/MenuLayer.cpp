@@ -1,4 +1,5 @@
 #include <cmath>
+#include <fstream>
 
 #include "MenuLayer.h"
 #include "Button.h"
@@ -12,6 +13,27 @@ namespace sqs {
     MenuLayer::MenuLayer(): Layer() {
         
         m_Sound = new rose::Sound("sound/pluck.wav");
+
+        char* prefPath = NULL;
+        prefPath = SDL_GetPrefPath("Squares", "profile");
+        if(prefPath) {
+            std::cout << prefPath << std::endl;
+        }else{
+            std::cout << "Error getting pref path" << std::endl;
+        }
+
+        std::string outputPath = std::string(prefPath) + "/test.json";
+
+        SDL_free(prefPath);
+
+        std::ofstream output(outputPath.c_str());
+        FractalElement r = FractalElement::Red;
+        FractalElement g = FractalElement::Green;
+        FractalElement b = FractalElement::Blue;
+        FractalElement e = FractalElement::Empty;
+        output << (int)r << (int)g << (int)b << (int)e;
+        output.close();
+
 
         Fractal<int> f0(1, glm::ivec2(0, 0), glm::vec2(0.0f, 0.0f), 0);
         Fractal<glm::imat2> f1(glm::imat2(0), glm::ivec2(0, 0), glm::vec2(0.0f, 0.0f), 0);
@@ -35,7 +57,33 @@ namespace sqs {
         m_Entities.push_back((rose::Entity*)m_StartButton);
         m_Entities.push_back((rose::Entity*)m_QuitButton);
         m_Entities.push_back((rose::Entity*)m_CloseButton);
-        for(PuzzleSet* ps: PuzzleSet::GetSets()) m_Entities.push_back((rose::Entity*)ps);
+
+        //default/profile data should be loaded into data structures here
+        //PuzzleSetData and PuzzleData
+        
+        PuzzleData puzzleData;
+        puzzleData.Width = 4;
+        puzzleData.Height = 4;
+
+        for(int i = 0; i < 16; ++i) {
+            puzzleData.Elements.push_back(FractalElement::Red);
+        }
+
+        PuzzleSetData puzzleSetData0;
+        PuzzleSetData puzzleSetData1;
+        PuzzleSetData puzzleSetData2;
+
+        for(int i = 0; i < 8; ++i) {
+            puzzleSetData0.Puzzles.push_back(puzzleData);
+            puzzleSetData1.Puzzles.push_back(puzzleData);
+            puzzleSetData2.Puzzles.push_back(puzzleData);
+        }
+
+        float topEdge = 135.0f;
+        m_PuzzleSets.emplace_back(new PuzzleSet(puzzleSetData0, glm::vec2(-32.0f, topEdge + 32.0f)));
+        m_PuzzleSets.emplace_back(new PuzzleSet(puzzleSetData1, glm::vec2(0.0f, topEdge + 32.0f)));
+        m_PuzzleSets.emplace_back(new PuzzleSet(puzzleSetData2, glm::vec2(32.0f, topEdge + 32.0f)));
+        for(PuzzleSet* ps: m_PuzzleSets) m_Entities.push_back(ps);
 
     }
 
@@ -58,7 +106,7 @@ namespace sqs {
         m_QuitButton->GoAway();
         m_QuitButton->ScaleTo(glm::vec2(1.0f, 2.0f));
         m_CloseButton->ComeBack();
-        for(PuzzleSet* ps : PuzzleSet::GetSets()) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
+        for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
         SetAnimationStart();
     }
 
@@ -68,19 +116,19 @@ namespace sqs {
         m_QuitButton->ComeBack();
         m_QuitButton->ScaleTo(glm::vec2(1.0f, 1.0f));
         m_CloseButton->GoAway();
-        for(PuzzleSet* ps : PuzzleSet::GetSets()) ps->MoveTo(glm::vec2(ps->x(), m_TopEdge + 32.0f));
+        for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), m_TopEdge + 32.0f));
         SetAnimationStart();
     }
 
     void MenuLayer::ClosePuzzleSet(PuzzleSet* openPuzzleSet) {
-        for(PuzzleSet* ps : PuzzleSet::GetSets()) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
+        for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
         openPuzzleSet->Close();
         SetAnimationStart();
     }
 
     void MenuLayer::OpenPuzzleSet(PuzzleSet* puzzleSet) {
         puzzleSet->Open();
-        for(PuzzleSet* ps : PuzzleSet::GetSets()) ps->MoveTo(glm::vec2(ps->x(), m_TopEdge + 32.0f));
+        for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), m_TopEdge + 32.0f));
         SetAnimationStart();
     }
 
@@ -125,7 +173,7 @@ namespace sqs {
             }
         }
 
-        for(PuzzleSet* ps : PuzzleSet::GetSets()) {
+        for(PuzzleSet* ps : m_PuzzleSets) {
             if(ps->PointCollision(mouse.x, mouse.y) && mouseKeys.at(rose::MouseEvents::LeftButton)) {
                 OpenPuzzleSet(ps);
                 break;
@@ -169,7 +217,7 @@ namespace sqs {
                     }else if(keys.at(SDLK_w)) { //translate up
                         BaseFractal* otherFractal = puzzle->GetFractal(glm::ivec2(index.x, index.y - GetFractalSize(fractal)));
                         if(otherFractal && GetFractalSize(fractal) == GetFractalSize(otherFractal)) { 
-                            m_Sound->Play();
+//                            m_Sound->Play();
                             puzzle->SwapFractals(fractal, otherFractal);
                             SetAnimationStart();
                             break;
@@ -241,7 +289,7 @@ namespace sqs {
 
 
     PuzzleSet* MenuLayer::GetOpenPuzzleSet() const {
-        for(PuzzleSet* ps: PuzzleSet::GetSets()) {
+        for(PuzzleSet* ps: m_PuzzleSets) {
             if(ps && ps->IsOpen()) return ps;
         }
         return nullptr;

@@ -1,26 +1,43 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
+    PITCH: An application teaching goemetric transformations using puzzles, but the app itself is a puzzle the user must explore to unravel
+
     THE BIG THREE:
-        1. Audio - FMOD (spend the mornings one this)
-            Get music (at least 1) and sound effects (at least 2) integrated into application
-            once it all works, abstract the necessary bits(shouldn't be much abstraction beyond init()/shutdown() since the current FMOD system is quite simple)
-                init and shutdown can actually be left here in Application.cpp.  Just need to make the loading/playing/freeing sound 
-                    API available in Layers
+        1. Save/load system - SDL_GetPrefPath (Spend mornings on this)
 
-            How to get audio system inside layer?  Could pass a pointer 
+                Need to initialize data structures to hold all application data at the beginning (loading either default or profile data)
+                    std::array of PuzzleSets
+                        puzzlesets should take in ALL puzzle data in with the constructor (just to keep things simple)                   
+                            rewrite puzzleset constructor to take in puzzle data (look at current puzzle instantiation inside puzzleset constructor
+                            to help guide how I want to do this)
+                
+                Data I need to save/load:
+                    default.sav - loads on first starting application or if profile.sav is invalid (will also display message informing user profile is invalid)
+                                    default.sav can be be in the same directory as the executable, since it's read only
+                        puzzleset 0 - int
+                            puzzle 0 - int
+                                fractal data - list of int
+                                width - int
+                                height - int
+                            puzzle 1
+                        puzzleset 1
+                            puzzle 0
+                            puzzle 1
+                    profile.sav - loads if exists and format is not invalid
+                                profile.sav should be writting to user data directory for this app (SDL_GetPrefPath)
 
-            Have Application object initialize audio system
-                then allow user to create sounds from asset paths
 
-            Make Audio class
+        2. Audio - FMOD
+            Sound is playing on translate up 
+            Get music looping
 
-        2. Save/load system - SDL_GetPrefPath
-            Save/Load system for puzzles and progress
-            Undo system (which requires save/load system in place)
+        3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear
 
-        3. Core Features - transformations/splitting/forming and puzzle clear/puzzleset clear
-
-            Move PuzzleIcon code in PuzzleSet constructor to PuzzleIcon class
+            Get Red/Gree/Blue Entry and Exit fractals functional
+                placed on edge of puzzles.  
+                Can't be transformed or split/formed
+                Same color, but different visually from regular fractals
+                keep in mind that these entry/exit fractals will be used to check Puzzle::IsCleared(), and PuzzleSet()::IsCleared()
 
             PuzzleClear/PuzzleSetClear status and checks on transformations (Don't hide these checks deep inside the puzzlesets or puzzle classses)
                 since it comes right after a transformation, should perform the check in the same place in MenuLayer (right before setting animation start parameters)
@@ -35,6 +52,15 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
                 like blurred fractals in front/behind play field that move along with puzzles to give illusion of depth and provide more animations
                 blurry dust motes (or something similar) floating in the background - maybe have selecting puzzles motion affect these motes
 
+            Selecting a puzzleset should have it unwrap and form the individual puzzles - this would require roughly 9 puzzles per set
+
+        4. Stop with the unnecessary abstractions
+                EntryPoint.cpp - creates single instance of application class (no need for singletons or anything)
+                Application.h and cpp - contains Layer/Renderer/Audio/Input classes
+                    Layer - all gameplay scripting
+                    Input - get user inputs/events
+                    Renderer - all OpenGL code
+                    Audio - all FMOD code
 
 Set build (x86 or x64) (or should this be a build option???)
 

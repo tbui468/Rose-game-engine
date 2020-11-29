@@ -3,9 +3,10 @@
 
 namespace sqs {
 
-    PuzzleIcon::PuzzleIcon(const rose::Sprite& sprite, const glm::vec2& size, const glm::vec4& boundingBox, const glm::vec2& pos, Puzzle* puzzle):
-            Entity(sprite, size, boundingBox, pos) {
-                m_PuzzleHandle = puzzle;
-            }
+
+    PuzzleIcon::PuzzleIcon(Puzzle* puzzle, int puzzleCount) 
+        : Entity(s_Sprite, s_ObjectSize, s_BoundingBox, glm::vec2(s_Margin * ((1 - puzzleCount) / 2.0f + puzzle->GetIndex()), 150.f)) {
+            m_PuzzleHandle = puzzle;
+    }
 
 }
