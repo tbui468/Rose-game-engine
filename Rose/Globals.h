@@ -7,7 +7,9 @@ namespace rose {
 
     extern float g_Scale;
     const int g_MaxKeys = 322;
-    const int g_MaxMouseButtons = 5;
+    const int g_MaxMouseButtons = 8;
+
+    extern bool g_TouchControls;
 
 }
 

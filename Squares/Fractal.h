@@ -27,6 +27,22 @@ namespace sqs {
         GreenExit
     };
 
+    enum class Corner {
+        None,
+        TopLeft,
+        TopRight,
+        BottomLeft,
+        BottomRight
+    };
+
+    enum class Edge {
+        None,
+        Left,
+        Right,
+        Top,
+        Bottom
+    };
+
     template <class T>
     class Fractal: public BaseFractal {
         public:
@@ -45,6 +61,16 @@ namespace sqs {
             int GetPuzzleNumber() const { return m_PuzzleNumber; };
             
             const T& GetElements() const { return m_Elements; }
+
+            Corner CornerCollision(const glm::vec2& mouse) {
+                //check each of the corners for a collision with mouse
+                return Corner::None;
+            }
+
+            Edge EdgeCollision(const glm::vec2& mouse) {
+                //check each of the edges for a collision with mouse
+                retunr Edge::None;
+            }
             
             virtual void OnAnimationEnd() override {
                 Entity::OnAnimationEnd();

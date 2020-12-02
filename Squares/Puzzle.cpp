@@ -7,17 +7,18 @@
 namespace sqs {
 
 
-float PointDistance(const glm::ivec2& start, const glm::ivec2& end) {
-    float deltaXSqr = pow(start.x - end.x, 2);
-    float deltaYSqr = pow(start.y - end.y, 2);
-    return sqrt(deltaXSqr + deltaYSqr);
-}
 
 //Puzzle::Puzzle(FractalElement* elements, const glm::ivec2& dimensions, const glm::vec2& pos, int index) 
 Puzzle::Puzzle(FractalElement* elements, const glm::ivec2& dimensions, int index) 
    : Entity(GetSprite(), GetObjectSize(), GetBoundingBox(), glm::vec2(GetInitOffset() + GetSpacing() * index, 0.0f)) {
         m_Index = index;
         m_Dimensions = dimensions;
+        m_MaxTransformations = 5; //temp: should load this value in from default puzzle data
+
+        //undo icons 
+        for(int i = 0; i < m_MaxTransformations; ++i) {
+            m_UndoIcons.emplace_back(new UndoIcon(glm::vec2(UndoIcon::s_Margin * ((1 - m_MaxTransformations) / 2.0f + i) + x(), -110.0f), this));
+        }
 
         //make a bunch of 1x1 fractals as starting point for all puzzles
         for(int row = 0; row < dimensions.y; ++row) {
@@ -35,6 +36,10 @@ Puzzle::Puzzle(FractalElement* elements, const glm::ivec2& dimensions, int index
 Puzzle::~Puzzle() {
     for(BaseFractal* f: m_Fractals) {
         if(f) delete f;
+    }
+
+    for(UndoIcon* i: m_UndoIcons) {
+        if(i) delete i;
     }
 }
 
@@ -55,12 +60,20 @@ void Puzzle::MoveTo(const glm::vec2& pos) {
     for(BaseFractal* f: m_Fractals) {
         if(f) f->MoveBy(glm::vec2(deltaX, deltaY));
     }
+
+    for(UndoIcon* i: m_UndoIcons) {
+        if(i) i->MoveBy(glm::vec2(deltaX, deltaY));
+    }
 }
 
 void Puzzle::MoveBy(const glm::vec2& shift) {
     Entity::MoveBy(shift);
     for(BaseFractal* f: m_Fractals) {
         if(f) f->MoveBy(shift);
+    }
+
+    for(UndoIcon* i: m_UndoIcons) {
+        if(i) i->MoveBy(shift);
     }
 }
 
@@ -69,6 +82,9 @@ void Puzzle::OnAnimationEnd() {
     Entity::OnAnimationEnd();
     for(BaseFractal* f: m_Fractals) {
         if(f) f->OnAnimationEnd();
+    }
+    for(UndoIcon* i: m_UndoIcons) {
+        if(i) i->OnAnimationEnd();
     }
 
 
@@ -144,12 +160,19 @@ void Puzzle::OnAnimationUpdate(float t) {
     for(BaseFractal* f: m_Fractals) {
         if(f) f->OnAnimationUpdate(t);
     }
+    for(UndoIcon* i: m_UndoIcons) {
+        if(i) i->OnAnimationUpdate(t);
+    }
 }
 
 void Puzzle::Draw() const {
-//    Entity::Draw();
+//    Entity::Draw(); //puzzle doesn't need/have a visual element
     for(BaseFractal* f: m_Fractals) {
         if(f) f->Draw();
+    }
+    for(int i = 0; i < GetTransformationCount(); ++i) {
+        UndoIcon* icon = m_UndoIcons.at(i);
+        if(icon) icon->Draw();
     }
 }
 
@@ -170,14 +193,6 @@ BaseFractal* Puzzle::GetFractal(const glm::ivec2& index) const {
     return nullptr;
 }
 
-void Puzzle::SwapFractals(BaseFractal* fractalA, BaseFractal* fractalB) {
-    glm::ivec2 indexA = fractalA->GetIndex();
-    fractalA->SetIndex(fractalB->GetIndex());
-    fractalB->SetIndex(indexA);
-
-    fractalA->MoveTo({fractalB->x(), fractalB->y()});
-    fractalB->MoveTo({fractalA->x(), fractalA->y()});
-}
 
 void Puzzle::SplitFractal(BaseFractal* fractal) {
     //calcualte start coordinates of subfractals
@@ -260,8 +275,8 @@ BaseFractal* Puzzle::GetClosestFractal(float mousex, float mousey) const {
         if(!closestF) {
             closestF = f;
         }else{
-            float closestDis = PointDistance(glm::vec2(closestF->x(), closestF->y()), glm::vec2(mousex, mousey));
-            float thisDis = PointDistance(glm::vec2(f->x(), f->y()), glm::vec2(mousex, mousey));
+            float closestDis = rose::PointDistance(glm::vec2(closestF->x(), closestF->y()), glm::vec2(mousex, mousey));
+            float thisDis = rose::PointDistance(glm::vec2(f->x(), f->y()), glm::vec2(mousex, mousey));
             if(thisDis < closestDis) closestF = f;
         }
     }
@@ -341,20 +356,102 @@ void Puzzle::FormFractal(FractalCorners fc) {
     m_FractalCorners.BottomRight = fc.BottomRight;
 }
 
+
+void Puzzle::SwapFractals(BaseFractal* fractalA, BaseFractal* fractalB) {
+    glm::ivec2 indexA = fractalA->GetIndex();
+    fractalA->SetIndex(fractalB->GetIndex());
+    fractalB->SetIndex(indexA);
+
+    fractalA->MoveTo({fractalB->x(), fractalB->y()});
+    fractalB->MoveTo({fractalA->x(), fractalA->y()});
+
+    //how to transform A to get back to original position
+    glm::ivec2 newIndexA = fractalA->GetIndex();
+    glm::ivec2 newIndexB = fractalB->GetIndex();
+
+    if(newIndexA.y == newIndexB.y) { //horizontal transformation
+        if(newIndexA.x < newIndexB.x) m_TransformationStack.push_back({TransformationType::TranslatePosX, fractalA->GetIndex(), GetFractalSize(fractalA)});
+        else m_TransformationStack.push_back({TransformationType::TranslateNegX, fractalA->GetIndex(), GetFractalSize(fractalA)});
+    }else{ //vertical transformation
+        if(newIndexA.y < newIndexB.y) m_TransformationStack.push_back({TransformationType::TranslatePosY, fractalA->GetIndex(), GetFractalSize(fractalA)});
+        else m_TransformationStack.push_back({TransformationType::TranslateNegY, fractalA->GetIndex(), GetFractalSize(fractalA)});
+    }
+
+}
+
 void Puzzle::RotateFractalCW(BaseFractal* fractal) {
     fractal->RotateBy(-1.5708);
+    m_TransformationStack.push_back({TransformationType::RotateCCW, fractal->GetIndex(), GetFractalSize(fractal)});
 }
 
 void Puzzle::RotateFractalCCW(BaseFractal* fractal) {
     fractal->RotateBy(1.5708);
+    m_TransformationStack.push_back({TransformationType::RotateCW, fractal->GetIndex(), GetFractalSize(fractal)});
 }
 
 void Puzzle::ReflectFractalX(BaseFractal* fractal) {
     fractal->ScaleTo({1.0f, -1.0f});
+    m_TransformationStack.push_back({TransformationType::ReflectX, fractal->GetIndex(), GetFractalSize(fractal)});
 }
 
 void Puzzle::ReflectFractalY(BaseFractal* fractal) {
     fractal->ScaleTo({-1.0f, 1.0f});
+    m_TransformationStack.push_back({TransformationType::ReflectY, fractal->GetIndex(), GetFractalSize(fractal)});
+}
+
+bool Puzzle::ResizeFractalsToUndo() {
+    //temp
+    return true;
+}
+
+void Puzzle::UndoTransformation() {
+
+    struct TransformationData tData = m_TransformationStack.back();
+
+    BaseFractal* f = GetFractal(tData.FractalIndex);
+
+    //temp: should only undo transformation after making sure fractal sizes are matching/correct
+    if(tData.FractalSize != GetFractalSize(f)) return;
+
+    BaseFractal* otherF;
+    glm::ivec2 index = f->GetIndex();
+
+    switch(tData.Transformation) {
+        case TransformationType::TranslatePosX:
+            otherF = GetFractal(glm::ivec2(index.x + GetFractalSize(f), index.y)); 
+            if(otherF && GetFractalSize(f) == GetFractalSize(otherF)) SwapFractals(f, otherF);
+            break;
+        case TransformationType::TranslateNegX:
+            otherF = GetFractal(glm::ivec2(index.x - GetFractalSize(f), index.y)); 
+            if(otherF && GetFractalSize(f) == GetFractalSize(otherF)) SwapFractals(f, otherF);
+            break;
+        case TransformationType::TranslatePosY:
+            otherF = GetFractal(glm::ivec2(index.x, index.y + GetFractalSize(f))); 
+            if(otherF && GetFractalSize(f) == GetFractalSize(otherF)) SwapFractals(f, otherF);
+            break;
+        case TransformationType::TranslateNegY:
+            otherF = GetFractal(glm::ivec2(index.x, index.y - GetFractalSize(f))); 
+            if(otherF && GetFractalSize(f) == GetFractalSize(otherF)) SwapFractals(f, otherF);
+            break;
+        case TransformationType::RotateCW:
+            RotateFractalCW(f);
+            break;
+        case TransformationType::RotateCCW:
+            RotateFractalCCW(f);
+            break;
+        case TransformationType::ReflectX: 
+            ReflectFractalX(f);
+            break;
+        case TransformationType::ReflectY:
+            ReflectFractalY(f);
+            break;
+    }
+
+    //the undo transformation pushes another transformation onto the transformation stack, 
+    //so pop_back is called twice - the first undo removes the transoformation pushed onto the 
+    //stack in the switch statement above, and the second is the actual transformation we want to undo
+    m_TransformationStack.pop_back();
+    m_TransformationStack.pop_back();
 }
 
 

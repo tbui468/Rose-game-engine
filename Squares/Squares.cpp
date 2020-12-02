@@ -1,7 +1,6 @@
 #include "Rose.h" //by any other name would have just as many memory leaks, and break as many cups
 
 #include "MenuLayer.h"
-#include "InputDispatcher.h"
 
 
 int main(int, char**) {

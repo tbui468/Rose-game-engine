@@ -1,11 +1,13 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
-#include <utility>
-#include <memory>
-#include <SDL.h>
+#include <glm/glm.hpp>
 
 namespace rose{
+
+
+float PointDistance(const glm::ivec2& start, const glm::ivec2& end);
+
 
 /*
 std::string GetAssetsPath(const std::string &subDir = "") {

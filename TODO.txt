@@ -3,42 +3,48 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
     PITCH: An application teaching goemetric transformations using puzzles, but the app itself is a puzzle the user must explore to unravel
 
     THE BIG THREE:
-        1. Save/load system - SDL_GetPrefPath (Spend mornings on this)
-            default.sav should be in base path
-            profile.sav should be in user localapp data
+        3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (Spend mornings on this)
+
+                    Fractal.h
+                        CornerCollision(const glm::vec2& mouse) returns an enum Corner::TopLeft (example) or Corner::None
+                        EdgeCollision(const glm::vec2& mouse) returns an enum Edge::Left (example) or Edge::None
+
+                    Mouse: (can require slightly more precision compared to touch controls)
+                        Translation - drag
+                        Reflection - tap on edge
+                        Rotation - drag corner
+                        Split - mouse wheel down
+                        Form - mouse wheel up
+                    Touch:
+                        Translation - flick
+                        Reflection - tap on edge
+                        Rotation - two finger rotation
+                        Split - pinch out
+                        Form - pinch in
+
+                InputQueue and CommandQueue
+                    input queue processes inputs and decays inputs out of the queue when commands take too long to complete (ex: during multistep commands)
+                    if the commandqueue is empty and the input queue has inputs, the next input is used to find the appropriate command and 
+                        that command is then added to the commandqueue to be called
+
+                InputQueue also should take in processed inputs (not the raw inputs) - how to process inputs?
+
+        1. Save/load system - SDL_GetPrefPath
 
             Write out data to profile.json to make sure it saves correctly
 
             Read data in from profile.json if it exists
 
-            Once I understand everything, wrap it up in a simple API specific to my app
+            Default data should also be move out of json file - should write it in c++ and compile it with executable
+                so that user can't accidentally delete default data
+
+            once I understand the parser function in json class, try to roll my own parser
+                it doesn't need to be the 50,000 line beast that is the library I'm using
+                make it rigid and only capable of reading/writing to the specific format for my app
 
         2. Audio - FMOD
             Sound is playing on translate up 
             Get music looping
-
-        3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear
-
-            Get Red/Gree/Blue Entry and Exit fractals functional
-                placed on edge of puzzles.  
-                Can't be transformed or split/formed
-                Same color, but different visually from regular fractals
-                keep in mind that these entry/exit fractals will be used to check Puzzle::IsCleared(), and PuzzleSet()::IsCleared()
-
-            PuzzleClear/PuzzleSetClear status and checks on transformations (Don't hide these checks deep inside the puzzlesets or puzzle classses)
-                since it comes right after a transformation, should perform the check in the same place in MenuLayer (right before setting animation start parameters)
-                    and set a flag somewhere (in MenuLayer would be best) if the puzzle is cleared
-                then after the transformation animation is done, go straight to the cleared puzzle animation (do something similar for clearing puzzlesets)
-
-            Moves per puzzle limit
-
-            Shaders and special effects as rewards for clearing puzzles
-
-            Add visual touches
-                like blurred fractals in front/behind play field that move along with puzzles to give illusion of depth and provide more animations
-                blurry dust motes (or something similar) floating in the background - maybe have selecting puzzles motion affect these motes
-
-            Selecting a puzzleset should have it unwrap and form the individual puzzles - this would require roughly 9 puzzles per set
 
         4. Stop with the unnecessary abstractions
                 EntryPoint.cpp - creates single instance of application class (no need for singletons or anything)

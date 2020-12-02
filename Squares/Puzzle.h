@@ -4,6 +4,7 @@
 #include <array>
 #include "Rose.h"
 #include "Fractal.h"
+#include "UndoIcon.h"
 
 namespace sqs {
 
@@ -19,6 +20,24 @@ struct FractalCorners {
     BaseFractal* TopRight {nullptr};
     BaseFractal* BottomLeft {nullptr};
     BaseFractal* BottomRight {nullptr};
+};
+
+enum class TransformationType {
+    None,
+    TranslatePosX,
+    TranslateNegX,
+    TranslatePosY,
+    TranslateNegY,
+    RotateCW,
+    RotateCCW,
+    ReflectX,
+    ReflectY
+};
+
+struct TransformationData {
+    TransformationType Transformation {TransformationType::None};
+    glm::ivec2 FractalIndex {-1, -1};
+    int FractalSize {0};
 };
 
 class Puzzle: public rose::Entity {
@@ -55,12 +74,19 @@ class Puzzle: public rose::Entity {
         void RotateFractalCCW(BaseFractal* fractal);
         void ReflectFractalX(BaseFractal* fractal);
         void ReflectFractalY(BaseFractal* fractal);
+        bool ResizeFractalsToUndo();
+        void UndoTransformation();
+        int GetMaxTransformations() const { return m_MaxTransformations; }
+        int GetTransformationCount() const { return m_TransformationStack.size(); }
     private:
         int m_Index;
         std::vector<BaseFractal*> m_Fractals;
         FractalCorners m_FractalCorners {nullptr, nullptr, nullptr, nullptr};
         bool m_IsOpen {false};
         glm::ivec2 m_Dimensions {0, 0};
+        int m_MaxTransformations {0};
+        std::vector<TransformationData> m_TransformationStack;
+        std::vector<UndoIcon*> m_UndoIcons;
     private:
         inline static float s_SPACING {240.0f};
         inline static float s_InitOffset {360.0f};

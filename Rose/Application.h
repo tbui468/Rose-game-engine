@@ -13,11 +13,14 @@
 namespace rose {
 
 enum MouseEvents {
-    LeftButton = 0,
-    RightButton,
-    MiddleButton, 
-    ScrollWheelUp,
-    ScrollWheelDown
+    LeftButtonDown = 0,
+    RightButtonDown,
+    MiddleButtonDown, 
+    LeftButtonUp,
+    RightButtonUp,
+    MiddleButtonUp, 
+    WheelUp,
+    WheelDown
 };
 
 class Application {
