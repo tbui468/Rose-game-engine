@@ -73,7 +73,7 @@ namespace sqs {
         output << (int)r << (int)g << (int)b << (int)e;
         output.close();
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
+
         /////////////////////////////////example reading in default data//////////////////////////////////////////////
         char* dataPath;
         char* basePath = SDL_GetBasePath();
@@ -88,7 +88,7 @@ namespace sqs {
         LoadPuzzleData(path, &puzzleSetList);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
-       
+
 
         float topEdge = 135.0f;
         m_PuzzleSets.emplace_back(new PuzzleSet(puzzleSetList.at(0), glm::vec2(-32.0f, topEdge + 32.0f)));
@@ -208,11 +208,11 @@ namespace sqs {
 
     void MenuLayer::ResizeFractalsToUndo(Puzzle* puzzle) {
         /*
-        bool resizeRequired = puzzle->ResizeFractalsToUndo();
-        if(resizeRequired) {
-            SetAnimationStart();
-        }
-        AddCommand(&MenuLayer::UndoTransformation);*/
+           bool resizeRequired = puzzle->ResizeFractalsToUndo();
+           if(resizeRequired) {
+           SetAnimationStart();
+           }
+           AddCommand(&MenuLayer::UndoTransformation);*/
     }
 
     void MenuLayer::UndoTransformation(Puzzle* puzzle) {
@@ -221,7 +221,7 @@ namespace sqs {
     }
 
     bool MenuLayer::Update(double deltaTime, const std::array<bool, rose::g_MaxKeys>& keys, const std::array<bool, rose::g_MaxMouseButtons>& mouseKeys, 
-                           const glm::vec2& mouse) {
+            const glm::vec2& mouse) {
 
 
         InputType input = InputType::None;
@@ -304,7 +304,7 @@ namespace sqs {
             }
         }
 
-        
+
         if(Puzzle* puzzle = GetOpenPuzzle()) {
             //no normal collision checks
             if(input == InputType::PinchIn) {
@@ -329,77 +329,110 @@ namespace sqs {
 
                 //check for transformations here
                 if(puzzle->GetTransformationCount() < puzzle->GetMaxTransformations()) {
-                    //translations
-                    if(fractal->PointCollision(m_DownMouseCoords.x, m_DownMouseCoords.y)) {
-                        glm::ivec2 index = fractal->GetIndex();
-                        BaseFractal* otherFractal;
-                        switch(input) {
-                            case InputType::FlickLeft:
+                    glm::ivec2 index = fractal->GetIndex();
+                    BaseFractal* otherFractal;
+                    switch(input) {
+                        case InputType::Tap: 
+                            if(fractal->EdgeCollision(mouse.x, mouse.y) == rose::Edge::Left || fractal->EdgeCollision(mouse.x, mouse.y) == rose::Edge::Right) {
+                                if(GetFractalSize(fractal) > 1) { 
+                                    puzzle->ReflectFractalY(fractal);
+                                    SetAnimationStart();
+                                    break;
+                                }
+                            }else if(fractal->EdgeCollision(mouse.x, mouse.y) == rose::Edge::Top || fractal->EdgeCollision(mouse.x, mouse.y) == rose::Edge::Bottom) {
+                                if(GetFractalSize(fractal) > 1) { 
+                                    puzzle->ReflectFractalX(fractal);
+                                    SetAnimationStart();
+                                    break;
+                                }
+                            }
+                            break;
+                        case InputType::FlickLeft:
+                            if(fractal->PointCollision(m_DownMouseCoords.x, m_DownMouseCoords.y)) {
                                 otherFractal = puzzle->GetFractal(glm::ivec2(index.x - GetFractalSize(fractal), index.y)); 
                                 if(otherFractal && GetFractalSize(fractal) == GetFractalSize(otherFractal)) { 
                                     puzzle->SwapFractals(fractal, otherFractal);
                                     SetAnimationStart();
+                                    break;
                                 }
+                            }
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopRight && GetFractalSize(fractal) > 1) {
+                                puzzle->RotateFractalCCW(fractal);
+                                SetAnimationStart();
                                 break;
-                            case InputType::FlickRight:
+                            }
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomRight && GetFractalSize(fractal) > 1) {
+                                puzzle->RotateFractalCW(fractal);
+                                SetAnimationStart();
+                                break;
+                            }
+                            break;
+                        case InputType::FlickRight:
+                            if(fractal->PointCollision(m_DownMouseCoords.x, m_DownMouseCoords.y)) {
                                 otherFractal = puzzle->GetFractal(glm::ivec2(index.x + GetFractalSize(fractal), index.y)); 
                                 if(otherFractal && GetFractalSize(fractal) == GetFractalSize(otherFractal)) { 
                                     puzzle->SwapFractals(fractal, otherFractal);
                                     SetAnimationStart();
+                                    break;
                                 }
+                            }
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopLeft && GetFractalSize(fractal) > 1) {
+                                puzzle->RotateFractalCW(fractal);
+                                SetAnimationStart();
                                 break;
-                            case InputType::FlickDown:
+                            }
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomLeft && GetFractalSize(fractal) > 1) {
+                                puzzle->RotateFractalCCW(fractal);
+                                SetAnimationStart();
+                                break;
+                            }
+                            break;
+                        case InputType::FlickDown:
+                            if(fractal->PointCollision(m_DownMouseCoords.x, m_DownMouseCoords.y)) {
                                 otherFractal = puzzle->GetFractal(glm::ivec2(index.x, index.y + GetFractalSize(fractal))); 
                                 if(otherFractal && GetFractalSize(fractal) == GetFractalSize(otherFractal)) { 
                                     puzzle->SwapFractals(fractal, otherFractal);
                                     SetAnimationStart();
+                                    break;
                                 }
+                            }
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopLeft && GetFractalSize(fractal) > 1) {
+                                puzzle->RotateFractalCCW(fractal);
+                                SetAnimationStart();
                                 break;
-                            case InputType::FlickUp:
+                            }
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopRight && GetFractalSize(fractal) > 1) {
+                                puzzle->RotateFractalCW(fractal);
+                                SetAnimationStart();
+                                break;
+                            }
+                            break;
+                        case InputType::FlickUp:
+                            if(fractal->PointCollision(m_DownMouseCoords.x, m_DownMouseCoords.y)) {
                                 otherFractal = puzzle->GetFractal(glm::ivec2(index.x, index.y - GetFractalSize(fractal))); 
                                 if(otherFractal && GetFractalSize(fractal) == GetFractalSize(otherFractal)) { 
                                     puzzle->SwapFractals(fractal, otherFractal);
                                     SetAnimationStart();
+                                    break;
                                 }
+                            }
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomLeft && GetFractalSize(fractal) > 1) {
+                                puzzle->RotateFractalCW(fractal);
+                                SetAnimationStart();
                                 break;
-                        }
-                    }
+                            }
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomRight && GetFractalSize(fractal) > 1) {
+                                puzzle->RotateFractalCCW(fractal);
+                                SetAnimationStart();
+                                break;
+                            }
+                            break;
 
-                    //check reflections and rotations
-                    //need to check edges for taps and corners for drags
-                    if(keys.at(SDLK_q)) { //rotate ccw
-                        if(GetFractalSize(fractal) > 1) { 
-                            puzzle->RotateFractalCCW(fractal);
-                            SetAnimationStart();
-                            break;
-                        }
-                    }else if(keys.at(SDLK_e)) { //rotate cw
-                        if(GetFractalSize(fractal) > 1) { 
-                            puzzle->RotateFractalCW(fractal);
-                            SetAnimationStart();
-                            break;
-                        }
-                    }else if(keys.at(SDLK_x)) { //reflect across x-axis
-                        if(GetFractalSize(fractal) > 1) { 
-                            puzzle->ReflectFractalX(fractal);
-                            SetAnimationStart();
-                            break;
-                        }
-                    }else if(keys.at(SDLK_z)) { //reflect across y-axis
-                        if(GetFractalSize(fractal) > 1) { 
-                            puzzle->ReflectFractalY(fractal);
-                            SetAnimationStart();
-                            break;
-                        }
                     }
 
 
                 }
-
-
-            } 
-
-
+            }
         }
 
         return false;

@@ -27,21 +27,6 @@ namespace sqs {
         GreenExit
     };
 
-    enum class Corner {
-        None,
-        TopLeft,
-        TopRight,
-        BottomLeft,
-        BottomRight
-    };
-
-    enum class Edge {
-        None,
-        Left,
-        Right,
-        Top,
-        Bottom
-    };
 
     template <class T>
     class Fractal: public BaseFractal {
@@ -62,15 +47,6 @@ namespace sqs {
             
             const T& GetElements() const { return m_Elements; }
 
-            Corner CornerCollision(const glm::vec2& mouse) {
-                //check each of the corners for a collision with mouse
-                return Corner::None;
-            }
-
-            Edge EdgeCollision(const glm::vec2& mouse) {
-                //check each of the edges for a collision with mouse
-                retunr Edge::None;
-            }
             
             virtual void OnAnimationEnd() override {
                 Entity::OnAnimationEnd();
@@ -83,6 +59,40 @@ namespace sqs {
                 m_ToScale = {1.0f, 1.0f};
                 UpdateTextureData(m_Elements, GetIndex(), m_PuzzleNumber);
                 UpdateSprite();
+            }
+
+            virtual rose::Corner CornerCollision(float pointX, float pointY) const override {
+
+                glm::vec2 point = {pointX * rose::g_Scale, pointY * rose::g_Scale};
+
+                float hWidth = m_BoundingBox.z / 2.0f;
+                float hHeight = m_BoundingBox.w / 2.0f;
+                glm::vec2 cornerBox = {hWidth/2.0f, hHeight/2.0f}; //make corner collision boxes 1/4 of the width/height
+
+                if(rose::PointInRectangle({m_Pos.x - hWidth, m_Pos.y + hHeight}, cornerBox, point)) return rose::Corner::TopLeft;
+                if(rose::PointInRectangle({m_Pos.x + hWidth, m_Pos.y + hHeight}, cornerBox, point)) return rose::Corner::TopRight;
+                if(rose::PointInRectangle({m_Pos.x - hWidth, m_Pos.y - hHeight}, cornerBox, point)) return rose::Corner::BottomLeft;
+                if(rose::PointInRectangle({m_Pos.x + hWidth, m_Pos.y - hHeight}, cornerBox, point)) return rose::Corner::BottomRight;
+                //base off of UnitMargin() and m_BoundingBox
+                //rose::PointInRectangle(start, end, point)
+                return rose::Corner::None;
+            }
+
+            virtual rose::Edge EdgeCollision(float pointX, float pointY) const override {
+                glm::vec2 point = {pointX * rose::g_Scale, pointY * rose::g_Scale};
+
+                float hWidth = m_BoundingBox.z / 2.0f;
+                float hHeight = m_BoundingBox.w / 2.0f;
+
+                glm::vec2 vertBox = { hWidth / 2.0f, hHeight };
+                glm::vec2 horiBox = { hWidth, hHeight / 2.0f };
+
+                if(rose::PointInRectangle({m_Pos.x - hWidth, m_Pos.y}, vertBox, point)) return rose::Edge::Left;
+                if(rose::PointInRectangle({m_Pos.x + hWidth, m_Pos.y}, vertBox, point)) return rose::Edge::Right;
+                if(rose::PointInRectangle({m_Pos.x, m_Pos.y + hHeight}, horiBox, point)) return rose::Edge::Top;
+                if(rose::PointInRectangle({m_Pos.x, m_Pos.y - hHeight}, horiBox, point)) return rose::Edge::Bottom;
+
+                return rose::Edge::None;
             }
 
             virtual void ScaleTo(const glm::vec2& scale) override {

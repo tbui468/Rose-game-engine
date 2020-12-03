@@ -9,5 +9,14 @@ float PointDistance(const glm::ivec2& start, const glm::ivec2& end) {
     return sqrt(deltaXSqr + deltaYSqr);
 }
 
+bool PointInRectangle(const glm::vec2& center, const glm::vec2& dim, const glm::vec2& point) {
+    if(point.x < (center.x - dim.x / 2.0f)) return false;
+    if(point.x > (center.x + dim.x / 2.0f)) return false;
+    if(point.y > (center.y + dim.y / 2.0f)) return false;
+    if(point.y < (center.y - dim.y / 2.0f)) return false;
+
+    return true;
+}
+
 
 }
