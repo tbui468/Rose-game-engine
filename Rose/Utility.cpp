@@ -18,5 +18,9 @@ bool PointInRectangle(const glm::vec2& center, const glm::vec2& dim, const glm::
     return true;
 }
 
+float Sigmoid(float t) {
+    return 1.0f / (1.0f + exp(-15.0f * (t - 0.5f)));
+}
+
 
 }

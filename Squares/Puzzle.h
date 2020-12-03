@@ -74,7 +74,7 @@ class Puzzle: public rose::Entity {
         void RotateFractalCCW(BaseFractal* fractal);
         void ReflectFractalX(BaseFractal* fractal);
         void ReflectFractalY(BaseFractal* fractal);
-        bool ResizeFractalsToUndo();
+        bool UndoResizeFractals();
         void UndoTransformation();
         int GetMaxTransformations() const { return m_MaxTransformations; }
         int GetTransformationCount() const { return m_TransformationStack.size(); }

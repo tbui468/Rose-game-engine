@@ -24,6 +24,7 @@ namespace sqs {
     };
 
 
+
     MenuLayer::MenuLayer(): Layer() {
 
         m_Sound = new rose::Sound("sound/pluck.wav");
@@ -148,12 +149,44 @@ namespace sqs {
         m_Start = true;
     }
 
-    void MenuLayer::AddCommand(void (MenuLayer::*func)()) {
-        m_CommandQueue.push_back(func);
+    void MenuLayer::AddCommand(CommandData data) {
+        m_CommandQueue.push_back(data);
     }
 
     void MenuLayer::CallNextCommand() {
-        (this->*m_CommandQueue.front())();  //get function pointer, dereference, and the call (need to explicitly use 'this' keyword for this occasion)
+        CommandData command = m_CommandQueue.front();
+    
+        switch(command.type) {
+            case CommandType::OpenPuzzleSetMenu:
+                OpenPuzzleSetMenu();
+                break;
+            case CommandType::OpenMainMenu:
+                OpenMainMenu();
+                break;
+            case CommandType::OpenPuzzleSet:
+                OpenPuzzleSet(command.puzzleSet);
+                break;
+            case CommandType::ClosePuzzleSet:
+                ClosePuzzleSet(command.puzzleSet);
+                break;
+            case CommandType::OpenPuzzle:
+                OpenPuzzle(command.puzzle);
+                break;
+            case CommandType::SplitFractal:
+                SplitFractal(command.baseFractal);
+                break;
+                /*
+            case CommandType::FormFractal: 
+                FormFractal(command.puzzle, FractalCorners fc);
+                break;*/
+            case CommandType::UndoResizeFractals:
+                UndoResizeFractals(command.puzzle);
+                break;
+            case CommandType::UndoTransformation:
+                UndoTransformation(command.puzzle);
+                break;
+        }
+
         m_CommandQueue.erase(m_CommandQueue.begin());
     }
 
@@ -177,15 +210,15 @@ namespace sqs {
         SetAnimationStart();
     }
 
-    void MenuLayer::ClosePuzzleSet(PuzzleSet* openPuzzleSet) {
-        for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
-        openPuzzleSet->Close();
-        SetAnimationStart();
-    }
-
     void MenuLayer::OpenPuzzleSet(PuzzleSet* puzzleSet) {
         puzzleSet->Open();
         for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), m_TopEdge + 32.0f));
+        SetAnimationStart();
+    }
+
+    void MenuLayer::ClosePuzzleSet(PuzzleSet* puzzleSet) {
+        for(PuzzleSet* ps : m_PuzzleSets) ps->MoveTo(glm::vec2(ps->x(), 0.0f));
+        puzzleSet->Close();
         SetAnimationStart();
     }
 
@@ -206,13 +239,9 @@ namespace sqs {
         SetAnimationStart();
     }
 
-    void MenuLayer::ResizeFractalsToUndo(Puzzle* puzzle) {
-        /*
-           bool resizeRequired = puzzle->ResizeFractalsToUndo();
-           if(resizeRequired) {
-           SetAnimationStart();
-           }
-           AddCommand(&MenuLayer::UndoTransformation);*/
+    void MenuLayer::UndoResizeFractals(Puzzle* puzzle) {
+           if(puzzle->UndoResizeFractals()) SetAnimationStart();
+           AddCommand({CommandType::UndoTransformation, nullptr, puzzle, nullptr});
     }
 
     void MenuLayer::UndoTransformation(Puzzle* puzzle) {
@@ -266,7 +295,7 @@ namespace sqs {
             if(m_Parameter >= 1.0f) {
                 for(rose::Entity* e: m_Entities) e->OnAnimationEnd();
             }else{
-                for(rose::Entity* e: m_Entities) e->OnAnimationUpdate(Sigmoid(m_Parameter));
+                for(rose::Entity* e: m_Entities) e->OnAnimationUpdate(rose::Sigmoid(m_Parameter));
                 return false; //skip remainder of Update function if animation is still playing
             }
         }else {
@@ -277,28 +306,27 @@ namespace sqs {
         if(m_QuitButton->PointCollision(mouse.x, mouse.y) && input == InputType::Tap) return true;
 
         if(m_StartButton->PointCollision(mouse.x, mouse.y) && input == InputType::Tap) {
-            AddCommand(&MenuLayer::OpenPuzzleSetMenu);
+            AddCommand({CommandType::OpenPuzzleSetMenu, nullptr, nullptr, nullptr});
         }
 
         if(m_CloseButton->PointCollision(mouse.x, mouse.y) && input == InputType::Tap) {
             PuzzleSet* openPuzzleSet = GetOpenPuzzleSet();
 
             if(openPuzzleSet) {
-                ClosePuzzleSet(openPuzzleSet);
+                AddCommand({CommandType::ClosePuzzleSet, openPuzzleSet, nullptr, nullptr});
             }else{
-                //OpenMainMenu();
-                AddCommand(&MenuLayer::OpenMainMenu);
+                AddCommand({CommandType::OpenMainMenu, nullptr, nullptr, nullptr});
             }
         }
 
         for(PuzzleSet* ps : m_PuzzleSets) {
             if(ps->PointCollision(mouse.x, mouse.y) && input == InputType::Tap) {
-                OpenPuzzleSet(ps);
+                AddCommand({CommandType::OpenPuzzleSet, ps, nullptr, nullptr});
                 break;
             }
             for(PuzzleIcon* icon: ps->GetPuzzleIcons()) {
                 if(icon->PointCollision(mouse.x, mouse.y) && input == InputType::Tap) {
-                    OpenPuzzle(icon->GetPuzzle());
+                    AddCommand({CommandType::OpenPuzzle, nullptr, icon->GetPuzzle(), nullptr});
                     break;
                 }
             }
@@ -315,7 +343,7 @@ namespace sqs {
             }
 
             if(keys.at(SDLK_SPACE) && puzzle->GetTransformationCount() > 0) {
-                UndoTransformation(puzzle);
+                AddCommand({CommandType::UndoResizeFractals, nullptr, puzzle, nullptr}); //UndoResizeFractals calls UndoTransformation immediately afterwards
             }
 
 
@@ -468,9 +496,6 @@ namespace sqs {
 
 
 
-    float MenuLayer::Sigmoid(float t) const {
-        return 1.0f / (1.0f + exp(-15.0f * (t - 0.5f)));
-    }
 
 
 }

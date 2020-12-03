@@ -10,6 +10,7 @@ float PointDistance(const glm::ivec2& start, const glm::ivec2& end);
 
 bool PointInRectangle(const glm::vec2& center, const glm::vec2& dim, const glm::vec2& point);
 
+float Sigmoid(float t);
 
 /*
 std::string GetAssetsPath(const std::string &subDir = "") {

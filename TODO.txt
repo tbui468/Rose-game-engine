@@ -5,34 +5,14 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
     THE BIG THREE:
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (Spend mornings on this)
 
-                get reflections and rotations working by first implementing collision checks with corners and edges:
-                    Flick corner for rotations
-                    Tap Edges (between corner collision boxes) for reflection 
+            Implement the Puzzle::UndoResizeFractals() - see the function for notes
+                look at implementation in gamemaker prototype to see the cases I need to handle
 
-                    Fractal.h
-                        CornerCollision(const glm::vec2& mouse) returns an enum Corner::TopLeft (example) or Corner::None
-                        EdgeCollision(const glm::vec2& mouse) returns an enum Edge::Left (example) or Edge::None
 
-                    Mouse: (can require slightly more precision compared to touch controls)
-                        Translation - drag
-                        Reflection - tap on edge
-                        Rotation - drag corner
-                        Split - mouse wheel down
-                        Form - mouse wheel up
-                    Touch:
-                        Translation - flick
-                        Reflection - tap on edge
-                        Rotation - two finger rotation
-                        Split - pinch out
-                        Form - pinch in
-
-                InputQueue and CommandQueue
-                    input queue processes inputs and decays inputs out of the queue when commands take too long to complete (ex: during multistep commands)
-                    if the commandqueue is empty and the input queue has inputs, the next input is used to find the appropriate command and 
-                        that command is then added to the commandqueue to be called
-
-                InputQueue also should take in processed inputs (not the raw inputs) - how to process inputs?
-
+            Implement InputQueue, with a similar format to the command queue,
+                If the player inputs while animation is playing, save the input type (including the x and y)
+                Once the current animation is done playing, trigger the next AddCommand(...) by using the queued inputs
+            
         1. Save/load system - SDL_GetPrefPath
 
             Write out data to profile.json to make sure it saves correctly

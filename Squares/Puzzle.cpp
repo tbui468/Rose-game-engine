@@ -399,9 +399,11 @@ void Puzzle::ReflectFractalY(BaseFractal* fractal) {
     m_TransformationStack.push_back({TransformationType::ReflectY, fractal->GetIndex(), GetFractalSize(fractal)});
 }
 
-bool Puzzle::ResizeFractalsToUndo() {
-    //temp
-    return true;
+bool Puzzle::UndoResizeFractals() {
+    //temp:
+    //if a transformation is needed, call all transformations and return true
+    //otherwise just return false
+    return false;
 }
 
 void Puzzle::UndoTransformation() {

@@ -11,7 +11,23 @@ namespace sqs {
     class PuzzleSet;
     class Puzzle;
 
+
+    enum class CommandType {
+        None,
+        OpenPuzzleSetMenu,
+        OpenMainMenu,
+        OpenPuzzleSet,
+        ClosePuzzleSet,
+        OpenPuzzle,
+        SplitFractal,
+        FormFractal,
+        UndoResizeFractals,
+        UndoTransformation 
+    };
+
+
     struct CommandData {
+        CommandType type {CommandType::None};
         PuzzleSet* puzzleSet {nullptr};
         Puzzle* puzzle {nullptr};
         BaseFractal* baseFractal {nullptr};
@@ -22,23 +38,22 @@ namespace sqs {
             MenuLayer();
             virtual ~MenuLayer();
             virtual bool Update(double deltaTime, const std::array<bool, rose::g_MaxKeys>& keys, const std::array<bool, 
-                                rose::g_MaxMouseButtons>& mouse , const glm::vec2& mousePos) override;
+                    rose::g_MaxMouseButtons>& mouse , const glm::vec2& mousePos) override;
             Puzzle* GetOpenPuzzle() const;
             PuzzleSet* GetOpenPuzzleSet() const;
             virtual void Draw() override;
-            float Sigmoid(float t) const;
-            void AddCommand(void (MenuLayer::*func)());
+            void AddCommand(CommandData data);
             void CallNextCommand();
+            void SetAnimationStart();
         public: //commands that can be added to command queue
             void OpenPuzzleSetMenu();
             void OpenMainMenu();
             void OpenPuzzleSet(PuzzleSet* puzzleSet);
             void ClosePuzzleSet(PuzzleSet* puzzleSet);
             void OpenPuzzle(Puzzle* puzzle);
-            void SetAnimationStart();
             void SplitFractal(BaseFractal* fractal);
             void FormFractal(Puzzle* puzzle, FractalCorners fc);
-            void ResizeFractalsToUndo(Puzzle* puzzle); 
+            void UndoResizeFractals(Puzzle* puzzle); 
             void UndoTransformation(Puzzle* puzzle);
         private:
             void LoadPuzzleData(const std::string& path, std::vector<PuzzleSetData>* puzzleSetList);
@@ -58,10 +73,9 @@ namespace sqs {
             float m_RightEdge {240.0f};
             float m_TopEdge {135.0f};
             float m_BottomEdge {-135.0f};
-            std::vector<void (MenuLayer::*)()> m_CommandQueue; //vector of MenuLayer function pointers with void return and void (none) parameters
+            std::vector<CommandData> m_CommandQueue; //vector of MenuLayer function pointers with void return and void (none) parameters
 
             //processing raw inputs 
-            bool m_PreviousLeftButton {false};
             glm::vec2 m_DownMouseCoords {0.0f, 0.0f};
             glm::vec2 m_UpMouseCoords {0.0f, 0.0f};
     };
