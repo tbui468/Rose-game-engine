@@ -33,6 +33,12 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
         4. Stop with the unnecessary abstractions
             Clean up engine code to keep it simple like this: (no need for layers or anything right now)
 
+            If I decide to go this route, then I can't have Application be a singleton.  But I tried that
+                and everything broke
+
+            The client should not have access to the window, audio, renderer - 
+                the client should only have access to the application API which provides limited access to these objects
+
                 class Squares : public rose::Application {
                     public:
                         Squares() {}

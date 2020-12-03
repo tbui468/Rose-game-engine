@@ -368,7 +368,6 @@ namespace sqs {
                 //textures start from bottom left, but starting textures from top left to fit fractal order (left to right, top to bottom)
                 glm::ivec2 texStart = GetTextureStart(index, puzzleNumber);
 
-                std::shared_ptr<rose::Renderer> renderer = (rose::Application::GetApplication())->GetRenderer();
 
                 std::vector<rose::SubTextureMapping> texMapping;
 
@@ -396,7 +395,7 @@ namespace sqs {
                     }
                 }
 
-                renderer->SetCustomTexture(texMapping);
+                rose::Application::GetApplication()->SetCustomTexture(texMapping);
             }
 
             static glm::ivec2 GetTextureStart(const glm::ivec2& index, int puzzleNumber) {

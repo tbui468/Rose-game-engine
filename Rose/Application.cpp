@@ -63,10 +63,19 @@ namespace rose {
         m_Layer = layer;
     }
 
-
+    //////////////////Renderer API/////////////////////////////////
     void Application::SetClearColor(const glm::ivec3& color) {
         m_Renderer->SetClearColor(color);
     }
+
+    void Application::DrawEntity(const Entity* entity) {
+        m_Renderer->AddEntity(entity);
+    }
+
+    void Application::SetCustomTexture(const std::vector<SubTextureMapping>& subtextures) {
+        m_Renderer->SetCustomTexture(subtextures);
+    }
+    /////////////////////////////////////////////////////////////////
 
     void Application::Run() {
 
