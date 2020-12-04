@@ -51,7 +51,7 @@ namespace sqs {
             void OpenPuzzleSet(PuzzleSet* puzzleSet);
             void ClosePuzzleSet(PuzzleSet* puzzleSet);
             void OpenPuzzle(Puzzle* puzzle);
-            void SplitFractal(BaseFractal* fractal);
+            void SplitFractal(Puzzle* puzzle, BaseFractal* fractal);
             void FormFractal(Puzzle* puzzle, FractalCorners fc);
             void UndoResizeFractals(Puzzle* puzzle); 
             void UndoTransformation(Puzzle* puzzle);

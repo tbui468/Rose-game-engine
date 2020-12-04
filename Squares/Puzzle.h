@@ -67,8 +67,9 @@ class Puzzle: public rose::Entity {
         const std::vector<BaseFractal*>& GetFractals() const { return m_Fractals; }
         std::vector<BaseFractal*>::iterator GetFractalIterator(BaseFractal* fractal);
     public: //fractal transformations
-        void SplitFractal(BaseFractal* fractal);
-        void FormFractal(FractalCorners fc);
+        std::vector<BaseFractal*> SplitFractal(BaseFractal* fractal, const std::vector<FractalData>& fractalData);
+ //       void MergeFractals(FractalCorners fc);
+        void AddMergeList(std::vector<BaseFractal*> mergeList);
         void SwapFractals(BaseFractal* fractalA, BaseFractal* fractalB);
         void RotateFractalCW(BaseFractal* fractal);
         void RotateFractalCCW(BaseFractal* fractal);
@@ -79,9 +80,12 @@ class Puzzle: public rose::Entity {
         int GetMaxTransformations() const { return m_MaxTransformations; }
         int GetTransformationCount() const { return m_TransformationStack.size(); }
     private:
+        void CreateFromMergeList(const std::vector<BaseFractal*>& mergeList);
+    private:
         int m_Index;
         std::vector<BaseFractal*> m_Fractals;
-        FractalCorners m_FractalCorners {nullptr, nullptr, nullptr, nullptr};
+//        FractalCorners m_FractalCorners {nullptr, nullptr, nullptr, nullptr}; //replace this with a list of lists called m_MergeList
+        std::vector<std::vector<BaseFractal*>> m_MergeLists; //CreateFromMergeList() should be called in OnAnimationEnd() and then the list cleared
         bool m_IsOpen {false};
         glm::ivec2 m_Dimensions {0, 0};
         int m_MaxTransformations {0};

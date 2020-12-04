@@ -5,7 +5,14 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
     THE BIG THREE:
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (Spend mornings on this)
 
-            Implement the Puzzle::UndoResizeFractals() - see the function for notes
+
+                3. combined generalized forming and splitting for resizing fractals for Undo commands
+                when combined together for UndoResizeFractals()
+                    split all fractals necessary
+                    call MergeFractals(merge list) on all groups of fractals that need to merge
+                    call MoveTo() on all fractals that need to be animated
+
+            Implement the Puzzle::UndoResizeFractals() - see the function for note:
                 look at implementation in gamemaker prototype to see the cases I need to handle
 
 
@@ -30,38 +37,11 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
             Sound is playing on translate up 
             Get music looping
 
-        4. Stop with the unnecessary abstractions
-            Clean up engine code to keep it simple like this: (no need for layers or anything right now)
+        Learn.
+            Watch Javidx9 videos or look through the code of his game engine
+                get a working program compiled with his engine, and
+                step through the code to see how he structured everything (especially the renderer and entity relationship for Draw())
 
-            If I decide to go this route, then I can't have Application be a singleton.  But I tried that
-                and everything broke
-
-            The client should not have access to the window, audio, renderer - 
-                the client should only have access to the application API which provides limited access to these objects
-
-                class Squares : public rose::Application {
-                    public:
-                        Squares() {}
-
-                        bool Create() override {
-                        }
-                        bool Update() override {
-                        }
-                }
-
-                int main() {
-                    Squares squares;
-                    if(squares.Construct(256, 240, 4, 4))
-                        squares.Start();
-                    return 0;
-                }
-
-
-                Application.h and cpp - contains Layer/Renderer/Audio/Input classes
-                    Layer - all gameplay scripting
-                    Input - get user inputs/events
-                    Renderer - all OpenGL code
-                    Audio - all FMOD code
 
 Set build (x86 or x64) (or should this be a build option???)
 

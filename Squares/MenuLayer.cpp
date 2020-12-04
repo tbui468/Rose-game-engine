@@ -173,7 +173,7 @@ namespace sqs {
                 OpenPuzzle(command.puzzle);
                 break;
             case CommandType::SplitFractal:
-                SplitFractal(command.baseFractal);
+                SplitFractal(command.puzzle, command.baseFractal);
                 break;
                 /*
             case CommandType::FormFractal: 
@@ -228,14 +228,47 @@ namespace sqs {
         SetAnimationStart();
     }
 
-    void MenuLayer::SplitFractal(BaseFractal* fractal) {
-        Puzzle* puzzle = GetOpenPuzzle();
-        puzzle->SplitFractal(fractal);
+    void MenuLayer::SplitFractal(Puzzle* puzzle, BaseFractal* fractal) {
+
+        int subSize = GetFractalSize(fractal) / 2;
+        glm::ivec2 index = fractal->GetIndex();
+
+        std::vector<FractalData> splitData;
+        splitData.push_back({subSize, {index.x, index.y}});
+        splitData.push_back({subSize, {index.x + subSize, index.y}});
+        splitData.push_back({subSize, {index.x, index.y + subSize}});
+        splitData.push_back({subSize, {index.x + subSize, index.y + subSize}});
+
+        std::vector<BaseFractal*> subFractalList = puzzle->SplitFractal(fractal, splitData); //creates subfractals, deletes fractal, returns list of subfractal pointers
+
+        for(BaseFractal* f: subFractalList) {
+            glm::vec2 endCoords = BaseFractal::GetCoords(f->GetIndex(), subSize, puzzle->GetDimensions(), glm::vec2(puzzle->x(), puzzle->y()));
+            f->MoveTo(endCoords);
+        }
+
         SetAnimationStart();
     }
 
     void MenuLayer::FormFractal(Puzzle* puzzle, FractalCorners fc) {
-        puzzle->FormFractal(fc); 
+
+        glm::ivec2 targetIndex = fc.TopLeft->GetIndex();
+        int subFSize = GetFractalSize(fc.TopLeft);
+        int targetSize = subFSize * 2;
+        glm::vec2 puzzlePos = {puzzle->x(), puzzle->y()};
+
+        glm::vec2 TLCoords = BaseFractal::GetCoordsForTarget(fc.TopLeft->GetIndex(), subFSize, targetIndex, targetSize, puzzle->GetDimensions(), puzzlePos);
+        fc.TopLeft->MoveTo(TLCoords);
+        glm::vec2 TRCoords = BaseFractal::GetCoordsForTarget(fc.TopRight->GetIndex(), subFSize, targetIndex, targetSize, puzzle->GetDimensions(), puzzlePos);
+        fc.TopRight->MoveTo(TRCoords);
+        glm::vec2 BLCoords = BaseFractal::GetCoordsForTarget(fc.BottomLeft->GetIndex(), subFSize, targetIndex, targetSize, puzzle->GetDimensions(), puzzlePos);
+        fc.BottomLeft->MoveTo(BLCoords);
+        glm::vec2 BRCoords = BaseFractal::GetCoordsForTarget(fc.BottomRight->GetIndex(), subFSize, targetIndex, targetSize, puzzle->GetDimensions(), puzzlePos);
+        fc.BottomRight->MoveTo(BRCoords);
+
+        puzzle->AddMergeList({fc.TopLeft, 
+                              fc.TopRight,
+                              fc.BottomLeft,
+                              fc.BottomRight});
         SetAnimationStart();
     }
 
@@ -351,7 +384,7 @@ namespace sqs {
             for(BaseFractal* fractal: puzzle->GetFractals()) {
 
                 if(input == InputType::PinchOut && GetFractalSize(fractal) != 1 && fractal->PointCollision(mouse.x, mouse.y)) {
-                    SplitFractal(fractal);
+                    SplitFractal(puzzle, fractal);
                     break;
                 }
 

@@ -10,8 +10,14 @@ namespace sqs {
 
     class Puzzle;
 
-
     int GetFractalSize(BaseFractal* f);
+    bool Contains(BaseFractal* f, const glm::ivec2& index);
+    int GetSubElementsI(BaseFractal* f, const glm::ivec2& startOffset);
+
+    struct FractalData {
+        int size {0};
+        glm::ivec2 index {-1, -1};
+    };
 
     enum class FractalElement {
         Empty = 0,
