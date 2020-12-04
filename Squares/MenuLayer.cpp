@@ -8,6 +8,8 @@
 #include "PuzzleIcon.h"
 #include "Fractal.h"
 
+#include "NewFractal.h"
+
 using json = nlohmann::json;
 
 namespace sqs {
@@ -26,6 +28,19 @@ namespace sqs {
 
 
     MenuLayer::MenuLayer(): Layer() {
+        std::vector<FractalElement> newE0 = {FractalElement::Red};
+        std::vector<FractalElement> newE1 = {FractalElement::Red,
+                                             FractalElement::Blue,
+                                             FractalElement::Blue,
+                                             FractalElement::Blue};
+        std::vector<FractalElement> newE2 = {FractalElement::Red, FractalElement::Blue, FractalElement::Green, FractalElement::Empty,
+                                             FractalElement::Red, FractalElement::Blue, FractalElement::Green, FractalElement::Empty,
+                                             FractalElement::Red, FractalElement::Blue, FractalElement::Green, FractalElement::Empty,
+                                             FractalElement::Red, FractalElement::Blue, FractalElement::Green, FractalElement::Empty};
+
+        NewFractal* newF0 = new NewFractal(newE0, {0, 0}, {0.0f, 0.0f}, 0); //<- this is what all Fractal instantiations should look like
+        NewFractal* newF1 = new NewFractal(newE1, {0, 0}, {0.0f, 0.0f}, 0); //<- this is what all Fractal instantiations should look like
+        NewFractal* newF2 = new NewFractal(newE2, {0, 0}, {0.0f, 0.0f}, 0); //<- this is what all Fractal instantiations should look like
 
         m_Sound = new rose::Sound("sound/pluck.wav");
 

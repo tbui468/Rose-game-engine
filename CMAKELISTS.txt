@@ -73,7 +73,8 @@ add_executable(Squares
     "Squares/PuzzleSet.cpp"
     "Squares/Fractal.cpp"
     "Squares/BaseFractal.cpp"
-    "Squares/UndoIcon.cpp")
+    "Squares/UndoIcon.cpp"
+    "Squares/NewFractal.cpp")
 target_include_directories(Squares PRIVATE 
     ${SDL_INCLUDE_DIR}
     ${GLAD_INCLUDE_DIR}

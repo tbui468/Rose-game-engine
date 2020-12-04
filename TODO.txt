@@ -4,9 +4,9 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
     THE BIG THREE:
 
-        Fractals template class is getting really confusing
-            it might be a good idea to create an interface for Fractal, and then create Fractal1, Fractal2 and Fractal4 classes
-
+        Important: Forget all the fancy stuff
+            Just make a single Fractal class!!!! The number of elements I pass it can determine the size
+                just check size when it determines some function!!
 
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (Spend mornings on this)
 
