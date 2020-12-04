@@ -288,7 +288,7 @@ namespace sqs {
     }
 
 
-    void Puzzle::AddMergeList(std::vector<BaseFractal*> mergeList) {
+    void Puzzle::MergeFractals(std::vector<BaseFractal*> mergeList) {
         m_MergeLists.push_back(mergeList);
     }
 
@@ -421,20 +421,6 @@ namespace sqs {
         m_TransformationStack.push_back({TransformationType::ReflectY, fractal->GetIndex(), GetFractalSize(fractal)});
     }
 
-    bool Puzzle::UndoResizeFractals() {
-        //temp:
-        //if a transformation is needed, call all transformations and return true
-        //otherwise just return false
-        //
-        //1. Check if the undo transformation is translation or not
-        //      if it's a translation, then may need to resize the fractal in undo data AND the swapped fractal
-        //2. Will need a function to determine if a subfractal is a proper subfractal of a larger given fractal,
-        //      if it overlaps partially, or if doesn't overlap at all (just need two of the three, since only one of the three conditions can every be true)
-        //3. Since FormFractal and Split will need to be called here, it might be convenient to move out the animation calls
-        //      example, Split returns a FractalCorners object, and user can then call MoveTo() on each of the four subfractals
-        //      could I make FormFractals more general???
-        return false;
-    }
 
     void Puzzle::UndoTransformation() {
 

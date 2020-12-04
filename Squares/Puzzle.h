@@ -68,14 +68,12 @@ class Puzzle: public rose::Entity {
         std::vector<BaseFractal*>::iterator GetFractalIterator(BaseFractal* fractal);
     public: //fractal transformations
         std::vector<BaseFractal*> SplitFractal(BaseFractal* fractal, const std::vector<FractalData>& fractalData);
- //       void MergeFractals(FractalCorners fc);
-        void AddMergeList(std::vector<BaseFractal*> mergeList);
+        void MergeFractals(std::vector<BaseFractal*> mergeList);
         void SwapFractals(BaseFractal* fractalA, BaseFractal* fractalB);
         void RotateFractalCW(BaseFractal* fractal);
         void RotateFractalCCW(BaseFractal* fractal);
         void ReflectFractalX(BaseFractal* fractal);
         void ReflectFractalY(BaseFractal* fractal);
-        bool UndoResizeFractals();
         void UndoTransformation();
         int GetMaxTransformations() const { return m_MaxTransformations; }
         int GetTransformationCount() const { return m_TransformationStack.size(); }

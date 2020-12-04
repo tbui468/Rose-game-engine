@@ -239,7 +239,9 @@ namespace sqs {
         splitData.push_back({subSize, {index.x, index.y + subSize}});
         splitData.push_back({subSize, {index.x + subSize, index.y + subSize}});
 
-        std::vector<BaseFractal*> subFractalList = puzzle->SplitFractal(fractal, splitData); //creates subfractals, deletes fractal, returns list of subfractal pointers
+        //can Puzzle::SplitFractal(splitData) just take in the split data and then find the fractal data from it?
+        //could put an assert inside split to make sure that all the subfractals form a large fractal of correct dimenions (1, 2, or 4)
+        std::vector<BaseFractal*> subFractalList = puzzle->SplitFractal(fractal, splitData); 
 
         for(BaseFractal* f: subFractalList) {
             glm::vec2 endCoords = BaseFractal::GetCoords(f->GetIndex(), subSize, puzzle->GetDimensions(), glm::vec2(puzzle->x(), puzzle->y()));
@@ -265,7 +267,8 @@ namespace sqs {
         glm::vec2 BRCoords = BaseFractal::GetCoordsForTarget(fc.BottomRight->GetIndex(), subFSize, targetIndex, targetSize, puzzle->GetDimensions(), puzzlePos);
         fc.BottomRight->MoveTo(BRCoords);
 
-        puzzle->AddMergeList({fc.TopLeft, 
+        //could put assert into merge fractals to make sure they all form a large fractal of correct dimensions (1,2 or 4)
+        puzzle->MergeFractals({fc.TopLeft, 
                               fc.TopRight,
                               fc.BottomLeft,
                               fc.BottomRight});
@@ -273,8 +276,19 @@ namespace sqs {
     }
 
     void MenuLayer::UndoResizeFractals(Puzzle* puzzle) {
-           if(puzzle->UndoResizeFractals()) SetAnimationStart();
-           AddCommand({CommandType::UndoTransformation, nullptr, puzzle, nullptr});
+        bool resized = false; //set this to true if any splits/merges are necessary
+        //
+        //1. Check if the undo transformation is translation or not
+        //      if it's a translation, then may need to resize the fractal in undo data AND the swapped fractal
+        //2. Will need a function to determine if a subfractal is a proper subfractal of a larger given fractal,
+        //      if it overlaps partially, or if doesn't overlap at all (just need two of the three, since only one of the three conditions can every be true)
+        //
+        //check if resize conditions are met (note: need to check two fractals if the undotransformation type is a translation)
+        //Call Puzzle::SplitFractal() if necessary (need to split first since MergeFractals() requires pointers to fractals to merge)
+        //Call Puzzle::MergeFractals() if necessary (recall: MergeFractals() creates a list of fractals to merge when Puzzle::OnAnimationEnd() called)
+        //Call Fractal::MoveTo() if necessary (will need a handle to all fractals, including those returned by SplitFractal() function call)
+        if(resized) SetAnimationStart();
+        AddCommand({CommandType::UndoTransformation, nullptr, puzzle, nullptr});
     }
 
     void MenuLayer::UndoTransformation(Puzzle* puzzle) {
