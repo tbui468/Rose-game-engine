@@ -16,10 +16,10 @@ struct PuzzleData {
 
 
 struct FractalCorners {
-    BaseFractal* TopLeft {nullptr};
-    BaseFractal* TopRight {nullptr};
-    BaseFractal* BottomLeft {nullptr};
-    BaseFractal* BottomRight {nullptr};
+    Fractal* TopLeft {nullptr};
+    Fractal* TopRight {nullptr};
+    Fractal* BottomLeft {nullptr};
+    Fractal* BottomRight {nullptr};
 };
 
 enum class TransformationType {
@@ -62,28 +62,28 @@ class Puzzle: public rose::Entity {
         static glm::vec4 GetBoundingBox() { return s_BoundingBox; }
     public: //fractal utility functions
         FractalCorners FindFractalCorners(float mousex, float mousey) const;
-        BaseFractal* GetClosestFractal(float mousex, float mousey) const;
-        BaseFractal* GetFractal(const glm::ivec2& index) const;
-        const std::vector<BaseFractal*>& GetFractals() const { return m_Fractals; }
-        std::vector<BaseFractal*>::iterator GetFractalIterator(BaseFractal* fractal);
+        Fractal* GetClosestFractal(float mousex, float mousey) const;
+        Fractal* GetFractal(const glm::ivec2& index) const;
+        const std::vector<Fractal*>& GetFractals() const { return m_Fractals; }
+        std::vector<Fractal*>::iterator GetFractalIterator(Fractal* fractal);
     public: //fractal transformations
-        std::vector<BaseFractal*> SplitFractal(BaseFractal* fractal, const std::vector<FractalData>& fractalData);
-        void MergeFractals(std::vector<BaseFractal*> mergeList);
-        void SwapFractals(BaseFractal* fractalA, BaseFractal* fractalB);
-        void RotateFractalCW(BaseFractal* fractal);
-        void RotateFractalCCW(BaseFractal* fractal);
-        void ReflectFractalX(BaseFractal* fractal);
-        void ReflectFractalY(BaseFractal* fractal);
+        std::vector<Fractal*> SplitFractal(Fractal* fractal, const std::vector<FractalData>& fractalData);
+        void MergeFractals(std::vector<Fractal*> mergeList);
+        void SwapFractals(Fractal* fractalA, Fractal* fractalB);
+        void RotateFractalCW(Fractal* fractal);
+        void RotateFractalCCW(Fractal* fractal);
+        void ReflectFractalX(Fractal* fractal);
+        void ReflectFractalY(Fractal* fractal);
         void UndoTransformation();
         int GetMaxTransformations() const { return m_MaxTransformations; }
         int GetTransformationCount() const { return m_TransformationStack.size(); }
     private:
-        void CreateFromMergeList(const std::vector<BaseFractal*>& mergeList);
+        Fractal* CreateFromMergeList(const std::vector<Fractal*>& mergeList);
     private:
         int m_Index;
-        std::vector<BaseFractal*> m_Fractals;
+        std::vector<Fractal*> m_Fractals;
 //        FractalCorners m_FractalCorners {nullptr, nullptr, nullptr, nullptr}; //replace this with a list of lists called m_MergeList
-        std::vector<std::vector<BaseFractal*>> m_MergeLists; //CreateFromMergeList() should be called in OnAnimationEnd() and then the list cleared
+        std::vector<std::vector<Fractal*>> m_MergeLists; //CreateFromMergeList() should be called in OnAnimationEnd() and then the list cleared
         bool m_IsOpen {false};
         glm::ivec2 m_Dimensions {0, 0};
         int m_MaxTransformations {0};

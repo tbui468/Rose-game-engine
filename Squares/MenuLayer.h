@@ -30,7 +30,7 @@ namespace sqs {
         CommandType type {CommandType::None};
         PuzzleSet* puzzleSet {nullptr};
         Puzzle* puzzle {nullptr};
-        BaseFractal* baseFractal {nullptr};
+        Fractal* fractal {nullptr};
     };
 
     class MenuLayer: public rose::Layer {
@@ -51,7 +51,7 @@ namespace sqs {
             void OpenPuzzleSet(PuzzleSet* puzzleSet);
             void ClosePuzzleSet(PuzzleSet* puzzleSet);
             void OpenPuzzle(Puzzle* puzzle);
-            void SplitFractal(Puzzle* puzzle, BaseFractal* fractal);
+            void SplitFractal(Puzzle* puzzle, Fractal* fractal);
             void FormFractal(Puzzle* puzzle, FractalCorners fc);
             void UndoResizeFractals(Puzzle* puzzle); 
             void UndoTransformation(Puzzle* puzzle);

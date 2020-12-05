@@ -4,9 +4,21 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
     THE BIG THREE:
 
-        Important: Forget all the fancy stuff
-            Just make a single Fractal class!!!! The number of elements I pass it can determine the size
-                just check size when it determines some function!!
+            Blue bottom right in puzzle 1, puzzleset 1 shows up in 2x2 fractal constructor after merging okay
+
+            By the time I call Split in MenuLayer, blue fractal in bottom right corner is gone (when I check GetSubElement)
+
+            run app and merge and split to see notes - why is m_Elements changing between these two times???
+
+                m_Elements is correct when we call Fractal(...) constructor
+
+                    this becomes false on the next frame...
+
+                m_Elements is wrong when we call MenuLayer::SplitFractal()
+
+            FOUND IT!!!! Problem with GetSubElement - it needs to know the size of the subelements needed AND the size of the fractal it is from
+                these may be different (and most often are) and I'm not taking that into account
+                Can use GetSize() to find the size of the current fractal
 
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (Spend mornings on this)
 
