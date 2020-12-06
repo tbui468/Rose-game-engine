@@ -56,7 +56,9 @@ namespace sqs {
             void UndoResizeFractals(Puzzle* puzzle); 
             void UndoTransformation(Puzzle* puzzle);
         private:
-            void LoadPuzzleData(const std::string& path, std::vector<PuzzleSetData>* puzzleSetList);
+            //void ReadPuzzleData(const std::string& path, std::vector<PuzzleSetData>* puzzleSetList);
+            void ReadPuzzleData(const std::string& path, std::vector<PuzzleSetData>& data);
+            void WritePuzzleData(const std::string& path, const std::vector<PuzzleSetData>& data); 
         private:
             Button* m_QuitButton;
             Button* m_StartButton;

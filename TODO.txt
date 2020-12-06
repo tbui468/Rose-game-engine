@@ -14,14 +14,11 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
     THE BIG THREE:
         1. Save/load system - SDL_GetPrefPath (spend mornings on this)
 
-            Indices don't need to be explicitly part of the data - the order of each data set inside the corresponding list is the index
-                the puzzleset and puzzles only need a copy of their corresponding indices to set once on construction, and to 
-                use it to look up / write to g_Data
+            Reading and writing to json files seems to work (with the function calls inside MenuLayer constructor)
 
-            Write out g_Data to profile.json
+                Have puzzles update g_Data every time a transformation occurs and then write g_Data to profile.json
 
-            Read in data from profile.json to g_Data (include checks for if profile.json exists and if the data is of correct format)
-
+                Open profile.json to check if the transformation state was saved properly
 
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear
 
@@ -33,7 +30,6 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
             Implement InputQueue, with a similar format to the command queue,
                 If the player inputs while animation is playing, save the input type (including the x and y)
                 Once the current animation is done playing, trigger the next AddCommand(...) by using the queued inputs
-            
 
         2. Audio - FMOD
             Sound is playing on translate up 

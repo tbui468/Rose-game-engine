@@ -21,14 +21,11 @@ namespace sqs {
     };
 
     struct PuzzleData {
- //       int setIndex {-1};
-  //      int index {-1};
         glm::ivec2 dimensions {-1, -1};
         std::vector<FractalElement> elements;
     };
 
     struct PuzzleSetData {
-//        int index {-1};
         std::vector<PuzzleData> puzzlesData;
     };
 

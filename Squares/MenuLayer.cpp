@@ -12,9 +12,6 @@ using json = nlohmann::json;
 
 namespace sqs {
 
-
-
-
     enum class InputType {
         None,
         Tap,
@@ -61,22 +58,16 @@ namespace sqs {
             std::cout << "Error getting pref path" << std::endl;
         }
 
-        std::string outputPath = std::string(prefPath) + "/test.json";
+        std::string outputPath = std::string(prefPath) + "/profile.json";
 
         SDL_free(prefPath);
 
-        std::ofstream output(outputPath.c_str());
-        FractalElement r = 'r';
-        FractalElement g = 'g';
-        FractalElement b = 'b';
-        FractalElement e = 'e';
-        output << (int)r << (int)g << (int)b << (int)e;
-        output.close();
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        WritePuzzleData(outputPath, g_Data);
 
         /////////////////////////////////example reading in default data//////////////////////////////////////////////
         //temp: this data should be saved inside the executable, not in an external file where it can be modified
         //reading in data should overwrite g_Data, and only occur when profile.json exists and is not corrupt
+        /*
         char* dataPath;
         char* basePath = SDL_GetBasePath();
         if(basePath) {
@@ -85,9 +76,9 @@ namespace sqs {
             dataPath = SDL_strdup("./");
         }
         SDL_free(basePath);
-        std::string path = std::string(dataPath) + "../../resources/default.json";
-        std::vector<PuzzleSetData> puzzleSetList;
-        LoadPuzzleData(path, &puzzleSetList);
+        std::string path = std::string(dataPath) + "../../resources/default.json";*/
+        std::string profilePath = outputPath;
+        ReadPuzzleData(profilePath, g_Data);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
         
@@ -104,43 +95,78 @@ namespace sqs {
     }
 
 
-    void MenuLayer::LoadPuzzleData(const std::string& path, std::vector<PuzzleSetData>* puzzleSetList) {
-        /*
+    void MenuLayer::WritePuzzleData(const std::string& path, const std::vector<PuzzleSetData>& data) {
+
+        std::ofstream outF(path);
+
+        outF << "{\n\"PuzzleSets\": [";
+
+        for(int set = 0; set < g_Data.size(); ++set) {
+            PuzzleSetData psd = g_Data.at(set);
+            outF << "{ \"Puzzles\": [\n";
+            for(int puzzle = 0; puzzle < psd.puzzlesData.size(); ++puzzle) {
+                PuzzleData pd = psd.puzzlesData.at(puzzle);
+                outF << "{";
+                outF << "\"Width\": " << pd.dimensions.x << ",\n";
+                outF << "\"Height\": " << pd.dimensions.y << ",\n";
+                outF << "\"Elements\": [";
+                for(int element = 0; element < pd.elements.size(); ++element) {
+                    outF << (int)(pd.elements.at(element));
+                    if(element != pd.elements.size() - 1) outF << ", ";
+                }
+                outF << "]}";
+                if(puzzle != psd.puzzlesData.size() - 1) outF << ",";
+                outF << '\n';
+            }
+            outF << "]}";
+            if(set != g_Data.size() - 1) outF << ",";
+            outF << '\n';
+        }
+
+
+        outF << "]\n}";
+
+        outF.close();
+    }
+
+
+    void MenuLayer::ReadPuzzleData(const std::string& path, std::vector<PuzzleSetData>& data) {
+
+        data.clear();
+
         std::ifstream inputFile(path);
         json j = json::parse(inputFile);
 
         int puzzleSetCount = j.begin().value().size();
         for(int i = 0; i < puzzleSetCount; ++i) { //iterator through puzzlesets
-            PuzzleSetData puzzleSetData;
-            json puzzleSet = j.begin().value().at(i);
-            for(json::iterator it = puzzleSet.begin(); it != puzzleSet.end(); ++it) {
+            PuzzleSetData psd;
+            json ps = j.begin().value().at(i);
+            for(json::iterator it = ps.begin(); it != ps.end(); ++it) {
                 if(it.value().is_array()) {
                     int puzzleCount = it.value().size();
                     for(int k = 0; k < puzzleCount; ++k) { //iterate through puzzles
-                        PuzzleData puzzleData;
+                        PuzzleData pd;
                         json puzzle = it.value().at(k);
                         for(json::iterator it2 = puzzle.begin(); it2 != puzzle.end(); ++it2) {
                             if(it2.value().is_array()) { //iterator through elements
                                 int elementCount = it2.value().size();
                                 for(int m = 0; m < elementCount; ++m) {
-                                    puzzleData.elements.push_back(it2.value().at(m));
+                                    uint8_t c = it2.value().at(m);
+                                    pd.elements.push_back((FractalElement)c);
                                 }
                             }else{
-                                if(it2.key() == "Width") puzzleData.dimensions.x = it2.value();
-                                if(it2.key() == "Height") puzzleData.dimensions.y = it2.value();
+                                if(it2.key() == "Width") pd.dimensions.x = it2.value();
+                                if(it2.key() == "Height") pd.dimensions.y = it2.value();
                             }
                         }
-                        puzzleSetData.puzzlesData.push_back(puzzleData);
+                        psd.puzzlesData.push_back(pd);
                     }
-                }else{
-                    //std::cout << it.key() << ": " << it.value() << std::endl;
                 }
             }
-            puzzleSetList->push_back(puzzleSetData);
-            //std::cout << std::endl;
+            data.push_back(psd); 
         }
 
-        inputFile.close();*/
+        inputFile.close();
     }
 
     MenuLayer::~MenuLayer() {
@@ -162,7 +188,7 @@ namespace sqs {
 
     void MenuLayer::CallNextCommand() {
         CommandData command = m_CommandQueue.front();
-    
+
         switch(command.type) {
             case CommandType::OpenPuzzleSetMenu:
                 OpenPuzzleSetMenu();
@@ -183,9 +209,9 @@ namespace sqs {
                 SplitFractal(command.puzzle, command.fractal);
                 break;
                 /*
-            case CommandType::FormFractal: 
-                FormFractal(command.puzzle, FractalCorners fc);
-                break;*/
+                   case CommandType::FormFractal: 
+                   FormFractal(command.puzzle, FractalCorners fc);
+                   break;*/
             case CommandType::UndoResizeFractals:
                 UndoResizeFractals(command.puzzle);
                 break;
@@ -342,7 +368,7 @@ namespace sqs {
             }
         }
 
-         
+
         if(m_Parameter < 1.0f && m_Start) {
             m_Parameter += static_cast<float>(deltaTime) * .0010f;
             if(m_Parameter >= 1.0f) {
