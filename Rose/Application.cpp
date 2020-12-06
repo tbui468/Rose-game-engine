@@ -63,10 +63,19 @@ namespace rose {
         m_Layer = layer;
     }
 
-
+    //////////////////Renderer API/////////////////////////////////
     void Application::SetClearColor(const glm::ivec3& color) {
         m_Renderer->SetClearColor(color);
     }
+
+    void Application::DrawEntity(const Entity* entity) {
+        m_Renderer->AddEntity(entity);
+    }
+
+    void Application::SetCustomTexture(const std::vector<SubTextureMapping>& subtextures) {
+        m_Renderer->SetCustomTexture(subtextures);
+    }
+    /////////////////////////////////////////////////////////////////
 
     void Application::Run() {
 
@@ -100,8 +109,12 @@ namespace rose {
     }
 
     bool Application::PollInputs() {
-        for(bool b: m_Keys) b = false;
-        for(bool b: m_Mouse) b = false;
+        for(int i = 0; i < m_Keys.size(); ++i) {
+            m_Keys.at(i) = false;
+        }
+        for(int i = 0; i < m_Mouse.size(); ++i) {
+            m_Mouse.at(i) = false;
+        }
 
         SDL_Event event;
 
@@ -118,15 +131,21 @@ namespace rose {
                     break;
                 case SDL_MOUSEBUTTONDOWN: 
                     if(event.button.button == SDL_BUTTON_LEFT)
-                        m_Mouse.at(MouseEvents::LeftButton) = true;
+                        m_Mouse.at(MouseEvents::LeftButtonDown) = true;
                     else if(event.button.button == SDL_BUTTON_RIGHT)
-                        m_Mouse.at(MouseEvents::RightButton) = true;
+                        m_Mouse.at(MouseEvents::RightButtonDown) = true;
                     break;
                 case SDL_MOUSEBUTTONUP: 
                     if(event.button.button == SDL_BUTTON_LEFT)
-                        m_Mouse.at(MouseEvents::LeftButton) = false;
+                        m_Mouse.at(MouseEvents::LeftButtonUp) = true;
                     else if(event.button.button == SDL_BUTTON_RIGHT)
-                        m_Mouse.at(MouseEvents::RightButton) = false;
+                        m_Mouse.at(MouseEvents::RightButtonUp) = true;
+                    break;
+                case SDL_MOUSEWHEEL:
+                    if(event.wheel.y > 0) 
+                        m_Mouse.at(MouseEvents::WheelUp) = true;
+                    else if(event.wheel.y < 0)
+                        m_Mouse.at(MouseEvents::WheelDown) = true;
                     break;
             }
         }

@@ -13,11 +13,14 @@
 namespace rose {
 
 enum MouseEvents {
-    LeftButton = 0,
-    RightButton,
-    MiddleButton, 
-    ScrollWheelUp,
-    ScrollWheelDown
+    LeftButtonDown = 0,
+    RightButtonDown,
+    MiddleButtonDown, 
+    LeftButtonUp,
+    RightButtonUp,
+    MiddleButtonUp, 
+    WheelUp,
+    WheelDown
 };
 
 class Application {
@@ -27,21 +30,26 @@ class Application {
         void Run();
         void Shutdown() const;
         void Quit();
-        //InputType GetInput() const;
-        bool PollInputs();
-        glm::ivec2 GetMousePos() const;
+        static Application* GetApplication();
+        std::shared_ptr<Audio> GetAudio() const { return m_Audio; } //should remove this
+        char* GetExecutablePath() const; //todo: move to private
+    public: //windowing API for client
         int32_t GetWindowWidth() const { return m_Window->GetWidth(); }
         int32_t GetWindowHeight() const { return m_Window->GetHeight(); }
         float GetProjWidth() const { return m_Renderer->GetProjWidth(); }
         float GetProjHeight() const { return m_Renderer->GetProjHeight(); }
+    public: //audio API for client
+        //void CreateSound(const std::string& path);
+        //void PlaySound(const Sound& sound);
+    public: //renderer API for client
         void SetClearColor(const glm::ivec3& color);
-        double GetDeltaTime() const { return m_DeltaTime; }
-        static Application* GetApplication();
-        std::shared_ptr<Renderer> GetRenderer() const { return m_Renderer; }
-        std::shared_ptr<Audio> GetAudio() const { return m_Audio; }
-        char* GetExecutablePath() const;
+        void DrawEntity(const Entity* entity);
+        void SetCustomTexture(const std::vector<SubTextureMapping>& subtextures);
     private:
         Application(); //making it private only because singleton for now
+        bool PollInputs();
+        glm::ivec2 GetMousePos() const;
+        double GetDeltaTime() const { return m_DeltaTime; }
     private:
         bool m_Quit {false};
         std::shared_ptr<Window> m_Window {nullptr};

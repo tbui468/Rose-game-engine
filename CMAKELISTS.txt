@@ -35,6 +35,7 @@ add_library(Rose STATIC
     "Rose/Globals.cpp"
     "Rose/Entity.cpp"
     "Rose/Application.cpp"
+    "Rose/Utility.cpp"
     "Rose/Audio.cpp"
     "Rose/Sound.cpp"
     "Rose/Camera.cpp"
@@ -70,9 +71,10 @@ add_executable(Squares
     "Squares/Puzzle.cpp"
     "Squares/PuzzleIcon.cpp"
     "Squares/PuzzleSet.cpp"
-    "Squares/InputDispatcher.cpp"
     "Squares/Fractal.cpp"
-    "Squares/BaseFractal.cpp")
+    "Squares/Data.cpp"
+    "Squares/UndoIcon.cpp")
+
 target_include_directories(Squares PRIVATE 
     ${SDL_INCLUDE_DIR}
     ${GLAD_INCLUDE_DIR}

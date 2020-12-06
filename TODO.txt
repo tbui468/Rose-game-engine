@@ -2,58 +2,60 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
     PITCH: An application teaching goemetric transformations using puzzles, but the app itself is a puzzle the user must explore to unravel
 
+        Idea: Instead of having menu buttons, make each puzzleset a cluster of four puzzles in a roughly square shape
+            have a central square be the back button.  The central button also displays which puzzle is already complete
+            since the puzzleset is so small, player can access any puzzle within 2 commands (1 command for adjacent puzzles)
+
+            or have player move puzzles similar to how they move the fractals
+
+            Instead of connecting colors to make lines, connect colors to make squares
+                can have some colored squares stationary as a guide to player
+
     THE BIG THREE:
-        1. Save/load system - SDL_GetPrefPath (Spend mornings on this)
-            default.sav should be in base path
-            profile.sav should be in user localapp data
+        1. Save/load system - SDL_GetPrefPath (spend mornings on this)
 
-            Write out data to profile.json to make sure it saves correctly
+            Indices don't need to be explicitly part of the data - the order of each data set inside the corresponding list is the index
+                the puzzleset and puzzles only need a copy of their corresponding indices to set once on construction, and to 
+                use it to look up / write to g_Data
 
-            Read data in from profile.json if it exists
+            Write out g_Data to profile.json
 
-            Once I understand everything, wrap it up in a simple API specific to my app
+            Read in data from profile.json to g_Data (include checks for if profile.json exists and if the data is of correct format)
+
+
+        3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear
+
+            Complete MenuLayer::UndoResizeFractals() - removed this function from puzzle class since it's easier to understand for now in MenuLayer
+                can re-add this function afterwards if it makes sense
+
+                carefully check all conditions here - this is the most complex part of the application so far
+
+            Implement InputQueue, with a similar format to the command queue,
+                If the player inputs while animation is playing, save the input type (including the x and y)
+                Once the current animation is done playing, trigger the next AddCommand(...) by using the queued inputs
+            
 
         2. Audio - FMOD
             Sound is playing on translate up 
             Get music looping
 
-        3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear
+        Learn.
+            Watch Javidx9 videos or look through the code of his game engine
+                get a working program compiled with his engine, and
+                step through the code to see how he structured everything (especially the renderer and entity relationship for Draw())
 
-            Get Red/Gree/Blue Entry and Exit fractals functional
-                placed on edge of puzzles.  
-                Can't be transformed or split/formed
-                Same color, but different visually from regular fractals
-                keep in mind that these entry/exit fractals will be used to check Puzzle::IsCleared(), and PuzzleSet()::IsCleared()
+            OLCGameEngine
+                application->Draw(....) is how the application draws stuff
+                I could just do Draw(entity.x, entity.y, entity.Sprite, etc) to draw
+                    but i need to be able to draw objects and entity contains too
 
-            PuzzleClear/PuzzleSetClear status and checks on transformations (Don't hide these checks deep inside the puzzlesets or puzzle classses)
-                since it comes right after a transformation, should perform the check in the same place in MenuLayer (right before setting animation start parameters)
-                    and set a flag somewhere (in MenuLayer would be best) if the puzzle is cleared
-                then after the transformation animation is done, go straight to the cleared puzzle animation (do something similar for clearing puzzlesets)
-
-            Moves per puzzle limit
-
-            Shaders and special effects as rewards for clearing puzzles
-
-            Add visual touches
-                like blurred fractals in front/behind play field that move along with puzzles to give illusion of depth and provide more animations
-                blurry dust motes (or something similar) floating in the background - maybe have selecting puzzles motion affect these motes
-
-            Selecting a puzzleset should have it unwrap and form the individual puzzles - this would require roughly 9 puzzles per set
-
-        4. Stop with the unnecessary abstractions
-                EntryPoint.cpp - creates single instance of application class (no need for singletons or anything)
-                Application.h and cpp - contains Layer/Renderer/Audio/Input classes
-                    Layer - all gameplay scripting
-                    Input - get user inputs/events
-                    Renderer - all OpenGL code
-                    Audio - all FMOD code
 
 Set build (x86 or x64) (or should this be a build option???)
 
 Open and build in visual studio using solutions generated by cmake to test if it works
 
-Build on linux virtual machine to test different compiler (GCC)
+Build on linux virtual machine to test different compiler (GCC) and the LLVM one (Clang)
 
 Need to make sure MAX_VERTEX size in shaders are below hardware max 
 
-
+Make sure I'm compile to release mode (and not debug) with optimizations turned to max

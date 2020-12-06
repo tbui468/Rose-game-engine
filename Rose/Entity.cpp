@@ -70,9 +70,7 @@ void Entity::OnAnimationEnd() {
 void Entity::Draw() const {
     if(abs(x()) > 480 || abs(y()) > 270) return;
 
-    Application* app = Application::GetApplication();
-    std::shared_ptr<Renderer> renderer = app->GetRenderer();
-    renderer->AddEntity(this);
+    Application::GetApplication()->DrawEntity(this);
 }
 
 
@@ -93,6 +91,21 @@ bool Entity::PointCollision(float pointX, float pointY) const {
     return true;
 }
 
+Corner Entity::CornerCollision(float pointX, float pointY) const {
+    pointX *= g_Scale;
+    pointY *= g_Scale;
+
+    //temp
+    return Corner::None;
+}
+
+Edge Entity::EdgeCollision(float pointX, float pointY) const {
+    pointX *= g_Scale;
+    pointY *= g_Scale;
+
+    //temp
+    return Edge::None;
+}
 
 glm::mat4 Entity::GetModelMatrix() const {
     /*
