@@ -4,12 +4,12 @@
 #include "Rose.h"
 #include "Fractal.h"
 #include "PuzzleSet.h"
+#include "Puzzle.h"
 
 namespace sqs {
 
     class Button;
-    class PuzzleSet;
-    class Puzzle;
+
 
 
     enum class CommandType {

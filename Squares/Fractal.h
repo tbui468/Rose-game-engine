@@ -2,27 +2,10 @@
 #define FRACTAL_H
 
 #include "Rose.h"
+#include "Data.h"
 
 namespace sqs {
 
-    struct FractalData {
-        int size {0};
-        glm::ivec2 index {-1, -1};
-    };
-
-    enum class FractalElement {
-        Empty = 0,
-        Block,
-        Red,
-        Blue,
-        Green,
-        RedEntry,
-        RedExit,
-        BlueEntry,
-        BlueExit,
-        GreenEntry,
-        GreenExit
-    };
 
     class Fractal: public rose::Entity {
         public:
@@ -60,8 +43,8 @@ namespace sqs {
             inline static float s_UnitSize = 32.0f;
             inline static float s_UnitMargin = 16.0f;
             glm::ivec2 m_Index {-1, -1};
-            int m_PuzzleIndex {-1};
-            int m_Size {0};
+            const int m_PuzzleIndex;
+            int m_Size {0}; //this could be const too
             std::vector<FractalElement> m_Elements;
     };
 

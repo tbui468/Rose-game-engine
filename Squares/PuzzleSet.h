@@ -3,18 +3,15 @@
 
 #include "Rose.h"
 #include "Puzzle.h"
+#include "Data.h"
 
 namespace sqs {
 
 class PuzzleIcon;
 
-struct PuzzleSetData {
-    std::vector<PuzzleData> Puzzles;
-};
-
 class PuzzleSet: public rose::Entity {
     public:
-        PuzzleSet(PuzzleSetData puzzleSetData, const glm::vec2& pos);
+        PuzzleSet(int index, const glm::vec2& pos);
         virtual ~PuzzleSet();
         void Open();
         void OpenPuzzle(Puzzle* puzzle);
@@ -26,11 +23,12 @@ class PuzzleSet: public rose::Entity {
         virtual void Draw() const override;
         const std::vector<Puzzle*>& GetPuzzles() const { return m_PuzzleList; }
         const std::vector<PuzzleIcon*>& GetPuzzleIcons() const { return m_PuzzleIconList; }
+        int GetIndex() const { return m_Index; }
     private:
         std::vector<Puzzle*> m_PuzzleList;
         std::vector<PuzzleIcon*> m_PuzzleIconList;
         bool m_DestroyPuzzles {false};
-        PuzzleSetData m_PuzzleSetData;
+        const int m_Index;
     private:
         inline static rose::Sprite s_Sprite {{0, 0}, {32, 32}, rose::TextureType::Default};
         inline static glm::vec2 s_ObjectSize {32.0f, 32.0f};

@@ -2,25 +2,28 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
     PITCH: An application teaching goemetric transformations using puzzles, but the app itself is a puzzle the user must explore to unravel
 
+        Idea: Instead of having menu buttons, make each puzzleset a cluster of four puzzles in a roughly square shape
+            have a central square be the back button.  The central button also displays which puzzle is already complete
+            since the puzzleset is so small, player can access any puzzle within 2 commands (1 command for adjacent puzzles)
+
+            or have player move puzzles similar to how they move the fractals
+
+            Instead of connecting colors to make lines, connect colors to make squares
+                can have some colored squares stationary as a guide to player
+
     THE BIG THREE:
+        1. Save/load system - SDL_GetPrefPath (spend mornings on this)
 
-            Blue bottom right in puzzle 1, puzzleset 1 shows up in 2x2 fractal constructor after merging okay
+            Indices don't need to be explicitly part of the data - the order of each data set inside the corresponding list is the index
+                the puzzleset and puzzles only need a copy of their corresponding indices to set once on construction, and to 
+                use it to look up / write to g_Data
 
-            By the time I call Split in MenuLayer, blue fractal in bottom right corner is gone (when I check GetSubElement)
+            Write out g_Data to profile.json
 
-            run app and merge and split to see notes - why is m_Elements changing between these two times???
+            Read in data from profile.json to g_Data (include checks for if profile.json exists and if the data is of correct format)
 
-                m_Elements is correct when we call Fractal(...) constructor
 
-                    this becomes false on the next frame...
-
-                m_Elements is wrong when we call MenuLayer::SplitFractal()
-
-            FOUND IT!!!! Problem with GetSubElement - it needs to know the size of the subelements needed AND the size of the fractal it is from
-                these may be different (and most often are) and I'm not taking that into account
-                Can use GetSize() to find the size of the current fractal
-
-        3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (Spend mornings on this)
+        3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear
 
             Complete MenuLayer::UndoResizeFractals() - removed this function from puzzle class since it's easier to understand for now in MenuLayer
                 can re-add this function afterwards if it makes sense
@@ -31,18 +34,6 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
                 If the player inputs while animation is playing, save the input type (including the x and y)
                 Once the current animation is done playing, trigger the next AddCommand(...) by using the queued inputs
             
-        1. Save/load system - SDL_GetPrefPath
-
-            Write out data to profile.json to make sure it saves correctly
-
-            Read data in from profile.json if it exists
-
-            Default data should also be move out of json file - should write it in c++ and compile it with executable
-                so that user can't accidentally delete default data
-
-            once I understand the parser function in json class, try to roll my own parser
-                it doesn't need to be the 50,000 line beast that is the library I'm using
-                make it rigid and only capable of reading/writing to the specific format for my app
 
         2. Audio - FMOD
             Sound is playing on translate up 

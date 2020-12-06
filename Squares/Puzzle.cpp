@@ -6,12 +6,9 @@
 namespace sqs {
 
 
-
-    //Puzzle::Puzzle(FractalElement* elements, const glm::ivec2& dimensions, const glm::vec2& pos, int index) 
-    Puzzle::Puzzle(FractalElement* elements, const glm::ivec2& dimensions, int index) 
-        : Entity(GetSprite(), GetObjectSize(), GetBoundingBox(), glm::vec2(GetInitOffset() + GetSpacing() * index, 0.0f)) {
-            m_Index = index;
-            m_Dimensions = dimensions;
+    Puzzle::Puzzle(int index, int setIndex): Entity(GetSprite(), GetObjectSize(), GetBoundingBox(), glm::vec2(GetInitOffset() + GetSpacing() * index, 0.0f)),
+                                             m_Index(index), m_SetIndex(setIndex) {
+            m_Dimensions = g_Data.at(setIndex).puzzlesData.at(index).dimensions;
             m_MaxTransformations = 5; //temp: should load this value in from default puzzle data
 
             //undo icons 
@@ -19,11 +16,13 @@ namespace sqs {
                 m_UndoIcons.emplace_back(new UndoIcon(glm::vec2(UndoIcon::s_Margin * ((1 - m_MaxTransformations) / 2.0f + i) + x(), -110.0f), this));
             }
 
+            std::vector<FractalElement> elements = g_Data.at(setIndex).puzzlesData.at(index).elements;
+
             //make a bunch of 1x1 fractals as starting point for all puzzles
-            for(int row = 0; row < dimensions.y; ++row) {
-                for(int col = 0; col < dimensions.x; ++col) {
-                    FractalElement element = elements[row * dimensions.x + col];
-                    if(element != FractalElement::Block) {
+            for(int row = 0; row < m_Dimensions.y; ++row) {
+                for(int col = 0; col < m_Dimensions.x; ++col) {
+                    FractalElement element = elements.at(row * m_Dimensions.x + col);
+                    if(element != 'E') {
                         glm::vec2 startCoords = Fractal::GetCoords({col, row}, 1, m_Dimensions, glm::vec2(x(), y()));
                         m_Fractals.emplace_back(new Fractal({element}, {col, row}, glm::vec2(startCoords.x, startCoords.y), GetIndex()));
                     }

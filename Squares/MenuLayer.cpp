@@ -12,6 +12,9 @@ using json = nlohmann::json;
 
 namespace sqs {
 
+
+
+
     enum class InputType {
         None,
         Tap,
@@ -63,15 +66,17 @@ namespace sqs {
         SDL_free(prefPath);
 
         std::ofstream output(outputPath.c_str());
-        FractalElement r = FractalElement::Red;
-        FractalElement g = FractalElement::Green;
-        FractalElement b = FractalElement::Blue;
-        FractalElement e = FractalElement::Empty;
+        FractalElement r = 'r';
+        FractalElement g = 'g';
+        FractalElement b = 'b';
+        FractalElement e = 'e';
         output << (int)r << (int)g << (int)b << (int)e;
         output.close();
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         /////////////////////////////////example reading in default data//////////////////////////////////////////////
+        //temp: this data should be saved inside the executable, not in an external file where it can be modified
+        //reading in data should overwrite g_Data, and only occur when profile.json exists and is not corrupt
         char* dataPath;
         char* basePath = SDL_GetBasePath();
         if(basePath) {
@@ -85,18 +90,22 @@ namespace sqs {
         LoadPuzzleData(path, &puzzleSetList);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
 
 
         float topEdge = 135.0f;
-        m_PuzzleSets.emplace_back(new PuzzleSet(puzzleSetList.at(0), glm::vec2(-32.0f, topEdge + 32.0f)));
-        m_PuzzleSets.emplace_back(new PuzzleSet(puzzleSetList.at(1), glm::vec2(0.0f, topEdge + 32.0f)));
-        m_PuzzleSets.emplace_back(new PuzzleSet(puzzleSetList.at(2), glm::vec2(32.0f, topEdge + 32.0f)));
+
+        for(int i = 0; i < g_Data.size(); ++i) {
+            m_PuzzleSets.emplace_back(new PuzzleSet(i, glm::vec2(-32.0f + 32.0f * i, topEdge + 32.0f)));
+        }
+
         for(PuzzleSet* ps: m_PuzzleSets) m_Entities.push_back(ps);
 
     }
 
 
     void MenuLayer::LoadPuzzleData(const std::string& path, std::vector<PuzzleSetData>* puzzleSetList) {
+        /*
         std::ifstream inputFile(path);
         json j = json::parse(inputFile);
 
@@ -114,14 +123,14 @@ namespace sqs {
                             if(it2.value().is_array()) { //iterator through elements
                                 int elementCount = it2.value().size();
                                 for(int m = 0; m < elementCount; ++m) {
-                                    puzzleData.Elements.push_back(it2.value().at(m));
+                                    puzzleData.elements.push_back(it2.value().at(m));
                                 }
                             }else{
-                                if(it2.key() == "Width") puzzleData.Width = it2.value();
-                                if(it2.key() == "Height") puzzleData.Height = it2.value();
+                                if(it2.key() == "Width") puzzleData.dimensions.x = it2.value();
+                                if(it2.key() == "Height") puzzleData.dimensions.y = it2.value();
                             }
                         }
-                        puzzleSetData.Puzzles.push_back(puzzleData);
+                        puzzleSetData.puzzlesData.push_back(puzzleData);
                     }
                 }else{
                     //std::cout << it.key() << ": " << it.value() << std::endl;
@@ -130,6 +139,8 @@ namespace sqs {
             puzzleSetList->push_back(puzzleSetData);
             //std::cout << std::endl;
         }
+
+        inputFile.close();*/
     }
 
     MenuLayer::~MenuLayer() {

@@ -7,10 +7,9 @@ namespace sqs {
         Fractal(MakeEntityData(elements, index, coords, puzzleIndex), elements, index, puzzleIndex) {}
 
     Fractal::Fractal(rose::EntityData e, const std::vector<FractalElement>& elements, const glm::ivec2& index, int puzzleIndex)
-        : Entity(e.sprite, e.size, e.boundingBox, e.position) {
+        : Entity(e.sprite, e.size, e.boundingBox, e.position), m_PuzzleIndex(puzzleIndex) {
             m_Elements = elements;
             m_Index = index;
-            m_PuzzleIndex = puzzleIndex;
             switch(elements.size()) {
                 case 1: m_Size = 1; break;
                 case 4: m_Size = 2; break;
@@ -304,15 +303,15 @@ namespace sqs {
                 FractalElement element = elements.at(row * size + col);
 
                 switch(element) {
-                    case FractalElement::Red:
+                    case 'r':
                         texMapping.push_back({{texStart.x + col * UnitSize() + 1, texStart.y - row * UnitSize() + 1}, 
                                 {UnitSize() + 1, 1}, {UnitSize() - 2, UnitSize() - 2}});
                         break;
-                    case FractalElement::Blue:
+                    case 'b':
                         texMapping.push_back({{texStart.x + col * UnitSize() + 1, texStart.y - row * UnitSize() + 1}, 
                                 {UnitSize() + 1, UnitSize() + 1}, {UnitSize() - 2, UnitSize() - 2}});
                         break;
-                    case FractalElement::Green:
+                    case 'g':
                         texMapping.push_back({{texStart.x + col * UnitSize() + 1, texStart.y - row * UnitSize() + 1}, 
                                 {UnitSize() + 1, UnitSize() * 2 + 1}, {UnitSize() - 2, UnitSize() - 2}});
                         break;

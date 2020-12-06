@@ -5,7 +5,7 @@
 namespace sqs {
 
 
-    PuzzleSet::PuzzleSet(PuzzleSetData puzzleSetData, const glm::vec2& pos): Entity(s_Sprite, s_ObjectSize, s_BoundingBox, pos), m_PuzzleSetData(puzzleSetData) {}
+    PuzzleSet::PuzzleSet(int index, const glm::vec2& pos): Entity(s_Sprite, s_ObjectSize, s_BoundingBox, pos), m_Index(index) {}
 
 
     PuzzleSet::~PuzzleSet() {
@@ -17,11 +17,8 @@ namespace sqs {
         Close(); //temp: just to make sure we don't open too many puzzles
         m_DestroyPuzzles = false;
 
-        int puzzleCount = m_PuzzleSetData.Puzzles.size();
-
-        for(int i = 0; i < puzzleCount; ++i) {
-            PuzzleData puzzleData = m_PuzzleSetData.Puzzles.at(i);
-            m_PuzzleList.emplace_back(new Puzzle(puzzleData.Elements.data(), glm::ivec2(puzzleData.Width, puzzleData.Height), m_PuzzleList.size()));
+        for(int i = 0; i < g_Data.at(GetIndex()).puzzlesData.size(); ++i) {
+            m_PuzzleList.emplace_back(new Puzzle(i, GetIndex()));
         }
 
 
