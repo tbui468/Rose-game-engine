@@ -12,20 +12,26 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
                 can have some colored squares stationary as a guide to player
 
     THE BIG THREE:
-        1. Save/load system - SDL_GetPrefPath (spend mornings on this)
+        3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
 
-            save and load undo stacks
+            undos with rotations and reflections work with splitting all fractals to 1x1
 
-        3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear
+            next is getting this working with translations (need to do the same thing to fractalB that we did to fractalA)
+                this might be an opportunity to split what we did with fractalA into a function that we can call on fractalB too
 
-            Complete MenuLayer::UndoResizeFractals() - removed this function from puzzle class since it's easier to understand for now in MenuLayer
-                can re-add this function afterwards if it makes sense
+            test on 4x4 fractal sizes
 
-                carefully check all conditions here - this is the most complex part of the application so far
+            implement splitting the bare minimum to allow and undo; don't split a 4x4 into 1x1s - only split into 2x2 or 1x1 for the quadrants that require it
+
+            test on 4x4 fractals with undo
 
             Implement InputQueue, with a similar format to the command queue,
                 If the player inputs while animation is playing, save the input type (including the x and y)
                 Once the current animation is done playing, trigger the next AddCommand(...) by using the queued inputs
+
+        1. Save/load system - SDL_GetPrefPath
+
+            save and load undo stacks
 
         2. Audio - FMOD
             Sound is playing on translate up 

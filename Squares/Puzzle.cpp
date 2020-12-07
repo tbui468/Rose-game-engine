@@ -6,7 +6,7 @@
 namespace sqs {
 
 
-    Puzzle::Puzzle(int index, int setIndex): Entity(GetSprite(), GetObjectSize(), GetBoundingBox(), glm::vec2(GetInitOffset() + GetSpacing() * index, 0.0f)),
+    Puzzle::Puzzle(int index, int setIndex): Entity(s_Sprite, s_ObjectSize, s_BoundingBox, glm::vec2(s_InitOffset + s_Spacing * index, 0.0f)),
                                              m_Index(index), m_SetIndex(setIndex) {
             m_Dimensions = g_Data.at(setIndex).puzzlesData.at(index).dimensions;
             m_MaxTransformations = 5; //temp: should load this value in from default puzzle data
@@ -124,13 +124,36 @@ namespace sqs {
         }
     }
 
-    Fractal* Puzzle::GetFractal(const glm::ivec2& index) const {
+    Fractal* Puzzle::GetFractalContaining(const glm::ivec2& index) const {
         for(Fractal* f: m_Fractals) {
-            if(f->GetIndex() == index || f->Contains(index)) return f;
+            if(f->Contains(index)) return f;
         }
         return nullptr;
     }
 
+    Fractal* Puzzle::GetFractalWithIndex(const glm::ivec2& index) const {
+        for(Fractal* f: m_Fractals) {
+            if(f->GetIndex() == index) return f;
+        }
+        return nullptr;
+    }
+
+    std::vector<Fractal*> Puzzle::GetOverlappingFractals(const FractalData& fractalData) {
+        std::vector<Fractal*> overlappingFractals;
+        for(Fractal* f: m_Fractals) {
+            bool contains = false;
+            for(int row = fractalData.index.y; row < fractalData.index.y + fractalData.size; ++row) {
+                for(int col = fractalData.index.x; col < fractalData.index.x + fractalData.size; ++col) {
+                    if(f->Contains({col, row})) contains = true;
+                    if(contains) break;
+                }
+                if(contains) break;
+            }
+            if(contains) overlappingFractals.push_back(f);
+        }
+
+        return overlappingFractals;
+    }
 
     std::vector<Fractal*> Puzzle::SplitFractal(Fractal* fractal, const std::vector<FractalData>& fractalData) {
 
@@ -250,26 +273,26 @@ namespace sqs {
         if(closestF->x() - mousex < 0) { //closest fractal is on left of mouse
             if(closestF->y() - mousey < 0) { //closest fractal is below mouse
                 bottomLeft = closestF;
-                bottomRight = GetFractal(glm::ivec2(index.x + size, index.y));
-                topLeft = GetFractal(glm::ivec2(index.x, index.y - size));
-                topRight = GetFractal(glm::ivec2(index.x + size, index.y - size));
+                bottomRight = GetFractalWithIndex(glm::ivec2(index.x + size, index.y));
+                topLeft = GetFractalWithIndex(glm::ivec2(index.x, index.y - size));
+                topRight = GetFractalWithIndex(glm::ivec2(index.x + size, index.y - size));
             }else{
                 topLeft = closestF;
-                topRight = GetFractal(glm::ivec2(index.x + size, index.y));
-                bottomLeft = GetFractal(glm::ivec2(index.x, index.y + size));
-                bottomRight = GetFractal(glm::ivec2(index.x + size, index.y + size));
+                topRight = GetFractalWithIndex(glm::ivec2(index.x + size, index.y));
+                bottomLeft = GetFractalWithIndex(glm::ivec2(index.x, index.y + size));
+                bottomRight = GetFractalWithIndex(glm::ivec2(index.x + size, index.y + size));
             }
         }else{ //closest fractal is on right side of mouse
             if(closestF->y() - mousey < 0) { //closest fractal is below mouse
                 bottomRight = closestF;
-                bottomLeft = GetFractal(glm::ivec2(index.x - size, index.y));
-                topLeft = GetFractal(glm::ivec2(index.x - size, index.y - size));
-                topRight = GetFractal(glm::ivec2(index.x, index.y - size));
+                bottomLeft = GetFractalWithIndex(glm::ivec2(index.x - size, index.y));
+                topLeft = GetFractalWithIndex(glm::ivec2(index.x - size, index.y - size));
+                topRight = GetFractalWithIndex(glm::ivec2(index.x, index.y - size));
             }else{
                 topRight = closestF;
-                topLeft = GetFractal(glm::ivec2(index.x - size, index.y));
-                bottomLeft = GetFractal(glm::ivec2(index.x - size, index.y + size));
-                bottomRight = GetFractal(glm::ivec2(index.x, index.y + size));
+                topLeft = GetFractalWithIndex(glm::ivec2(index.x - size, index.y));
+                bottomLeft = GetFractalWithIndex(glm::ivec2(index.x - size, index.y + size));
+                bottomRight = GetFractalWithIndex(glm::ivec2(index.x, index.y + size));
             }
         }
 
@@ -421,33 +444,33 @@ namespace sqs {
     }
 
 
-    void Puzzle::UndoTransformation() {
+    void Puzzle::UndoLastTransformation() {
 
         struct TransformationData tData = m_TransformationStack.back();
 
-        Fractal* f = GetFractal(tData.FractalIndex);
+        Fractal* f = GetFractalWithIndex(tData.fractalIndex);
 
         //temp: should only undo transformation after making sure fractal sizes are matching/correct
-        if(tData.FractalSize != f->GetSize()) return;
+        if(tData.fractalSize != f->GetSize()) return;
 
         Fractal* otherF;
         glm::ivec2 index = f->GetIndex();
 
-        switch(tData.Transformation) {
+        switch(tData.transformation) {
             case TransformationType::TranslatePosX:
-                otherF = GetFractal(glm::ivec2(index.x + f->GetSize(), index.y)); 
+                otherF = GetFractalWithIndex(glm::ivec2(index.x + f->GetSize(), index.y)); 
                 if(otherF && f->GetSize() == otherF->GetSize()) SwapFractals(f, otherF);
                 break;
             case TransformationType::TranslateNegX:
-                otherF = GetFractal(glm::ivec2(index.x - f->GetSize(), index.y)); 
+                otherF = GetFractalWithIndex(glm::ivec2(index.x - f->GetSize(), index.y)); 
                 if(otherF && f->GetSize() == otherF->GetSize()) SwapFractals(f, otherF);
                 break;
             case TransformationType::TranslatePosY:
-                otherF = GetFractal(glm::ivec2(index.x, index.y + f->GetSize())); 
+                otherF = GetFractalWithIndex(glm::ivec2(index.x, index.y + f->GetSize())); 
                 if(otherF && f->GetSize() == otherF->GetSize()) SwapFractals(f, otherF);
                 break;
             case TransformationType::TranslateNegY:
-                otherF = GetFractal(glm::ivec2(index.x, index.y - f->GetSize())); 
+                otherF = GetFractalWithIndex(glm::ivec2(index.x, index.y - f->GetSize())); 
                 if(otherF && f->GetSize() == otherF->GetSize()) SwapFractals(f, otherF);
                 break;
             case TransformationType::RotateCW:

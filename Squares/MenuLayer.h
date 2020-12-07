@@ -5,12 +5,10 @@
 #include "Fractal.h"
 #include "PuzzleSet.h"
 #include "Puzzle.h"
+#include "Button.h"
+#include "Data.h"
 
 namespace sqs {
-
-    class Button;
-
-
 
     enum class CommandType {
         None,
@@ -22,7 +20,7 @@ namespace sqs {
         SplitFractal,
         FormFractal,
         UndoResizeFractals,
-        UndoTransformation 
+        UndoLastTransformation 
     };
 
 
@@ -54,7 +52,7 @@ namespace sqs {
             void SplitFractal(Puzzle* puzzle, Fractal* fractal);
             void FormFractal(Puzzle* puzzle, FractalCorners fc);
             void UndoResizeFractals(Puzzle* puzzle); 
-            void UndoTransformation(Puzzle* puzzle);
+            void UndoLastTransformation(Puzzle* puzzle);
         private:
             //void ReadPuzzleData(const std::string& path, std::vector<PuzzleSetData>* puzzleSetList);
             void ReadPuzzleData(const std::string& path, std::vector<PuzzleSetData>& data);

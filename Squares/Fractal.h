@@ -14,9 +14,9 @@ namespace sqs {
             int GetSize() const { return m_Size; }
             FractalElement GetSubElement(const glm::ivec2& index) const;
             glm::ivec2 GetIndex() const { return m_Index; }
-            bool Contains(const glm::ivec2& index) const;
             void SetIndex(const glm::ivec2& index) { m_Index = index; }
-            void WriteData(std::vector<PuzzleSetData>& data, int setIndex, int puzzleIndex);
+            bool Contains(const glm::ivec2& index) const;
+            void WriteData(std::vector<PuzzleSetData>& data, int setIndex, int puzzleIndex) const;
         public:
             virtual void RotateBy(float angle) override;
             virtual void ScaleTo(const glm::vec2& scale) override;
@@ -30,19 +30,16 @@ namespace sqs {
             static glm::vec2 GetCoordsForTarget(const glm::ivec2& index, int size, const glm::ivec2& targetIndex, int targetSize, 
                                                 const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos);
             static glm::vec2 GetCoords(const glm::ivec2& index, int size, const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos);
-            static float UnitSize() { return s_UnitSize; }
-            static float UnitMargin() { return s_UnitMargin; }
         private:
             Fractal(rose::EntityData e, const std::vector<FractalElement>& elements, const glm::ivec2& index, int puzzleIndex);
-           // Fractal(rose::EntityData e);
             int GetPuzzleIndex() const { return m_PuzzleIndex; }
             const std::vector<FractalElement>& GetElements() const { return m_Elements; }
             void SetElements(const std::vector<FractalElement>& elements) { m_Elements = elements; }
             void UpdateSprite();
             std::vector<FractalElement> GetSubElements(const glm::ivec2& index, int subElementSize) const;
         private:
-            inline static float s_UnitSize = 32.0f;
-            inline static float s_UnitMargin = 16.0f;
+            inline static const float s_UnitSize = 32.0f;
+            inline static const float s_UnitMargin = 16.0f;
             glm::ivec2 m_Index {-1, -1};
             const int m_PuzzleIndex;
             int m_Size {0}; //this could be const too

@@ -30,9 +30,9 @@ namespace sqs {
     };
 
     struct TransformationData {
-        TransformationType Transformation {TransformationType::None};
-        glm::ivec2 FractalIndex {-1, -1};
-        int FractalSize {0};
+        TransformationType transformation {TransformationType::None};
+        glm::ivec2 fractalIndex {-1, -1};
+        int fractalSize {0};
     };
 
 
@@ -40,6 +40,7 @@ namespace sqs {
         int size {0};
         glm::ivec2 index {-1, -1};
     };
+
 
 
 
