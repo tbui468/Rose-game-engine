@@ -43,6 +43,16 @@ namespace sqs {
         return elements;
     }
 
+    void Fractal::WriteData(std::vector<PuzzleSetData>& data, int setIndex, int puzzleIndex) {
+        int width = data.at(setIndex).puzzlesData.at(puzzleIndex).dimensions.x;
+
+        for(int row = 0; row < GetSize(); ++row) {
+            for(int col = 0; col < GetSize(); ++col) {
+                data.at(setIndex).puzzlesData.at(puzzleIndex).elements.at((GetIndex().y + row) * width + GetIndex().x + col) = GetSubElement({col, row});
+            }
+        }
+    }
+
     void Fractal::RotateBy(float angle) {
         Entity::RotateBy(angle);
 

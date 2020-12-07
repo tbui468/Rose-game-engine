@@ -22,6 +22,7 @@ namespace sqs {
             Puzzle(int index, int setIndex);
             virtual ~Puzzle();
             int GetIndex() const { return m_Index; }
+            int GetSetIndex() const { return m_SetIndex; } 
             bool IsOpen() const { return m_IsOpen; }
             void Open();
             void Close();
@@ -31,6 +32,8 @@ namespace sqs {
             virtual void OnAnimationEnd() override;
             virtual void OnAnimationUpdate(float t) override;
             const glm::ivec2& GetDimensions() const { return m_Dimensions; }
+            int GetWidth() const { return m_Dimensions.x; }
+            int GetHeight() const { return m_Dimensions.y; }
         public:
             static float GetSpacing() { return s_SPACING; }
             static float GetInitOffset() { return s_InitOffset; }

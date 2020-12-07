@@ -16,6 +16,7 @@ namespace sqs {
     static PuzzleSetData ps0 {{p00, p01, p02, p03}};
 
     extern std::vector<PuzzleSetData> g_Data {ps0, ps0, ps0};
+    const extern std::vector<PuzzleSetData> g_DefaultData {g_Data};
 
 
 }

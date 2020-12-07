@@ -44,6 +44,7 @@ namespace sqs {
 
 
     extern std::vector<PuzzleSetData> g_Data;
+    const extern std::vector<PuzzleSetData> g_DefaultData;
 
 }
 

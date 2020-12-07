@@ -386,26 +386,38 @@ namespace sqs {
             else m_TransformationStack.push_back({TransformationType::TranslateNegY, fractalA->GetIndex(), fractalA->GetSize()});
         }
 
+        fractalA->WriteData(g_Data, GetSetIndex(), GetIndex());
+        fractalB->WriteData(g_Data, GetSetIndex(), GetIndex());
+
     }
+
 
     void Puzzle::RotateFractalCW(Fractal* fractal) {
         fractal->RotateBy(-1.5708);
         m_TransformationStack.push_back({TransformationType::RotateCCW, fractal->GetIndex(), fractal->GetSize()});
+
+        fractal->WriteData(g_Data, GetSetIndex(), GetIndex());
     }
 
     void Puzzle::RotateFractalCCW(Fractal* fractal) {
         fractal->RotateBy(1.5708);
         m_TransformationStack.push_back({TransformationType::RotateCW, fractal->GetIndex(), fractal->GetSize()});
+
+        fractal->WriteData(g_Data, GetSetIndex(), GetIndex());
     }
 
     void Puzzle::ReflectFractalX(Fractal* fractal) {
         fractal->ScaleTo({1.0f, -1.0f});
         m_TransformationStack.push_back({TransformationType::ReflectX, fractal->GetIndex(), fractal->GetSize()});
+
+        fractal->WriteData(g_Data, GetSetIndex(), GetIndex());
     }
 
     void Puzzle::ReflectFractalY(Fractal* fractal) {
         fractal->ScaleTo({-1.0f, 1.0f});
         m_TransformationStack.push_back({TransformationType::ReflectY, fractal->GetIndex(), fractal->GetSize()});
+
+        fractal->WriteData(g_Data, GetSetIndex(), GetIndex());
     }
 
 

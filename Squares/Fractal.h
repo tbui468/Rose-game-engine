@@ -16,6 +16,7 @@ namespace sqs {
             glm::ivec2 GetIndex() const { return m_Index; }
             bool Contains(const glm::ivec2& index) const;
             void SetIndex(const glm::ivec2& index) { m_Index = index; }
+            void WriteData(std::vector<PuzzleSetData>& data, int setIndex, int puzzleIndex);
         public:
             virtual void RotateBy(float angle) override;
             virtual void ScaleTo(const glm::vec2& scale) override;

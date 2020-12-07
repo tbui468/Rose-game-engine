@@ -14,11 +14,7 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
     THE BIG THREE:
         1. Save/load system - SDL_GetPrefPath (spend mornings on this)
 
-            Reading and writing to json files seems to work (with the function calls inside MenuLayer constructor)
-
-                Have puzzles update g_Data every time a transformation occurs and then write g_Data to profile.json
-
-                Open profile.json to check if the transformation state was saved properly
+            save and load undo stacks
 
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear
 

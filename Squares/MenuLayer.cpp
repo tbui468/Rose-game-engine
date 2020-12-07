@@ -58,27 +58,17 @@ namespace sqs {
             std::cout << "Error getting pref path" << std::endl;
         }
 
-        std::string outputPath = std::string(prefPath) + "/profile.json";
+        m_UserDataPath = std::string(prefPath) + "/profile.json";
 
         SDL_free(prefPath);
 
-        WritePuzzleData(outputPath, g_Data);
+        //default data is automatically loaded when the application starts
 
-        /////////////////////////////////example reading in default data//////////////////////////////////////////////
-        //temp: this data should be saved inside the executable, not in an external file where it can be modified
-        //reading in data should overwrite g_Data, and only occur when profile.json exists and is not corrupt
-        /*
-        char* dataPath;
-        char* basePath = SDL_GetBasePath();
-        if(basePath) {
-            dataPath = basePath;
-        }else{
-            dataPath = SDL_strdup("./");
-        }
-        SDL_free(basePath);
-        std::string path = std::string(dataPath) + "../../resources/default.json";*/
-        std::string profilePath = outputPath;
-        ReadPuzzleData(profilePath, g_Data);
+        //WritePuzzleData(m_UserDataPath, g_Data);
+
+        ReadPuzzleData(m_UserDataPath, g_Data);
+
+        //CopyPuzzleData(g_Data, g_DefaultData);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
         
@@ -167,6 +157,10 @@ namespace sqs {
         }
 
         inputFile.close();
+    }
+
+    void MenuLayer::CopyPuzzleData(std::vector<PuzzleSetData>& data, const std::vector<PuzzleSetData>& defaultData) {
+        data = defaultData;
     }
 
     MenuLayer::~MenuLayer() {
@@ -327,6 +321,7 @@ namespace sqs {
 
     void MenuLayer::UndoTransformation(Puzzle* puzzle) {
         puzzle->UndoTransformation();
+        WritePuzzleData(m_UserDataPath, g_Data);
         SetAnimationStart();
     }
 
@@ -367,7 +362,6 @@ namespace sqs {
                 }
             }
         }
-
 
         if(m_Parameter < 1.0f && m_Start) {
             m_Parameter += static_cast<float>(deltaTime) * .0010f;
@@ -411,7 +405,6 @@ namespace sqs {
             }
         }
 
-
         if(Puzzle* puzzle = GetOpenPuzzle()) {
             //no normal collision checks
             if(input == InputType::PinchIn) {
@@ -444,12 +437,14 @@ namespace sqs {
                             if(fractal->EdgeCollision(mouse.x, mouse.y) == rose::Edge::Left || fractal->EdgeCollision(mouse.x, mouse.y) == rose::Edge::Right) {
                                 if(fractal->GetSize() > 1) { 
                                     puzzle->ReflectFractalY(fractal);
+                                    WritePuzzleData(m_UserDataPath, g_Data);
                                     SetAnimationStart();
                                     break;
                                 }
                             }else if(fractal->EdgeCollision(mouse.x, mouse.y) == rose::Edge::Top || fractal->EdgeCollision(mouse.x, mouse.y) == rose::Edge::Bottom) {
                                 if(fractal->GetSize() > 1) { 
                                     puzzle->ReflectFractalX(fractal);
+                                    WritePuzzleData(m_UserDataPath, g_Data);
                                     SetAnimationStart();
                                     break;
                                 }
@@ -460,17 +455,20 @@ namespace sqs {
                                 otherFractal = puzzle->GetFractal(glm::ivec2(index.x - fractal->GetSize(), index.y)); 
                                 if(otherFractal && fractal->GetSize() == otherFractal->GetSize()) { 
                                     puzzle->SwapFractals(fractal, otherFractal);
+                                    WritePuzzleData(m_UserDataPath, g_Data);
                                     SetAnimationStart();
                                     break;
                                 }
                             }
                             if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopRight && fractal->GetSize() > 1) {
                                 puzzle->RotateFractalCCW(fractal);
+                                WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();
                                 break;
                             }
                             if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomRight && fractal->GetSize() > 1) {
                                 puzzle->RotateFractalCW(fractal);
+                                WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();
                                 break;
                             }
@@ -480,17 +478,20 @@ namespace sqs {
                                 otherFractal = puzzle->GetFractal(glm::ivec2(index.x + fractal->GetSize(), index.y)); 
                                 if(otherFractal && fractal->GetSize() == otherFractal->GetSize()) { 
                                     puzzle->SwapFractals(fractal, otherFractal);
+                                    WritePuzzleData(m_UserDataPath, g_Data);
                                     SetAnimationStart();
                                     break;
                                 }
                             }
                             if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopLeft && fractal->GetSize() > 1) {
                                 puzzle->RotateFractalCW(fractal);
+                                WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();
                                 break;
                             }
                             if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomLeft && fractal->GetSize() > 1) {
                                 puzzle->RotateFractalCCW(fractal);
+                                WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();
                                 break;
                             }
@@ -500,17 +501,20 @@ namespace sqs {
                                 otherFractal = puzzle->GetFractal(glm::ivec2(index.x, index.y + fractal->GetSize())); 
                                 if(otherFractal && fractal->GetSize() == otherFractal->GetSize()) { 
                                     puzzle->SwapFractals(fractal, otherFractal);
+                                    WritePuzzleData(m_UserDataPath, g_Data);
                                     SetAnimationStart();
                                     break;
                                 }
                             }
                             if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopLeft && fractal->GetSize() > 1) {
                                 puzzle->RotateFractalCCW(fractal);
+                                WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();
                                 break;
                             }
                             if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopRight && fractal->GetSize() > 1) {
                                 puzzle->RotateFractalCW(fractal);
+                                WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();
                                 break;
                             }
@@ -520,17 +524,20 @@ namespace sqs {
                                 otherFractal = puzzle->GetFractal(glm::ivec2(index.x, index.y - fractal->GetSize())); 
                                 if(otherFractal && fractal->GetSize() == otherFractal->GetSize()) { 
                                     puzzle->SwapFractals(fractal, otherFractal);
+                                    WritePuzzleData(m_UserDataPath, g_Data);
                                     SetAnimationStart();
                                     break;
                                 }
                             }
                             if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomLeft && fractal->GetSize() > 1) {
                                 puzzle->RotateFractalCW(fractal);
+                                WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();
                                 break;
                             }
                             if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomRight && fractal->GetSize() > 1) {
                                 puzzle->RotateFractalCCW(fractal);
+                                WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();
                                 break;
                             }
