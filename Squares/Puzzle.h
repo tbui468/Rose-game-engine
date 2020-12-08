@@ -44,7 +44,7 @@ namespace sqs {
             const std::vector<Fractal*>& GetFractals() const { return m_Fractals; }
             std::vector<Fractal*>::iterator GetFractalIterator(Fractal* fractal);
         public: //fractal transformations
-            std::vector<Fractal*> GetOverlappingFractals(const FractalData& fractalData);
+            std::vector<Fractal*> SplitOverlappingWith(FractalData fractalData);
             std::vector<Fractal*> SplitFractal(Fractal* fractal, const std::vector<FractalData>& fractalData);
             void MergeFractals(std::vector<Fractal*> mergeList);
             void SwapFractals(Fractal* fractalA, Fractal* fractalB);

@@ -21,7 +21,6 @@ namespace sqs {
     };
 
 
-
     MenuLayer::MenuLayer(): Layer() {
         m_Sound = new rose::Sound("sound/pluck.wav");
 
@@ -306,102 +305,109 @@ namespace sqs {
         assert(puzzle->GetTransformationCount() != 0);
         TransformationData td = puzzle->PeekLastTransformation();
 
-/* //ignoreing translations for now
+        std::vector<Fractal*> splitB;
+
+        FractalData fractalDataA;
+        fractalDataA.size = td.fractalData.size;
+        fractalDataA.index = td.fractalData.index;
+        FractalData fractalDataB;
+        fractalDataB.size = td.fractalData.size;
+
         if(td.transformation == TransformationType::TranslatePosX || td.transformation == TransformationType::TranslateNegX ||
            td.transformation == TransformationType::TranslatePosY || td.transformation == TransformationType::TranslateNegY) {
 
             Fractal* fractalB = nullptr;
 
+
             //check if swapped fractal exists
             switch(td.transformation) {
                 case TransformationType::TranslatePosX:
-                    fractalB = puzzle->GetFractalWithIndex(glm::ivec2(td.fractalIndex.x + td.fractalSize, td.fractalIndex.y));
+                    fractalB = puzzle->GetFractalWithIndex(glm::ivec2(td.fractalData.index.x + td.fractalData.size, td.fractalData.index.y));
+                    fractalDataB.index = {td.fractalData.index.x + td.fractalData.size, td.fractalData.index.y};
                     break;
                 case TransformationType::TranslateNegX:
-                    fractalB = puzzle->GetFractalWithIndex(glm::ivec2(td.fractalIndex.x - td.fractalSize, td.fractalIndex.y));
+                    fractalB = puzzle->GetFractalWithIndex(glm::ivec2(td.fractalData.index.x - td.fractalData.size, td.fractalData.index.y));
+                    fractalDataB.index = {td.fractalData.index.x - td.fractalData.size, td.fractalData.index.y};
                     break;
                 case TransformationType::TranslatePosY:
-                    fractalB = puzzle->GetFractalWithIndex(glm::ivec2(td.fractalIndex.x, td.fractalIndex.y + td.fractalSize));
+                    fractalB = puzzle->GetFractalWithIndex(glm::ivec2(td.fractalData.index.x, td.fractalData.index.y + td.fractalData.size));
+                    fractalDataB.index = {td.fractalData.index.x, td.fractalData.index.y + td.fractalData.size};
                     break;
                 case TransformationType::TranslateNegY:
-                    fractalB = puzzle->GetFractalWithIndex(glm::ivec2(td.fractalIndex.x, td.fractalIndex.y - td.fractalSize));
+                    fractalB = puzzle->GetFractalWithIndex(glm::ivec2(td.fractalData.index.x, td.fractalData.index.y - td.fractalData.size));
+                    fractalDataB.index = {td.fractalData.index.x, td.fractalData.index.y - td.fractalData.size};
                     break;
                 default:
                     //no swap fractal exists, so do nothing
                     break;
             }
 
-            if(fractalB == nullptr || fractalB->GetSize() != td.fractalSize) {
-            //std::vector<Fractal*> SplitFractal(Fractal* fractal, const std::vector<FractalData>& fractalData);
-            //void MergeFractals(std::vector<Fractal*> mergeList);
-
-            
-                //split the bare minimum times and locations to make fractalB valid
-                //need to check ALL the fractals containing any index inside B
-                    //if that fractal is a proper subfractal, do nothing
-                    //if that fractal is
+            if(fractalB == nullptr || fractalB->GetSize() != td.fractalData.size) {
+                splitB = puzzle->SplitOverlappingWith(fractalDataB);  //need to call this on the swap fractal before merge is called
                 resized = true;
             }
 
-        }*/
+        }
 
 
 
-        Fractal* fractalA = puzzle->GetFractalWithIndex(td.fractalIndex); 
+        Fractal* fractalA = puzzle->GetFractalWithIndex(td.fractalData.index); 
+        std::vector<Fractal*> splitA;
 
-        if(fractalA == nullptr || fractalA->GetSize() != td.fractalSize) {
+        if(fractalA == nullptr || fractalA->GetSize() != td.fractalData.size) {
+            splitA = puzzle->SplitOverlappingWith(td.fractalData);  //need to call this on the swap fractal before merge is called
 
-            //////////////////////////////Split fractals that overlap fractalA and add to list////////////////////////
-            std::vector<Fractal*> allSplitFractals; //list of 1x1 fractals - temp: will make it split only bare minimum later
-            for(Fractal* f: puzzle->GetOverlappingFractals({td.fractalSize, td.fractalIndex})) { //this index will need to be modified for fractalB data above
-                glm::ivec2 index = f->GetIndex();
-                int size = f->GetSize();
-                std::vector<FractalData> fData;
-                for(int row = index.y; row < index.y + size; ++row) {
-                    for(int col = index.x; col < index.x + size; ++col) {
-                        fData.push_back({1, {col, row}});
-                    }
-                }
-                std::vector<Fractal*> splitFractals = puzzle->SplitFractal(f, fData);
+            resized = true;
+        }
 
-                for(Fractal* f: splitFractals) allSplitFractals.push_back(f);
-            }
+        std::vector<Fractal*> allSplitFractals;
+        allSplitFractals.reserve(splitA.size() + splitB.size());
+        allSplitFractals.insert(allSplitFractals.end(), splitA.begin(), splitA.end());
+        allSplitFractals.insert(allSplitFractals.end(), splitB.begin(), splitB.end());
 
-            //////////////////////////////seperate 1x1 fractals into merge/nomerge lists//////////////////
-            std::vector<Fractal*> mergeList;
-            std::vector<Fractal*> noMergeList;
+        //////////////////////////////seperate 1x1 fractals into merge/nomerge lists//////////////////
+        std::vector<Fractal*> mergeListA;
+        std::vector<Fractal*> mergeListB;
+        std::vector<Fractal*> noMergeList;
 
-            for(Fractal* f: allSplitFractals) {
-                glm::ivec2 index = f->GetIndex();
-                int size = f->GetSize();
-                bool contains = false;
-                for(int row = index.y; row < index.y + size; ++row) {
-                    for(int col = index.x; col < index.x + size; ++col) {
-                        if(f->Contains({col, row})) contains = true;
-                        if(contains) break;
+        for(Fractal* f: allSplitFractals) {
+            bool contains = false;
+            for(int row = 0; row < td.fractalData.size; ++row) {
+                for(int col = 0; col < td.fractalData.size; ++col) {
+                    if(f->Contains({col + fractalDataA.index.x, row + fractalDataA.index.y})) {
+                        mergeListA.push_back(f);
+                        contains = true;
+                    }else if(f->Contains({col + fractalDataB.index.x, row + fractalDataB.index.y})) {
+                        mergeListB.push_back(f);
+                        contains = true;
                     }
                     if(contains) break;
                 }
-                if(contains) mergeList.push_back(f);
-                else noMergeList.push_back(f);
+                if(contains) break;
             }
+            if(!contains) noMergeList.push_back(f);
+        }
 
-            puzzle->MergeFractals(mergeList);
+        if(mergeListA.size() > 0) puzzle->MergeFractals(mergeListA);
+        if(mergeListB.size() > 0) puzzle->MergeFractals(mergeListB);
 
-            /////////////////////////////////MoveTo() on all fractals split (and merged) to proper place ////////////////////////////
-            for(Fractal* f: mergeList) {
-                glm::vec2 coords = Fractal::GetCoordsForTarget(f->GetIndex(), f->GetSize(), td.fractalIndex, td.fractalSize,
-                                                               puzzle->GetDimensions(), {puzzle->x(), puzzle->y()});
-                f->MoveTo(coords);
-            }
+        /////////////////////////////////MoveTo() on all fractals split (and merged) to proper place ////////////////////////////
+        for(Fractal* f: mergeListA) {
+            glm::vec2 coords = Fractal::GetCoordsForTarget(f->GetIndex(), f->GetSize(), fractalDataA.index, fractalDataA.size,
+                    puzzle->GetDimensions(), {puzzle->x(), puzzle->y()});
+            f->MoveTo(coords);
+        }
 
-            //move to using regular coords
-            for(Fractal* f: noMergeList) {
-                glm::vec2 coords = Fractal::GetCoords(f->GetIndex(), f->GetSize(), puzzle->GetDimensions(), {puzzle->x(), puzzle->y()});
-                f->MoveTo(coords);
-            }
+        for(Fractal* f: mergeListB) {
+            glm::vec2 coords = Fractal::GetCoordsForTarget(f->GetIndex(), f->GetSize(), fractalDataB.index, fractalDataB.size,
+                    puzzle->GetDimensions(), {puzzle->x(), puzzle->y()});
+            f->MoveTo(coords);
+        }
 
-            resized = true;
+        //move to using regular coords
+        for(Fractal* f: noMergeList) {
+            glm::vec2 coords = Fractal::GetCoords(f->GetIndex(), f->GetSize(), puzzle->GetDimensions(), {puzzle->x(), puzzle->y()});
+            f->MoveTo(coords);
         }
 
 

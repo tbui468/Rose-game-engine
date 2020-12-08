@@ -14,12 +14,7 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
     THE BIG THREE:
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
 
-            undos with rotations and reflections work with splitting all fractals to 1x1
-
-            next is getting this working with translations (need to do the same thing to fractalB that we did to fractalA)
-                this might be an opportunity to split what we did with fractalA into a function that we can call on fractalB too
-
-            test on 4x4 fractal sizes
+            test on 4x4 fractal sizes 
 
             implement splitting the bare minimum to allow and undo; don't split a 4x4 into 1x1s - only split into 2x2 or 1x1 for the quadrants that require it
 

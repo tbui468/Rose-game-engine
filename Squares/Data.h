@@ -29,19 +29,15 @@ namespace sqs {
         std::vector<PuzzleData> puzzlesData;
     };
 
-    struct TransformationData {
-        TransformationType transformation {TransformationType::None};
-        glm::ivec2 fractalIndex {-1, -1};
-        int fractalSize {0};
-    };
-
-
     struct FractalData {
         int size {0};
         glm::ivec2 index {-1, -1};
     };
 
-
+    struct TransformationData {
+        TransformationType transformation {TransformationType::None};
+        FractalData fractalData {0, {-1 ,-1}};
+    };
 
 
     extern std::vector<PuzzleSetData> g_Data;

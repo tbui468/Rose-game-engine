@@ -138,21 +138,41 @@ namespace sqs {
         return nullptr;
     }
 
-    std::vector<Fractal*> Puzzle::GetOverlappingFractals(const FractalData& fractalData) {
+    std::vector<Fractal*> Puzzle::SplitOverlappingWith(FractalData fractalData) {
+
         std::vector<Fractal*> overlappingFractals;
+
         for(Fractal* f: m_Fractals) {
             bool contains = false;
+
             for(int row = fractalData.index.y; row < fractalData.index.y + fractalData.size; ++row) {
                 for(int col = fractalData.index.x; col < fractalData.index.x + fractalData.size; ++col) {
-                    if(f->Contains({col, row})) contains = true;
+                    if(f->Contains({col, row})) {
+                        overlappingFractals.push_back(f);
+                        contains = true;
+                    }
                     if(contains) break;
                 }
                 if(contains) break;
             }
-            if(contains) overlappingFractals.push_back(f);
         }
 
-        return overlappingFractals;
+        //split all fractals overlapping fractalData into 1x1 (temp - should split bare minimum to satisfy undo requirements)
+        std::vector<Fractal*> allSplitFractals;
+
+        for(Fractal* f: overlappingFractals) {
+            std::vector<FractalData> fData;
+
+            for(int row = f->GetIndex().y; row < f->GetIndex().y + f->GetSize(); ++row) {
+                for(int col = f->GetIndex().x; col < f->GetIndex().x + f->GetSize(); ++col) {
+                    fData.push_back({1, {col, row}}); //splitting all fractals into 1x1 by pushing size 1 data
+                }
+            }
+
+            for(Fractal* f: SplitFractal(f, fData)) allSplitFractals.push_back(f);
+        }
+
+        return allSplitFractals;
     }
 
     std::vector<Fractal*> Puzzle::SplitFractal(Fractal* fractal, const std::vector<FractalData>& fractalData) {
@@ -162,12 +182,6 @@ namespace sqs {
         int targetSize = fractal->GetSize();
         glm::ivec2 targetIndex = fractal->GetIndex();
 
-        /*
-           for(int row = 0; row < 2; ++row) {
-           for(int col = 0; col < 2; ++col) {
-           std::cout << (int)fractal->GetSubElement({col, row}) << std::endl;
-           }
-           }*/
 
         for(FractalData data: fractalData) {
             //find start coordinates from fractaldata
@@ -402,11 +416,11 @@ namespace sqs {
         glm::ivec2 newIndexB = fractalB->GetIndex();
 
         if(newIndexA.y == newIndexB.y) { //horizontal transformation
-            if(newIndexA.x < newIndexB.x) m_TransformationStack.push_back({TransformationType::TranslatePosX, fractalA->GetIndex(), fractalA->GetSize()});
-            else m_TransformationStack.push_back({TransformationType::TranslateNegX, fractalA->GetIndex(), fractalA->GetSize()});
+            if(newIndexA.x < newIndexB.x) m_TransformationStack.push_back({TransformationType::TranslatePosX, {fractalA->GetSize(), fractalA->GetIndex()}});
+            else m_TransformationStack.push_back({TransformationType::TranslateNegX, {fractalA->GetSize(), fractalA->GetIndex()}});
         }else{ //vertical transformation
-            if(newIndexA.y < newIndexB.y) m_TransformationStack.push_back({TransformationType::TranslatePosY, fractalA->GetIndex(), fractalA->GetSize()});
-            else m_TransformationStack.push_back({TransformationType::TranslateNegY, fractalA->GetIndex(), fractalA->GetSize()});
+            if(newIndexA.y < newIndexB.y) m_TransformationStack.push_back({TransformationType::TranslatePosY, {fractalA->GetSize(), fractalA->GetIndex()}});
+            else m_TransformationStack.push_back({TransformationType::TranslateNegY, {fractalA->GetSize(), fractalA->GetIndex()}});
         }
 
         fractalA->WriteData(g_Data, GetSetIndex(), GetIndex());
@@ -417,28 +431,28 @@ namespace sqs {
 
     void Puzzle::RotateFractalCW(Fractal* fractal) {
         fractal->RotateBy(-1.5708);
-        m_TransformationStack.push_back({TransformationType::RotateCCW, fractal->GetIndex(), fractal->GetSize()});
+        m_TransformationStack.push_back({TransformationType::RotateCCW, {fractal->GetSize(), fractal->GetIndex()}});
 
         fractal->WriteData(g_Data, GetSetIndex(), GetIndex());
     }
 
     void Puzzle::RotateFractalCCW(Fractal* fractal) {
         fractal->RotateBy(1.5708);
-        m_TransformationStack.push_back({TransformationType::RotateCW, fractal->GetIndex(), fractal->GetSize()});
+        m_TransformationStack.push_back({TransformationType::RotateCW, {fractal->GetSize(), fractal->GetIndex()}});
 
         fractal->WriteData(g_Data, GetSetIndex(), GetIndex());
     }
 
     void Puzzle::ReflectFractalX(Fractal* fractal) {
         fractal->ScaleTo({1.0f, -1.0f});
-        m_TransformationStack.push_back({TransformationType::ReflectX, fractal->GetIndex(), fractal->GetSize()});
+        m_TransformationStack.push_back({TransformationType::ReflectX, {fractal->GetSize(), fractal->GetIndex()}});
 
         fractal->WriteData(g_Data, GetSetIndex(), GetIndex());
     }
 
     void Puzzle::ReflectFractalY(Fractal* fractal) {
         fractal->ScaleTo({-1.0f, 1.0f});
-        m_TransformationStack.push_back({TransformationType::ReflectY, fractal->GetIndex(), fractal->GetSize()});
+        m_TransformationStack.push_back({TransformationType::ReflectY, {fractal->GetSize(), fractal->GetIndex()}});
 
         fractal->WriteData(g_Data, GetSetIndex(), GetIndex());
     }
@@ -448,10 +462,10 @@ namespace sqs {
 
         struct TransformationData tData = m_TransformationStack.back();
 
-        Fractal* f = GetFractalWithIndex(tData.fractalIndex);
+        Fractal* f = GetFractalWithIndex(tData.fractalData.index);
 
         //temp: should only undo transformation after making sure fractal sizes are matching/correct
-        if(tData.fractalSize != f->GetSize()) return;
+        if(tData.fractalData.size != f->GetSize()) return;
 
         Fractal* otherF;
         glm::ivec2 index = f->GetIndex();
