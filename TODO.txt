@@ -2,31 +2,48 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
     PITCH: An application teaching goemetric transformations using puzzles, but the app itself is a puzzle the user must explore to unravel
 
-        Idea: Instead of having menu buttons, make each puzzleset a cluster of four puzzles in a roughly square shape
-            have a central square be the back button.  The central button also displays which puzzle is already complete
-            since the puzzleset is so small, player can access any puzzle within 2 commands (1 command for adjacent puzzles)
+            design issues: how do I want puzzles to connect to puzzlesets?  And how will puzzlesets connect to the application in general?
+                a good sentence in a novel needs to provide information about character, plot, or setting (or all three)
+                a good interactive application needs to provide information about 
+                    1. ruleset of the world (transformations, essentially) and how making squares of same color clear that puzzle
+                    2. how the ruleset integrates the world ....
+                        each set is composed of 4(?) puzzles
+                        the world is composed of clusters of 4 sets???
+                    3. ...
 
-            or have player move puzzles similar to how they move the fractals
+                look at notebook for design notes
+                    the puzzle interaction needs to be clarified and fleshed out ( main problem is I don't like solving puzzles in 3 dimensions)
+                        solving in 3 dimensions requires too much input to see all possibilities, whereas for 2-d puzzles all the information
+                        can be present on screen at one time.  In real life this is less of a problem since rotating a rubrik's cube with 
+                        your hands is significantly easier than doing the same on a digital screen (due to the simple fact that we use our hands
+                        on a daily basis and only use my application / mouse and keyboard for limited time a day)
 
-            Instead of connecting colors to make lines, connect colors to make squares
-                can have some colored squares stationary as a guide to player
+                        The third dimension is more useful for exploration / building atmosphere than to solve complex puzzles (at least with the current 
+                            limitations in user input - touchscreen, mouse, keyboard)  That will change once VR tech becomes more commonplace and advanced
+
+                        -solving fractal puzzles is mostly clear (connecting colored line segments across surface of a square)
+                        -solving cube faces puzzle is fuzzy (connecting colored line segments wrapped around 6 surfaces of a cube, but requires 3-d motion????)
+                        -solving 8 cubes puzzles for tesseract if very fuzzy (I don't know how I want to do this)
+
 
     THE BIG THREE:
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
 
-            test on 4x4 fractal sizes 
+            look at Fractal::FindOverlapType(...) and Puzzle::SplitOverlappingWith(...) 
 
-            implement splitting the bare minimum to allow and undo; don't split a 4x4 into 1x1s - only split into 2x2 or 1x1 for the quadrants that require it
+            test on 4x4 fractals with undo using bare minimum resizing - not working correctly (where is it failing?)
+                not splitting up 4x4 (or it's splitting but not animating)
+                trace what is happening using std::cout 
 
-            test on 4x4 fractals with undo
 
-            Implement InputQueue, with a similar format to the command queue,
-                If the player inputs while animation is playing, save the input type (including the x and y)
-                Once the current animation is done playing, trigger the next AddCommand(...) by using the queued inputs
+            saving Undo data
+
+            puzzle clear and puzzleset clear
 
         1. Save/load system - SDL_GetPrefPath
 
             save and load undo stacks
+
 
         2. Audio - FMOD
             Sound is playing on translate up 

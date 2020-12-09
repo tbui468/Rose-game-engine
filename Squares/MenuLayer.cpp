@@ -62,7 +62,7 @@ namespace sqs {
 
         //WritePuzzleData(m_UserDataPath, g_Data);
 
-        ReadPuzzleData(m_UserDataPath, g_Data);
+//        ReadPuzzleData(m_UserDataPath, g_Data); //temp disabling to test new puzzles
 
         //CopyPuzzleData(g_Data, g_DefaultData);
 
@@ -349,8 +349,6 @@ namespace sqs {
 
         }
 
-
-
         Fractal* fractalA = puzzle->GetFractalWithIndex(td.fractalData.index); 
         std::vector<Fractal*> splitA;
 
@@ -415,11 +413,13 @@ namespace sqs {
         AddCommand({CommandType::UndoLastTransformation, nullptr, puzzle, nullptr});
     }
 
+
     void MenuLayer::UndoLastTransformation(Puzzle* puzzle) {
         puzzle->UndoLastTransformation();
         WritePuzzleData(m_UserDataPath, g_Data);
         SetAnimationStart();
     }
+
 
     bool MenuLayer::Update(double deltaTime, const std::array<bool, rose::g_MaxKeys>& keys, const std::array<bool, rose::g_MaxMouseButtons>& mouseKeys, 
             const glm::vec2& mouse) {

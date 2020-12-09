@@ -124,12 +124,14 @@ namespace sqs {
         }
     }
 
+
     Fractal* Puzzle::GetFractalContaining(const glm::ivec2& index) const {
         for(Fractal* f: m_Fractals) {
             if(f->Contains(index)) return f;
         }
         return nullptr;
     }
+
 
     Fractal* Puzzle::GetFractalWithIndex(const glm::ivec2& index) const {
         for(Fractal* f: m_Fractals) {
@@ -138,35 +140,73 @@ namespace sqs {
         return nullptr;
     }
 
+
     std::vector<Fractal*> Puzzle::SplitOverlappingWith(FractalData fractalData) {
 
+        //finding all fractals that overlap the given fractal data
         std::vector<Fractal*> overlappingFractals;
+        std::vector<Fractal*> allSplitFractals;
 
         for(Fractal* f: m_Fractals) {
-            bool contains = false;
 
-            for(int row = fractalData.index.y; row < fractalData.index.y + fractalData.size; ++row) {
-                for(int col = fractalData.index.x; col < fractalData.index.x + fractalData.size; ++col) {
-                    if(f->Contains({col, row})) {
-                        overlappingFractals.push_back(f);
-                        contains = true;
-                    }
-                    if(contains) break;
-                }
-                if(contains) break;
+            OverlapType type = Fractal::FindOverlapType({f->GetSize(), f->GetIndex()}, fractalData);
+
+            switch(type) {
+                case OverlapType::None:
+                    break;
+                case OverlapType::Equal:
+                    allSplitFractals.push_back(f);
+                    return allSplitFractals;
+                    break;
+                case OverlapType::Within:
+                    allSplitFractals.push_back(f);
+                    break;
+                case OverlapType::Enclose:
+                    overlappingFractals.push_back(f);
+                    break;
+                case OverlapType::Partial:
+                    overlappingFractals.push_back(f);
+                    break;
             }
         }
 
-        //split all fractals overlapping fractalData into 1x1 (temp - should split bare minimum to satisfy undo requirements)
-        std::vector<Fractal*> allSplitFractals;
 
+        //all fractals with no intersections are already filtered out above
         for(Fractal* f: overlappingFractals) {
             std::vector<FractalData> fData;
 
-            for(int row = f->GetIndex().y; row < f->GetIndex().y + f->GetSize(); ++row) {
-                for(int col = f->GetIndex().x; col < f->GetIndex().x + f->GetSize(); ++col) {
-                    fData.push_back({1, {col, row}}); //splitting all fractals into 1x1 by pushing size 1 data
-                }
+            int size = f->GetSize();
+            glm::ivec2 index = f->GetIndex();
+
+            switch(size) {
+                case 1:
+                    fData.push_back({1, f->GetIndex()}); 
+                    break;
+                case 2:
+                    fData.push_back({1, index}); 
+                    fData.push_back({1, {index.x + 1, index.y}}); 
+                    fData.push_back({1, {index.x, index.y + 1}}); 
+                    fData.push_back({1, {index.x + 1, index.y + 1}}); 
+                    break;
+                case 4:
+                    FractalData fdArr[4];
+                    fdArr[0] = {2, index};
+                    fdArr[1] = {2, {index.x + 2, index.y}};
+                    fdArr[2] = {2, {index.x, index.y + 2}};
+                    fdArr[3] = {2, {index.x + 2, index.y + 2}};
+                    for(int i = 0; i < 4; ++i) {
+                        OverlapType type = Fractal::FindOverlapType(fdArr[i], fractalData);
+                        if(type == OverlapType::None || type == OverlapType::Equal || type == OverlapType::Within) { //2x2 fractal doesn't need to be split anymore
+                            fData.push_back(fdArr[i]);
+                        }else{ //need to split 2x2 further into 1x1s
+                            glm::ivec2 fdIndex = fdArr[i].index; 
+                            fData.push_back({1, fdIndex}); 
+                            fData.push_back({1, {fdIndex.x + 1, fdIndex.y}}); 
+                            fData.push_back({1, {fdIndex.x, fdIndex.y + 1}}); 
+                            fData.push_back({1, {fdIndex.x + 1, fdIndex.y + 1}}); 
+                        }
+                    }
+                    break;
             }
 
             for(Fractal* f: SplitFractal(f, fData)) allSplitFractals.push_back(f);
@@ -174,6 +214,7 @@ namespace sqs {
 
         return allSplitFractals;
     }
+
 
     std::vector<Fractal*> Puzzle::SplitFractal(Fractal* fractal, const std::vector<FractalData>& fractalData) {
 

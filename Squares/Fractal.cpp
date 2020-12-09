@@ -6,6 +6,7 @@ namespace sqs {
     Fractal::Fractal(const std::vector<FractalElement>& elements, const glm::ivec2& index, const glm::vec2& coords, int puzzleIndex):
         Fractal(MakeEntityData(elements, index, coords, puzzleIndex), elements, index, puzzleIndex) {}
 
+
     Fractal::Fractal(rose::EntityData e, const std::vector<FractalElement>& elements, const glm::ivec2& index, int puzzleIndex)
         : Entity(e.sprite, e.size, e.boundingBox, e.position), m_PuzzleIndex(puzzleIndex) {
             m_Elements = elements;
@@ -18,6 +19,34 @@ namespace sqs {
             }
         }
 
+
+    //return type is read as follows:
+    //f1 is Within f2 (f2 is larger)
+    //f1 Partially overlaps f2 (and vice versa)
+    //f1 Encloses f2 (f1 is larger)
+    //f1 is Equal to f2 (f1 and f2 are equal in size and have same index)
+    OverlapType Fractal::FindOverlapType(FractalData f1, FractalData f2) {
+
+        if(f1.size == f2.size && f1.index.x == f2.index.x && f1.index.y == f2.index.y) return OverlapType::Equal;
+
+        //check if f1 is fully inside f2
+        bool f1InsideX = f1.index.x >= f2.index.x && f1.index.x + f1.size <= f2.index.x + f2.size;
+        bool f1InsideY = f1.index.y >= f2.index.y && f1.index.y + f1.size <= f2.index.y + f2.size;
+        if(f1InsideX && f1InsideY) return OverlapType::Within;
+
+        //check if f2 is fully inside f1
+        bool f2InsideX = f2.index.x >= f1.index.x && f2.index.x + f2.size <= f1.index.x + f1.size;
+        bool f2InsideY = f2.index.y >= f1.index.y && f2.index.y + f2.size <= f1.index.y + f1.size;
+        if(f2InsideX && f2InsideY) return OverlapType::Enclose;
+
+        bool noXOverlap = f1.index.x + f1.size <= f2.index.x || f2.index.x + f2.size <= f1.index.x;
+        bool noYOverlap = f1.index.y + f1.size <= f2.index.y || f2.index.y + f2.size <= f1.index.y;
+
+        if(noXOverlap && noYOverlap) return OverlapType::None;
+
+        return OverlapType::Partial;
+
+    }
 
     bool Fractal::Contains(const glm::ivec2& index) const {
         if(index.x < GetIndex().x) return false;

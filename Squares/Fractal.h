@@ -6,6 +6,14 @@
 
 namespace sqs {
 
+    enum class OverlapType {
+        None = 0, //
+        Within, //proper subset
+        Partial,
+        Enclose, //fractal is larger and encloses other fractal
+        Equal
+    };
+
 
     class Fractal: public rose::Entity {
         public:
@@ -15,7 +23,7 @@ namespace sqs {
             FractalElement GetSubElement(const glm::ivec2& index) const;
             glm::ivec2 GetIndex() const { return m_Index; }
             void SetIndex(const glm::ivec2& index) { m_Index = index; }
-            bool Contains(const glm::ivec2& index) const;
+            bool Contains(const glm::ivec2& index) const; //todo: replace all calls to this with static version using fractal data
             void WriteData(std::vector<PuzzleSetData>& data, int setIndex, int puzzleIndex) const;
         public:
             virtual void RotateBy(float angle) override;
@@ -30,6 +38,7 @@ namespace sqs {
             static glm::vec2 GetCoordsForTarget(const glm::ivec2& index, int size, const glm::ivec2& targetIndex, int targetSize, 
                                                 const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos);
             static glm::vec2 GetCoords(const glm::ivec2& index, int size, const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos);
+            static OverlapType FindOverlapType(FractalData f1, FractalData f2); //com
         private:
             Fractal(rose::EntityData e, const std::vector<FractalElement>& elements, const glm::ivec2& index, int puzzleIndex);
             int GetPuzzleIndex() const { return m_PuzzleIndex; }
