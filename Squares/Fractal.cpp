@@ -34,7 +34,7 @@ namespace sqs {
         bool f1InsideY = f1.index.y >= f2.index.y && f1.index.y + f1.size <= f2.index.y + f2.size;
         if(f1InsideX && f1InsideY) return OverlapType::Within;
 
-        //check if f2 is fully inside f1
+        //check if f2 is fully inside f1 (should split)
         bool f2InsideX = f2.index.x >= f1.index.x && f2.index.x + f2.size <= f1.index.x + f1.size;
         bool f2InsideY = f2.index.y >= f1.index.y && f2.index.y + f2.size <= f1.index.y + f1.size;
         if(f2InsideX && f2InsideY) return OverlapType::Enclose;
@@ -42,9 +42,9 @@ namespace sqs {
         bool noXOverlap = f1.index.x + f1.size <= f2.index.x || f2.index.x + f2.size <= f1.index.x;
         bool noYOverlap = f1.index.y + f1.size <= f2.index.y || f2.index.y + f2.size <= f1.index.y;
 
-        if(noXOverlap && noYOverlap) return OverlapType::None;
+        if(noXOverlap || noYOverlap) return OverlapType::None;
 
-        return OverlapType::Partial;
+        return OverlapType::Partial; //should split
 
     }
 

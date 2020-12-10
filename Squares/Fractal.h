@@ -38,7 +38,7 @@ namespace sqs {
             static glm::vec2 GetCoordsForTarget(const glm::ivec2& index, int size, const glm::ivec2& targetIndex, int targetSize, 
                                                 const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos);
             static glm::vec2 GetCoords(const glm::ivec2& index, int size, const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos);
-            static OverlapType FindOverlapType(FractalData f1, FractalData f2); //com
+            static OverlapType FindOverlapType(FractalData f1, FractalData f2); 
         private:
             Fractal(rose::EntityData e, const std::vector<FractalElement>& elements, const glm::ivec2& index, int puzzleIndex);
             int GetPuzzleIndex() const { return m_PuzzleIndex; }

@@ -46,7 +46,7 @@ namespace sqs {
         public: //fractal transformations
             std::vector<Fractal*> SplitOverlappingWith(FractalData fractalData);
             std::vector<Fractal*> SplitFractal(Fractal* fractal, const std::vector<FractalData>& fractalData);
-            void MergeFractals(std::vector<Fractal*> mergeList);
+            void MergeFractals(FractalData data);
             void SwapFractals(Fractal* fractalA, Fractal* fractalB);
             void RotateFractalCW(Fractal* fractal);
             void RotateFractalCCW(Fractal* fractal);
@@ -57,14 +57,13 @@ namespace sqs {
             int GetMaxTransformations() const { return m_MaxTransformations; }
             int GetTransformationCount() const { return m_TransformationStack.size(); }
         private:
-            Fractal* CreateFromMergeList(const std::vector<Fractal*>& mergeList);
-        private:
             const int m_Index;
             const int m_SetIndex;
             glm::ivec2 m_Dimensions;  //cached this for now
             std::vector<Fractal*> m_Fractals;
             //        FractalCorners m_FractalCorners {nullptr, nullptr, nullptr, nullptr}; //replace this with a list of lists called m_MergeList
-            std::vector<std::vector<Fractal*>> m_MergeLists; //CreateFromMergeList() should be called in OnAnimationEnd() and then the list cleared
+            //std::vector<std::vector<Fractal*>> m_MergeLists; //CreateFromMergeList() should be called in OnAnimationEnd() and then the list cleared
+            std::vector<FractalData> m_MergeList; //just put in data of fractal to create at end of merge, iterate through fractals and destroy those contained inside 
             bool m_IsOpen {false};
             int m_MaxTransformations {0};
             std::vector<TransformationData> m_TransformationStack;

@@ -292,10 +292,7 @@ namespace sqs {
         fc.BottomRight->MoveTo(BRCoords);
 
         //could put assert into merge fractals to make sure they all form a large fractal of correct dimensions (1,2 or 4)
-        puzzle->MergeFractals({fc.TopLeft, 
-                fc.TopRight,
-                fc.BottomLeft,
-                fc.BottomRight});
+        puzzle->MergeFractals({fc.TopLeft->GetSize() * 2, fc.TopLeft->GetIndex()});
         SetAnimationStart();
     }
 
@@ -313,8 +310,10 @@ namespace sqs {
         FractalData fractalDataB;
         fractalDataB.size = td.fractalData.size;
 
-        if(td.transformation == TransformationType::TranslatePosX || td.transformation == TransformationType::TranslateNegX ||
-           td.transformation == TransformationType::TranslatePosY || td.transformation == TransformationType::TranslateNegY) {
+        bool isTranslation = td.transformation == TransformationType::TranslatePosX || td.transformation == TransformationType::TranslateNegX ||
+                             td.transformation == TransformationType::TranslatePosY || td.transformation == TransformationType::TranslateNegY;
+
+        if(isTranslation) {
 
             Fractal* fractalB = nullptr;
 
@@ -375,7 +374,7 @@ namespace sqs {
                     if(f->Contains({col + fractalDataA.index.x, row + fractalDataA.index.y})) {
                         mergeListA.push_back(f);
                         contains = true;
-                    }else if(f->Contains({col + fractalDataB.index.x, row + fractalDataB.index.y})) {
+                    }else if(isTranslation && f->Contains({col + fractalDataB.index.x, row + fractalDataB.index.y})) {
                         mergeListB.push_back(f);
                         contains = true;
                     }
@@ -386,26 +385,32 @@ namespace sqs {
             if(!contains) noMergeList.push_back(f);
         }
 
-        if(mergeListA.size() > 0) puzzle->MergeFractals(mergeListA);
-        if(mergeListB.size() > 0) puzzle->MergeFractals(mergeListB);
+        if(mergeListA.size() > 0) puzzle->MergeFractals(fractalDataA);
+        if(mergeListB.size() > 0) puzzle->MergeFractals(fractalDataB);
 
         /////////////////////////////////MoveTo() on all fractals split (and merged) to proper place ////////////////////////////
+        std::cout << "MergeList A" << std::endl;
         for(Fractal* f: mergeListA) {
             glm::vec2 coords = Fractal::GetCoordsForTarget(f->GetIndex(), f->GetSize(), fractalDataA.index, fractalDataA.size,
                     puzzle->GetDimensions(), {puzzle->x(), puzzle->y()});
             f->MoveTo(coords);
+            std::cout << f->GetIndex().x << ", " << f->GetIndex().y << std::endl;
         }
 
+        std::cout << "MergeList B" << std::endl;
         for(Fractal* f: mergeListB) {
             glm::vec2 coords = Fractal::GetCoordsForTarget(f->GetIndex(), f->GetSize(), fractalDataB.index, fractalDataB.size,
                     puzzle->GetDimensions(), {puzzle->x(), puzzle->y()});
             f->MoveTo(coords);
+            std::cout << f->GetIndex().x << ", " << f->GetIndex().y << std::endl;
         }
 
+        std::cout << "Regular fractal coords" << std::endl;
         //move to using regular coords
         for(Fractal* f: noMergeList) {
             glm::vec2 coords = Fractal::GetCoords(f->GetIndex(), f->GetSize(), puzzle->GetDimensions(), {puzzle->x(), puzzle->y()});
             f->MoveTo(coords);
+            std::cout << f->GetIndex().x << ", " << f->GetIndex().y << std::endl;
         }
 
 
