@@ -6,6 +6,7 @@ namespace sqs {
     Fractal::Fractal(const std::vector<FractalElement>& elements, const glm::ivec2& index, const glm::vec2& coords, int puzzleIndex):
         Fractal(MakeEntityData(elements, index, coords, puzzleIndex), elements, index, puzzleIndex) {}
 
+
     Fractal::Fractal(rose::EntityData e, const std::vector<FractalElement>& elements, const glm::ivec2& index, int puzzleIndex)
         : Entity(e.sprite, e.size, e.boundingBox, e.position), m_PuzzleIndex(puzzleIndex) {
             m_Elements = elements;
@@ -18,6 +19,34 @@ namespace sqs {
             }
         }
 
+
+    //return type is read as follows:
+    //f1 is Within f2 (f2 is larger)
+    //f1 Partially overlaps f2 (and vice versa)
+    //f1 Encloses f2 (f1 is larger)
+    //f1 is Equal to f2 (f1 and f2 are equal in size and have same index)
+    OverlapType Fractal::FindOverlapType(FractalData f1, FractalData f2) {
+
+        if(f1.size == f2.size && f1.index.x == f2.index.x && f1.index.y == f2.index.y) return OverlapType::Equal;
+
+        //check if f1 is fully inside f2
+        bool f1InsideX = f1.index.x >= f2.index.x && f1.index.x + f1.size <= f2.index.x + f2.size;
+        bool f1InsideY = f1.index.y >= f2.index.y && f1.index.y + f1.size <= f2.index.y + f2.size;
+        if(f1InsideX && f1InsideY) return OverlapType::Within;
+
+        //check if f2 is fully inside f1 (should split)
+        bool f2InsideX = f2.index.x >= f1.index.x && f2.index.x + f2.size <= f1.index.x + f1.size;
+        bool f2InsideY = f2.index.y >= f1.index.y && f2.index.y + f2.size <= f1.index.y + f1.size;
+        if(f2InsideX && f2InsideY) return OverlapType::Enclose;
+
+        bool noXOverlap = f1.index.x + f1.size <= f2.index.x || f2.index.x + f2.size <= f1.index.x;
+        bool noYOverlap = f1.index.y + f1.size <= f2.index.y || f2.index.y + f2.size <= f1.index.y;
+
+        if(noXOverlap || noYOverlap) return OverlapType::None;
+
+        return OverlapType::Partial; //should split
+
+    }
 
     bool Fractal::Contains(const glm::ivec2& index) const {
         if(index.x < GetIndex().x) return false;
@@ -41,6 +70,16 @@ namespace sqs {
         }
 
         return elements;
+    }
+
+    void Fractal::WriteData(std::vector<PuzzleSetData>& data, int setIndex, int puzzleIndex) const {
+        int width = data.at(setIndex).puzzlesData.at(puzzleIndex).dimensions.x;
+
+        for(int row = 0; row < GetSize(); ++row) {
+            for(int col = 0; col < GetSize(); ++col) {
+                data.at(setIndex).puzzlesData.at(puzzleIndex).elements.at((GetIndex().y + row) * width + GetIndex().x + col) = GetSubElement({col, row});
+            }
+        }
     }
 
     void Fractal::RotateBy(float angle) {
@@ -229,7 +268,7 @@ namespace sqs {
         if(rose::PointInRectangle({m_Pos.x + hWidth, m_Pos.y + hHeight}, cornerBox, point)) return rose::Corner::TopRight;
         if(rose::PointInRectangle({m_Pos.x - hWidth, m_Pos.y - hHeight}, cornerBox, point)) return rose::Corner::BottomLeft;
         if(rose::PointInRectangle({m_Pos.x + hWidth, m_Pos.y - hHeight}, cornerBox, point)) return rose::Corner::BottomRight;
-        //base off of UnitMargin() and m_BoundingBox
+        //base off of s_UnitMargin and m_BoundingBox
         //rose::PointInRectangle(start, end, point)
         return rose::Corner::None;
     }
@@ -252,8 +291,8 @@ namespace sqs {
         UpdateTextureData(elements, index, puzzleIndex);
 
         int size = sqrt(elements.size() + 1);
-        float fWidth = UnitSize() * size;
-        float fHeight = UnitSize() * size;
+        float fWidth = s_UnitSize * size;
+        float fHeight = s_UnitSize * size;
 
         glm::ivec2 texStart = GetTextureStart(index, puzzleIndex);
 
@@ -261,7 +300,7 @@ namespace sqs {
         glm::vec4 boundingBox = glm::vec4(0.0f, 0.0f, fWidth, fHeight);
         rose::EntityData e;
 
-        e.sprite = { {texStart.x, texStart.y - (size - 1) * UnitSize()}, {fWidth, fHeight}, rose::TextureType::Custom };
+        e.sprite = { {texStart.x, texStart.y - (size - 1) * s_UnitSize}, {fWidth, fHeight}, rose::TextureType::Custom };
         e.size = entitySize;
         e.boundingBox = boundingBox;
         e.position = pos;
@@ -272,14 +311,14 @@ namespace sqs {
 
     void Fractal::UpdateSprite() {
         int size = GetSize();
-        float fWidth = UnitSize() * size;
-        float fHeight = UnitSize() * size;
+        float fWidth = s_UnitSize * size;
+        float fHeight = s_UnitSize * size;
 
 
         glm::ivec2 texStart = GetTextureStart(GetIndex(), GetPuzzleIndex());
 
 
-        rose::Sprite sprite = { {texStart.x, texStart.y - (size - 1) * UnitSize()}, {fWidth, fHeight}, rose::TextureType::Custom };
+        rose::Sprite sprite = { {texStart.x, texStart.y - (size - 1) * s_UnitSize}, {fWidth, fHeight}, rose::TextureType::Custom };
         Entity::SetSprite(sprite);
     }
 
@@ -287,8 +326,8 @@ namespace sqs {
     void Fractal::UpdateTextureData(const std::vector<FractalElement>& elements, const glm::ivec2& index, int puzzleNumber) {
         int size = sqrt(elements.size() + 1);
 
-        float fWidth = UnitSize() * size;
-        float fHeight = UnitSize() * size;
+        float fWidth = s_UnitSize * size;
+        float fHeight = s_UnitSize * size;
 
         //textures start from bottom left, but starting textures from top left to fit fractal order (left to right, top to bottom)
         glm::ivec2 texStart = GetTextureStart(index, puzzleNumber);
@@ -297,23 +336,23 @@ namespace sqs {
 
         for(int row = 0; row < size; ++row) {
             for(int col = 0; col < size; ++col) {
-                texMapping.push_back({{texStart.x + col * UnitSize(), texStart.y - row * UnitSize()}, {0, 0}, {UnitSize(), UnitSize()}}); //fractal frame
+                texMapping.push_back({{texStart.x + col * s_UnitSize, texStart.y - row * s_UnitSize}, {0, 0}, {s_UnitSize, s_UnitSize}}); //fractal frame
 
                 //elements are drawn inside fractal frame, so start point is offset by 1 and side length is reduced by 2 in each dimension
                 FractalElement element = elements.at(row * size + col);
 
                 switch(element) {
                     case 'r':
-                        texMapping.push_back({{texStart.x + col * UnitSize() + 1, texStart.y - row * UnitSize() + 1}, 
-                                {UnitSize() + 1, 1}, {UnitSize() - 2, UnitSize() - 2}});
+                        texMapping.push_back({{texStart.x + col * s_UnitSize + 1, texStart.y - row * s_UnitSize + 1}, 
+                                {s_UnitSize + 1, 1}, {s_UnitSize - 2, s_UnitSize - 2}});
                         break;
                     case 'b':
-                        texMapping.push_back({{texStart.x + col * UnitSize() + 1, texStart.y - row * UnitSize() + 1}, 
-                                {UnitSize() + 1, UnitSize() + 1}, {UnitSize() - 2, UnitSize() - 2}});
+                        texMapping.push_back({{texStart.x + col * s_UnitSize + 1, texStart.y - row * s_UnitSize + 1}, 
+                                {s_UnitSize + 1, s_UnitSize + 1}, {s_UnitSize - 2, s_UnitSize - 2}});
                         break;
                     case 'g':
-                        texMapping.push_back({{texStart.x + col * UnitSize() + 1, texStart.y - row * UnitSize() + 1}, 
-                                {UnitSize() + 1, UnitSize() * 2 + 1}, {UnitSize() - 2, UnitSize() - 2}});
+                        texMapping.push_back({{texStart.x + col * s_UnitSize + 1, texStart.y - row * s_UnitSize + 1}, 
+                                {s_UnitSize + 1, s_UnitSize * 2 + 1}, {s_UnitSize - 2, s_UnitSize - 2}});
                         break;
                 }
             }
@@ -324,7 +363,7 @@ namespace sqs {
 
 
     glm::ivec2 Fractal::GetTextureStart(const glm::ivec2& index, int puzzleNumber) {
-        return glm::ivec2(index.x * UnitSize() + puzzleNumber * 256, 256 - (index.y + 1) * UnitSize()); 
+        return glm::ivec2(index.x * s_UnitSize + puzzleNumber * 256, 256 - (index.y + 1) * s_UnitSize); 
     }
 
 
@@ -332,22 +371,22 @@ namespace sqs {
             const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos) {
         glm::vec2 targetCenter = GetCoords(targetIndex, targetSize, puzzleDim, puzzlePos);
 
-        float targetHalfWidth = size * UnitSize() * (targetSize / size - 1) * 0.5f; //distance between centers of the fractals on left/right edges (or top/bottom)
+        float targetHalfWidth = size * s_UnitSize * (targetSize / size - 1) * 0.5f; //distance between centers of the fractals on left/right edges (or top/bottom)
 
         glm::vec2 targetTopLeft = glm::vec2(targetCenter.x - targetHalfWidth, targetCenter.y + targetHalfWidth); //center of top left fractal
 
         //using target center, start from targetIndex location and 
         glm::ivec2 relativeIndex = glm::ivec2(index.x - targetIndex.x, index.y - targetIndex.y);
-        return glm::vec2(targetTopLeft.x + relativeIndex.x * UnitSize(), targetTopLeft.y - relativeIndex.y * UnitSize());
+        return glm::vec2(targetTopLeft.x + relativeIndex.x * s_UnitSize, targetTopLeft.y - relativeIndex.y * s_UnitSize);
     }
 
     glm::vec2 Fractal::GetCoords(const glm::ivec2& index, int size, const glm::ivec2& puzzleDim, const glm::vec2& puzzlePos) {
-        float puzzleWidth = (puzzleDim.x - 1) * (UnitSize() + UnitMargin()); //this gives us width/height if all fractals are 1x1
-        float puzzleHeight = (puzzleDim.y - 1) * (UnitSize() + UnitMargin());
+        float puzzleWidth = (puzzleDim.x - 1) * (s_UnitSize + s_UnitMargin); //this gives us width/height if all fractals are 1x1
+        float puzzleHeight = (puzzleDim.y - 1) * (s_UnitSize + s_UnitMargin);
         glm::vec2 topLeftGrid = glm::vec2(puzzlePos.x - puzzleWidth / 2.0f, puzzlePos.y + puzzleHeight/ 2.0f); //this gives center of topleft fractal
-        glm::vec2 topLeftFractal = glm::vec2(topLeftGrid.x + index.x * (UnitSize() + UnitMargin()), 
-                topLeftGrid.y - index.y * (UnitSize() + UnitMargin()));
-        float fractalWidth = (size - 1) * (UnitSize() + UnitMargin());
+        glm::vec2 topLeftFractal = glm::vec2(topLeftGrid.x + index.x * (s_UnitSize + s_UnitMargin), 
+                topLeftGrid.y - index.y * (s_UnitSize + s_UnitMargin));
+        float fractalWidth = (size - 1) * (s_UnitSize + s_UnitMargin);
         return glm::vec2(topLeftFractal.x + fractalWidth / 2.0f, topLeftFractal.y - fractalWidth / 2.0f);
     }
 

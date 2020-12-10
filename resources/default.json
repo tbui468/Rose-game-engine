@@ -1,7 +1,6 @@
 {
     "PuzzleSets": [
     {
-        "Index": 0,
         "Puzzles": [
             {
                 "Width": 2,
@@ -20,7 +19,6 @@
         ]
     },
     {
-        "Index": 1,
         "Puzzles": [
             {
                 "Width": 2,
@@ -39,7 +37,6 @@
         ]
     },
     {
-        "Index": 2,
         "Puzzles": [
             {
                 "Width": 4,

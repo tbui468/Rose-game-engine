@@ -5,12 +5,10 @@
 #include "Fractal.h"
 #include "PuzzleSet.h"
 #include "Puzzle.h"
+#include "Button.h"
+#include "Data.h"
 
 namespace sqs {
-
-    class Button;
-
-
 
     enum class CommandType {
         None,
@@ -22,7 +20,7 @@ namespace sqs {
         SplitFractal,
         FormFractal,
         UndoResizeFractals,
-        UndoTransformation 
+        UndoLastTransformation 
     };
 
 
@@ -54,9 +52,12 @@ namespace sqs {
             void SplitFractal(Puzzle* puzzle, Fractal* fractal);
             void FormFractal(Puzzle* puzzle, FractalCorners fc);
             void UndoResizeFractals(Puzzle* puzzle); 
-            void UndoTransformation(Puzzle* puzzle);
+            void UndoLastTransformation(Puzzle* puzzle);
         private:
-            void LoadPuzzleData(const std::string& path, std::vector<PuzzleSetData>* puzzleSetList);
+            //void ReadPuzzleData(const std::string& path, std::vector<PuzzleSetData>* puzzleSetList);
+            void ReadPuzzleData(const std::string& path, std::vector<PuzzleSetData>& data);
+            void WritePuzzleData(const std::string& path, const std::vector<PuzzleSetData>& data); 
+            void CopyPuzzleData(std::vector<PuzzleSetData>& data, const std::vector<PuzzleSetData>& defaultData);
         private:
             Button* m_QuitButton;
             Button* m_StartButton;
@@ -75,9 +76,10 @@ namespace sqs {
             float m_BottomEdge {-135.0f};
             std::vector<CommandData> m_CommandQueue; //vector of MenuLayer function pointers with void return and void (none) parameters
 
-            //processing raw inputs 
             glm::vec2 m_DownMouseCoords {0.0f, 0.0f};
             glm::vec2 m_UpMouseCoords {0.0f, 0.0f};
+
+            std::string m_UserDataPath {""};
     };
 
 }

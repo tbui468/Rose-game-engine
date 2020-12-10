@@ -22,6 +22,7 @@ namespace sqs {
             Puzzle(int index, int setIndex);
             virtual ~Puzzle();
             int GetIndex() const { return m_Index; }
+            int GetSetIndex() const { return m_SetIndex; } 
             bool IsOpen() const { return m_IsOpen; }
             void Open();
             void Close();
@@ -31,48 +32,48 @@ namespace sqs {
             virtual void OnAnimationEnd() override;
             virtual void OnAnimationUpdate(float t) override;
             const glm::ivec2& GetDimensions() const { return m_Dimensions; }
-        public:
-            static float GetSpacing() { return s_SPACING; }
-            static float GetInitOffset() { return s_InitOffset; }
-            static rose::Sprite GetSprite() { return s_Sprite; }
-            static glm::vec2 GetObjectSize() { return s_ObjectSize; }
-            static glm::vec4 GetBoundingBox() { return s_BoundingBox; }
+            int GetWidth() const { return m_Dimensions.x; }
+            int GetHeight() const { return m_Dimensions.y; }
+        public: 
+            static float GetSpacing() { return s_Spacing; }
         public: //fractal utility functions
             FractalCorners FindFractalCorners(float mousex, float mousey) const;
             Fractal* GetClosestFractal(float mousex, float mousey) const;
-            Fractal* GetFractal(const glm::ivec2& index) const;
+            Fractal* GetFractalContaining(const glm::ivec2& index) const;
+            Fractal* GetFractalWithIndex(const glm::ivec2& index) const;
             const std::vector<Fractal*>& GetFractals() const { return m_Fractals; }
             std::vector<Fractal*>::iterator GetFractalIterator(Fractal* fractal);
         public: //fractal transformations
+            std::vector<Fractal*> SplitOverlappingWith(FractalData fractalData);
             std::vector<Fractal*> SplitFractal(Fractal* fractal, const std::vector<FractalData>& fractalData);
-            void MergeFractals(std::vector<Fractal*> mergeList);
+            void MergeFractals(FractalData data);
             void SwapFractals(Fractal* fractalA, Fractal* fractalB);
             void RotateFractalCW(Fractal* fractal);
             void RotateFractalCCW(Fractal* fractal);
             void ReflectFractalX(Fractal* fractal);
             void ReflectFractalY(Fractal* fractal);
-            void UndoTransformation();
+            TransformationData PeekLastTransformation() const { return m_TransformationStack.back(); }
+            void UndoLastTransformation();
             int GetMaxTransformations() const { return m_MaxTransformations; }
             int GetTransformationCount() const { return m_TransformationStack.size(); }
-        private:
-            Fractal* CreateFromMergeList(const std::vector<Fractal*>& mergeList);
         private:
             const int m_Index;
             const int m_SetIndex;
             glm::ivec2 m_Dimensions;  //cached this for now
             std::vector<Fractal*> m_Fractals;
             //        FractalCorners m_FractalCorners {nullptr, nullptr, nullptr, nullptr}; //replace this with a list of lists called m_MergeList
-            std::vector<std::vector<Fractal*>> m_MergeLists; //CreateFromMergeList() should be called in OnAnimationEnd() and then the list cleared
+            //std::vector<std::vector<Fractal*>> m_MergeLists; //CreateFromMergeList() should be called in OnAnimationEnd() and then the list cleared
+            std::vector<FractalData> m_MergeList; //just put in data of fractal to create at end of merge, iterate through fractals and destroy those contained inside 
             bool m_IsOpen {false};
             int m_MaxTransformations {0};
             std::vector<TransformationData> m_TransformationStack;
             std::vector<UndoIcon*> m_UndoIcons;
         private:
-            inline static float s_SPACING {240.0f};
-            inline static float s_InitOffset {360.0f};
-            inline static rose::Sprite s_Sprite {{32, 32}, {32, 32}, rose::TextureType::Default};
-            inline static glm::vec2 s_ObjectSize {32.0f, 32.0f};
-            inline static glm::vec4 s_BoundingBox {0.0f, 0.0f, 32.0f, 32.0f};
+            inline static const float s_Spacing {240.0f};
+            inline static const float s_InitOffset {360.0f};
+            inline static const rose::Sprite s_Sprite {{32, 32}, {32, 32}, rose::TextureType::Default};
+            inline static const glm::vec2 s_ObjectSize {32.0f, 32.0f};
+            inline static const glm::vec4 s_BoundingBox {0.0f, 0.0f, 32.0f, 32.0f};
     };
 
 }

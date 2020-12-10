@@ -30,9 +30,9 @@ class PuzzleSet: public rose::Entity {
         bool m_DestroyPuzzles {false};
         const int m_Index;
     private:
-        inline static rose::Sprite s_Sprite {{0, 0}, {32, 32}, rose::TextureType::Default};
-        inline static glm::vec2 s_ObjectSize {32.0f, 32.0f};
-        inline static glm::vec4 s_BoundingBox {0.0f, 0.0f, 32.0f, 32.0f};
+        inline static const rose::Sprite s_Sprite {{0, 0}, {32, 32}, rose::TextureType::Default};
+        inline static const glm::vec2 s_ObjectSize {32.0f, 32.0f};
+        inline static const glm::vec4 s_BoundingBox {0.0f, 0.0f, 32.0f, 32.0f};
 };
 
 }

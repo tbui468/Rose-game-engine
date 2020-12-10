@@ -1,53 +1,62 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
     PITCH: An application teaching goemetric transformations using puzzles, but the app itself is a puzzle the user must explore to unravel
+    GOAL: A vertical slice of the entire game - one complete cube (with other cubes grayed out so you can use them)
 
-        Idea: Instead of having menu buttons, make each puzzleset a cluster of four puzzles in a roughly square shape
-            have a central square be the back button.  The central button also displays which puzzle is already complete
-            since the puzzleset is so small, player can access any puzzle within 2 commands (1 command for adjacent puzzles)
+            look at notebook for design notes
+                the puzzle interaction needs to be clarified and fleshed out ( main problem is I don't like solving puzzles in 3 dimensions)
+                    solving in 3 dimensions requires too much input to see all possibilities, whereas for 2-d puzzles all the information
+                    can be present on screen at one time.  In real life this is less of a problem since rotating a rubrik's cube with 
+                    your hands is significantly easier than doing the same on a digital screen (due to the simple fact that we use our hands
+                    on a daily basis and only use my application / mouse and keyboard for limited time a day)
 
-            or have player move puzzles similar to how they move the fractals
+                    The third dimension is more useful for exploration / building atmosphere than to solve complex puzzles (at least with the current 
+                        limitations in user input - touchscreen, mouse, keyboard)  That will change once VR tech becomes more commonplace and advanced
 
-            Instead of connecting colors to make lines, connect colors to make squares
-                can have some colored squares stationary as a guide to player
+                    -solving fractal puzzles is mostly clear (connecting colored line segments across surface of a square)
+                    -solving cube faces puzzle is fuzzy (connecting colored line segments wrapped around 6 surfaces of a cube, but requires 3-d motion????)
+                    -solving 8 cubes puzzles for tesseract if very fuzzy (I don't know how I want to do this)
+
 
     THE BIG THREE:
-        1. Save/load system - SDL_GetPrefPath (spend mornings on this)
+        1. ReactJS - hello world - groundwork for potential work if this app doesn't pan out- do this for Xuan and our future
+            Get a hello world react app working - get it done fast with simple tools (can see how to manually compile later)
 
-            Indices don't need to be explicitly part of the data - the order of each data set inside the corresponding list is the index
-                the puzzleset and puzzles only need a copy of their corresponding indices to set once on construction, and to 
-                use it to look up / write to g_Data
+            Typescript - hit the basics tomorrow with node.js (then do express, mongodb and then react (with typescript this time))
 
-            Write out g_Data to profile.json
+            Find two simple projects tutorials I can follow so I can get a feel for ReactJS 
+                tic-tac-toe for hello world - get it working (dont worry about learning every detail)
+                Photo gallery app from react examples for week 1 - make it and modify it
+                Book store selling app for week 2 - make it and modify it
+                personal project for week 3 - make it production ready and deploy
 
-            Read in data from profile.json to g_Data (include checks for if profile.json exists and if the data is of correct format)
+            Get a good project that I can put in portfolio by the end of the month of December
 
+        2. Test on Ubuntu virtual machine  (resume download and / or install vm)
+            install unbuntu on virtual machine
+            clone from Squares on Github
+            build and compile/link
+            run
+            need to test this on a regular basis - after version changes (whatever that means)
 
-        3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear
+        3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
 
-            Complete MenuLayer::UndoResizeFractals() - removed this function from puzzle class since it's easier to understand for now in MenuLayer
-                can re-add this function afterwards if it makes sense
+            look at code in puzzle::OnAnimationEnd()
+              there's a problem with the new MergeFractal system I implemented,
+              Merge doesn't take a list of fractal data and then construct a final fractal when that data,
+              it instead takes one fractal data, and then destroys all fractals that are contained inside of it 
+              and creates it
 
-                carefully check all conditions here - this is the most complex part of the application so far
+            test on 4x4 fractals with undo using bare minimum resizing - not working correctly (where is it failing?)
+                not splitting up 4x4 (or it's splitting but not animating)
+                trace what is happening using std::cout 
 
-            Implement InputQueue, with a similar format to the command queue,
-                If the player inputs while animation is playing, save the input type (including the x and y)
-                Once the current animation is done playing, trigger the next AddCommand(...) by using the queued inputs
-            
+            Implement non-moveable colored blocks (which are the endpoints user has to connect using transformations)
 
-        2. Audio - FMOD
-            Sound is playing on translate up 
-            Get music looping
+            Implement completing puzzles by connecting colored blocks with non-moveable colored blocks
 
-        Learn.
-            Watch Javidx9 videos or look through the code of his game engine
-                get a working program compiled with his engine, and
-                step through the code to see how he structured everything (especially the renderer and entity relationship for Draw())
+            How will this connect to the puzzlesets????
 
-            OLCGameEngine
-                application->Draw(....) is how the application draws stuff
-                I could just do Draw(entity.x, entity.y, entity.Sprite, etc) to draw
-                    but i need to be able to draw objects and entity contains too
 
 
 Set build (x86 or x64) (or should this be a build option???)
