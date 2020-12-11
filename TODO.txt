@@ -17,20 +17,12 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
                     -solving cube faces puzzle is fuzzy (connecting colored line segments wrapped around 6 surfaces of a cube, but requires 3-d motion????)
                     -solving 8 cubes puzzles for tesseract if very fuzzy (I don't know how I want to do this)
 
-
     THE BIG THREE:
-        1. ReactJS - hello world - groundwork for potential work if this app doesn't pan out- do this for Xuan and our future
-            Get a hello world react app working - get it done fast with simple tools (can see how to manually compile later)
+        1. ReactJS and/or Angular (MERN/MEAN stacks) - groundwork for stable work if this app doesn't pan out- do this for Xuan and our future
 
-            Typescript - hit the basics tomorrow with node.js (then do express, mongodb and then react (with typescript this time))
-
-            Find two simple projects tutorials I can follow so I can get a feel for ReactJS 
-                tic-tac-toe for hello world - get it working (dont worry about learning every detail)
-                Photo gallery app from react examples for week 1 - make it and modify it
-                Book store selling app for week 2 - make it and modify it
-                personal project for week 3 - make it production ready and deploy
-
-            Get a good project that I can put in portfolio by the end of the month of December
+            Get a good project that I can put in portfolio by the end of the month of December (website that looks dope)
+            Polish up the rigid body simulation 
+            Polish up the custom software 3d rasterizer
 
         2. Test on Ubuntu virtual machine  (resume download and / or install vm)
             install unbuntu on virtual machine
@@ -40,12 +32,13 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
             need to test this on a regular basis - after version changes (whatever that means)
 
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
+  
+            bug with undo still.  At one point two 1x1s swapped, but there was a fractal at swap destination that didn't dissappear...
+              so there was overlap
 
-            look at code in puzzle::OnAnimationEnd()
-              there's a problem with the new MergeFractal system I implemented,
-              Merge doesn't take a list of fractal data and then construct a final fractal when that data,
-              it instead takes one fractal data, and then destroys all fractals that are contained inside of it 
-              and creates it
+            Think about refactoring fractal and puzzles so that puzzles hold the grid of elements
+            transformation functions are passed to fractals on instantiation (these functions point back to puzzle)
+            On animation end, the fractals should be destroyed and recreated with the correct sprite/index
 
             test on 4x4 fractals with undo using bare minimum resizing - not working correctly (where is it failing?)
                 not splitting up 4x4 (or it's splitting but not animating)
