@@ -19,10 +19,13 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
     THE BIG THREE:
         1. ReactJS and/or Angular (MERN/MEAN stacks) - groundwork for stable work if this app doesn't pan out- do this for Xuan and our future
+            look at TODO.text in TypescriptTest project for notes on what to do 
 
-            Get a good project that I can put in portfolio by the end of the month of December (website that looks dope)
-            Polish up the rigid body simulation 
-            Polish up the custom software 3d rasterizer
+            Get a good project that I can put in portfolio by the end of the month of December (nifty website for LASEPS or something would be good)
+                Find some good websites to use as a starting point (consulting, marketing websites)
+                keep it simple and clean - angular has all the stuff I need (probably)
+            Polish up the rigid body simulation - for potential c++ gamedev/systems/embedded jobs
+            Polish up the custom software 3d rasterizer - same as above
 
         2. Test on Ubuntu virtual machine  (resume download and / or install vm)
             install unbuntu on virtual machine
@@ -32,9 +35,12 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
             need to test this on a regular basis - after version changes (whatever that means)
 
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
+
+            recreation: swap two 1x1s in upper center.  Merge left 4 and right 4 fractals into two 2x2s.  Undo swap to see bug
+              split 2 2x2s, then swap 
   
             bug with undo still.  At one point two 1x1s swapped, but there was a fractal at swap destination that didn't dissappear...
-              so there was overlap
+              so there was overlap - try to recreate it
 
             Think about refactoring fractal and puzzles so that puzzles hold the grid of elements
             transformation functions are passed to fractals on instantiation (these functions point back to puzzle)

@@ -371,10 +371,13 @@ namespace sqs {
             bool contains = false;
             for(int row = 0; row < td.fractalData.size; ++row) {
                 for(int col = 0; col < td.fractalData.size; ++col) {
-                    if(f->Contains({col + fractalDataA.index.x, row + fractalDataA.index.y})) {
+                    //should replace these two Contains() with FindOverlapType(...)
+                    if(f->Contains({col + fractalDataA.index.x, row + fractalDataA.index.y}) &&
+                       !(f->GetSize() == fractalDataA.size && f->GetIndex() == fractalDataA.index)) {
                         mergeListA.push_back(f);
                         contains = true;
-                    }else if(isTranslation && f->Contains({col + fractalDataB.index.x, row + fractalDataB.index.y})) {
+                    }else if(isTranslation && f->Contains({col + fractalDataB.index.x, row + fractalDataB.index.y}) &&
+                             !(f->GetSize() == fractalDataB.size && f->GetIndex() == fractalDataB.index)) {
                         mergeListB.push_back(f);
                         contains = true;
                     }

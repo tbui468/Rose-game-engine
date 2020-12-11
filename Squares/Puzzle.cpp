@@ -1,4 +1,3 @@
-
 #include "Rose.h"
 #include "Puzzle.h"
 #include "Fractal.h"
@@ -88,7 +87,6 @@ namespace sqs {
             if(i) i->OnAnimationEnd();
         }
 
-       
         if(m_MergeList.empty()) return; 
 
         std::cout << std::endl;
@@ -108,21 +106,17 @@ namespace sqs {
           }
         }
 
-        std::cout << "Right before deleting merged fractals" << std::endl;
        
         std::vector<Fractal*>::iterator iter = m_Fractals.begin();
 
         //this loop is the main issue, it seems
         while(iter != m_Fractals.end()) {
           Fractal* f = *iter;
-          std::cout << "Index: " << f->GetIndex().x << ", " << f->GetIndex().y << std::endl;
           bool contained = false;
 
           for(int k = 0; k < m_MergeList.size(); ++k) {
             FractalData data = m_MergeList.at(k);
-            std::cout << "Inside for loop going over mergeList" << std::endl;
             if(Fractal::FindOverlapType(data, {f->GetSize(), f->GetIndex()}) == OverlapType::Enclose) {
-              std::cout << "Inside FindOverlapConditional; before loop" << std::endl;
               for(int row = f->GetIndex().y; row < f->GetIndex().y + f->GetSize(); ++row) {
                 for(int col = f->GetIndex().x; col < f->GetIndex().x + f->GetSize(); ++col) {
                   elementsList.at(k).at((row - data.index.y) * data.size + col - data.index.x) = f->GetSubElement({col - f->GetIndex().x, row - f->GetIndex().y});
@@ -130,7 +124,6 @@ namespace sqs {
               }
               contained = true;
             }
-            std::cout << "After FindOverlapType conditional" << std::endl;
             if(contained) break;
           }
           if(contained) iter = m_Fractals.erase(iter); //erase invalidates the iterator I pass in, but returns a new iterator that can be used
@@ -139,7 +132,6 @@ namespace sqs {
         }
 
 
-        std::cout << "Right after deleting merged fractals" << std::endl;
 
         //create new fractals using merge data
         //need to remove temp elements vector once code above works
