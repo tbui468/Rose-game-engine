@@ -309,14 +309,16 @@ namespace sqs {
         fractalDataA.index = td.fractalData.index;
         FractalData fractalDataB;
         fractalDataB.size = td.fractalData.size;
+        fractalDataB.index = td.fractalData.index;
 
         bool isTranslation = td.transformation == TransformationType::TranslatePosX || td.transformation == TransformationType::TranslateNegX ||
                              td.transformation == TransformationType::TranslatePosY || td.transformation == TransformationType::TranslateNegY;
 
+        Fractal* fractalB = nullptr;
+
+        std::cout << "Before switch for FractalB" << std::endl;
+
         if(isTranslation) {
-
-            Fractal* fractalB = nullptr;
-
 
             //check if swapped fractal exists
             switch(td.transformation) {
@@ -348,12 +350,13 @@ namespace sqs {
 
         }
 
+        std::cout << "After switch for FractalB" << std::endl;
+
         Fractal* fractalA = puzzle->GetFractalWithIndex(td.fractalData.index); 
         std::vector<Fractal*> splitA;
 
         if(fractalA == nullptr || fractalA->GetSize() != td.fractalData.size) {
             splitA = puzzle->SplitOverlappingWith(td.fractalData);  //need to call this on the swap fractal before merge is called
-
             resized = true;
         }
 
@@ -363,6 +366,7 @@ namespace sqs {
         allSplitFractals.insert(allSplitFractals.end(), splitB.begin(), splitB.end());
 
         //////////////////////////////seperate 1x1 fractals into merge/nomerge lists//////////////////
+        std::cout << "Before splitting fractals into mergeListA, mergeListB and noMergeList" << std::endl;
         std::vector<Fractal*> mergeListA;
         std::vector<Fractal*> mergeListB;
         std::vector<Fractal*> noMergeList;
@@ -371,15 +375,14 @@ namespace sqs {
             bool contains = false;
             for(int row = 0; row < td.fractalData.size; ++row) {
                 for(int col = 0; col < td.fractalData.size; ++col) {
-                    //should replace these two Contains() with FindOverlapType(...)
-                    if(f->Contains({col + fractalDataA.index.x, row + fractalDataA.index.y}) &&
+                    if(f->Contains({col + fractalDataA.index.x, row + fractalDataA.index.y}) && 
                        !(f->GetSize() == fractalDataA.size && f->GetIndex() == fractalDataA.index)) {
-                        mergeListA.push_back(f);
-                        contains = true;
-                    }else if(isTranslation && f->Contains({col + fractalDataB.index.x, row + fractalDataB.index.y}) &&
+                          mergeListA.push_back(f);
+                          contains = true;
+                    }else if(fractalB && f->Contains({col + fractalDataB.index.x, row + fractalDataB.index.y}) &&
                              !(f->GetSize() == fractalDataB.size && f->GetIndex() == fractalDataB.index)) {
-                        mergeListB.push_back(f);
-                        contains = true;
+                          mergeListB.push_back(f);
+                          contains = true;
                     }
                     if(contains) break;
                 }
@@ -388,37 +391,38 @@ namespace sqs {
             if(!contains) noMergeList.push_back(f);
         }
 
+        std::cout << "After splitting fractals into mergeListA, mergeListB and noMergeList" << std::endl;
+
+        //something past here crashes I think
+        std::cout << mergeListA.size() << std::endl;
+        std::cout << mergeListB.size() << std::endl;
+
         if(mergeListA.size() > 0) puzzle->MergeFractals(fractalDataA);
         if(mergeListB.size() > 0) puzzle->MergeFractals(fractalDataB);
 
         /////////////////////////////////MoveTo() on all fractals split (and merged) to proper place ////////////////////////////
-        std::cout << "MergeList A" << std::endl;
         for(Fractal* f: mergeListA) {
             glm::vec2 coords = Fractal::GetCoordsForTarget(f->GetIndex(), f->GetSize(), fractalDataA.index, fractalDataA.size,
                     puzzle->GetDimensions(), {puzzle->x(), puzzle->y()});
             f->MoveTo(coords);
-            std::cout << f->GetIndex().x << ", " << f->GetIndex().y << std::endl;
         }
 
-        std::cout << "MergeList B" << std::endl;
         for(Fractal* f: mergeListB) {
             glm::vec2 coords = Fractal::GetCoordsForTarget(f->GetIndex(), f->GetSize(), fractalDataB.index, fractalDataB.size,
                     puzzle->GetDimensions(), {puzzle->x(), puzzle->y()});
             f->MoveTo(coords);
-            std::cout << f->GetIndex().x << ", " << f->GetIndex().y << std::endl;
         }
 
-        std::cout << "Regular fractal coords" << std::endl;
         //move to using regular coords
         for(Fractal* f: noMergeList) {
             glm::vec2 coords = Fractal::GetCoords(f->GetIndex(), f->GetSize(), puzzle->GetDimensions(), {puzzle->x(), puzzle->y()});
             f->MoveTo(coords);
-            std::cout << f->GetIndex().x << ", " << f->GetIndex().y << std::endl;
         }
 
 
         if(resized) SetAnimationStart();
         AddCommand({CommandType::UndoLastTransformation, nullptr, puzzle, nullptr});
+        std::cout << "At end of resize" << std::endl; //not reach this line
     }
 
 

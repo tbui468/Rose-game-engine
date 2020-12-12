@@ -92,10 +92,6 @@ namespace sqs {
         std::cout << std::endl;
         std::cout << "Merge list size: " << m_MergeList.size() << std::endl;
 
-        ///////////////////problem is this code////////////////////////
-        ////////////////////and other places we call MergeFractals (maybe)//////////
-        //delete all fractals that are contained in merge data
-        //need to get elements for fractals we create in mergeList
         std::vector<std::vector<FractalElement>> elementsList;
         
         for(int i = 0; i < m_MergeList.size(); ++i) {

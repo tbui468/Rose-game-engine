@@ -65,8 +65,8 @@ namespace sqs {
             //std::vector<std::vector<Fractal*>> m_MergeLists; //CreateFromMergeList() should be called in OnAnimationEnd() and then the list cleared
             std::vector<FractalData> m_MergeList; //just put in data of fractal to create at end of merge, iterate through fractals and destroy those contained inside 
             bool m_IsOpen {false};
-            int m_MaxTransformations {0};
-            std::vector<TransformationData> m_TransformationStack;
+            int m_MaxTransformations {0}; //* move to g_Data
+            std::vector<TransformationData> m_TransformationStack; //* move to g_Data
             std::vector<UndoIcon*> m_UndoIcons;
         private:
             inline static const float s_Spacing {240.0f};

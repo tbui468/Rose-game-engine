@@ -14,14 +14,14 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
                         limitations in user input - touchscreen, mouse, keyboard)  That will change once VR tech becomes more commonplace and advanced
 
                     -solving fractal puzzles is mostly clear (connecting colored line segments across surface of a square)
-                    -solving cube faces puzzle is fuzzy (connecting colored line segments wrapped around 6 surfaces of a cube, but requires 3-d motion????)
-                    -solving 8 cubes puzzles for tesseract if very fuzzy (I don't know how I want to do this)
+                    -solving cube faces puzzle is a bit fuzzy (connecting colored line segments wrapped around 6 surfaces of a cube, but requires 3-d motion????)
+                    -solving 8 cubes puzzles for tesseract is very fuzzy (I don't know how I want to do this)
 
     THE BIG THREE:
         1. ReactJS and/or Angular (MERN/MEAN stacks) - groundwork for stable work if this app doesn't pan out- do this for Xuan and our future
             look at TODO.text in TypescriptTest project for notes on what to do 
 
-            Get a good project that I can put in portfolio by the end of the month of December (nifty website for LASEPS or something would be good)
+            Get a good web project that I can put in portfolio by the end of the month of December (nifty website for LASEPS or something would be good)
                 Find some good websites to use as a starting point (consulting, marketing websites)
                 keep it simple and clean - angular has all the stuff I need (probably)
             Polish up the rigid body simulation - for potential c++ gamedev/systems/embedded jobs
@@ -32,23 +32,51 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
             clone from Squares on Github
             build and compile/link
             run
-            need to test this on a regular basis - after version changes (whatever that means)
+            need to test this on a regular basis - after version changes
 
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
 
-            recreation: swap two 1x1s in upper center.  Merge left 4 and right 4 fractals into two 2x2s.  Undo swap to see bug
-              split 2 2x2s, then swap 
-  
-            bug with undo still.  At one point two 1x1s swapped, but there was a fractal at swap destination that didn't dissappear...
-              so there was overlap - try to recreate it
 
-            Think about refactoring fractal and puzzles so that puzzles hold the grid of elements
-            transformation functions are passed to fractals on instantiation (these functions point back to puzzle)
-            On animation end, the fractals should be destroyed and recreated with the correct sprite/index
+            ///////////////////////////REFACTOR///////////////////////////////////////////////////////
+            first, should the puzzleset or puzzles write to g_Data?
+              Puzzles bc the sets are just a list of puzzles
+            
 
-            test on 4x4 fractals with undo using bare minimum resizing - not working correctly (where is it failing?)
-                not splitting up 4x4 (or it's splitting but not animating)
-                trace what is happening using std::cout 
+            Callback function of each fractal should call a function in Puzzle, but that function should manipulate the data inside g_Data 
+              holding an extra copy of each puzzle's data inside the puzzle class is asking for trouble
+              data should only exist in g_Data - all function calls read or write to g_Data
+
+            What if I refactored everything so that puzzles held all element data??
+              Would that make undo easier??? I could just save the undo stack as a grid
+                But that would cause other problems with undo - would still need to store undo data (because deducing that by comparing current and
+                previous elements would be a different type of hell).  So undo will still best be saved as UndoData
+
+              If a fractal animation is set, always destroy/recreate it OnAnimationEnd() to avoid saving states
+              setting a fractal animation will change the elements and textures in puzzle immediately, (but this won't affect current fractals)
+              OnAnimationEnd will recreate the fractals with the new data that was transformed (new data is only sprite since elements is held in puzzle now)
+
+              How would my current problem be different if I refactored the elements to puzzle?
+                right now, I'm calling split fractals, merge fractals and then animate when resizing is needed for the undo pipeline 
+                this wouldn't really change much besides how I look up which fractals to split/merge (since now it can be done in puzzles)
+                but then would still need to iterate over fractals
+
+
+              //////////////shelve this for the time being/////////////////////////////////
+            ///////////////////////UNDO BUG///////////////////////////////////////////////////
+            Bug recreated!
+              Merge center left 4 into a 2x2.  Merge center right 4 into a 2x2.  Swap the two 2x2s
+              Merge all into a 4x4
+              Push undo for application to crash.  
+              Also crashes if I do top middle, and bottom middle 2x2s 
+
+            MenuLayer::UndoResizeFractals is too big and confusing - is there any way to break these up into smaller functions? Or are they too dependent?
+
+              I suspect bug is related to splitting after check fractalB, and then trying to split again when checking fractalA afterwards
+
+
+              Consider grabbing a notebook and writing out some pseudocode to cover all the cases
+
+            ////////////////////////////////////////////////////////////////////////////////////
 
             Implement non-moveable colored blocks (which are the endpoints user has to connect using transformations)
 
