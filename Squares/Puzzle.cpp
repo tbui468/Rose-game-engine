@@ -78,53 +78,42 @@ namespace sqs {
     void Puzzle::OnAnimationEnd() {
         Entity::OnAnimationEnd();
 
-        for(Fractal* f: m_Fractals) {
-            if(f) f->OnAnimationEnd();
-        }
+
         for(UndoIcon* i: m_UndoIcons) {
             if(i) i->OnAnimationEnd();
         }
 
-        if(m_MergeList.empty()) return; 
-
-        std::vector<std::vector<FractalElement>> elementsList;
-
-        for(int i = 0; i < m_MergeList.size(); ++i) {
-            elementsList.push_back(std::vector<FractalElement>());
-            FractalData data = m_MergeList.at(i);
-            for(int k = 0; k < data.size * data.size; ++k) {
-                elementsList.at(i).push_back('r');
-            }
-        }
-
-
         std::vector<Fractal*>::iterator iter = m_Fractals.begin();
 
-        //this loop is the main issue, it seems
         while(iter != m_Fractals.end()) {
             Fractal* f = *iter;
-            bool contained = false;
 
-            for(int k = 0; k < m_MergeList.size(); ++k) {
-                FractalData data = m_MergeList.at(k);
-                if(Fractal::FindOverlapType(data, {f->GetSize(), f->GetIndex()}) == OverlapType::Enclose) {
-                    contained = true;
-                }
-                if(contained) break;
+            switch(f->GetAnimationEndEvent()) {
+                case AnimationEndEvent::Destroy:
+                    iter = m_Fractals.erase(iter);
+                    delete f;
+                    break;
+                case AnimationEndEvent::Recreate:
+                    iter = m_Fractals.erase(iter);
+                    glm::vec2 startCoords = Fractal::GetCoords(f->GetIndex(), f->GetSize(), m_Dimensions, {x(), y()});
+                    iter = m_Fractals.insert(iter, new Fractal(GetTempSprite(f->GetSize()), {f->GetSize(), f->GetIndex()}, startCoords, {this, &Puzzle::Transform}));
+                    delete f;
+                    iter++;
+                    break;
+                case AnimationEndEvent::None:
+                    f->OnAnimationEnd();
+                    iter++;
+                    break;
+                default:
+                    assert(false);
+                    break;
             }
-            if(contained) iter = m_Fractals.erase(iter); //erase invalidates the iterator I pass in, but returns a new iterator that can be used
-            else iter++;
-
         }
 
-
-
         //create new fractals using merge data
-        //need to remove temp elements vector once code above works
         for(int i = 0; i < m_MergeList.size(); ++i) {
             FractalData data = m_MergeList.at(i);
             glm::vec2 startCoords = Fractal::GetCoords(data.index, data.size, m_Dimensions, {x(), y()});
-            //m_Fractals.push_back(new Fractal(elementsList.at(i), data.index, startCoords, GetIndex()));
             m_Fractals.emplace_back(new Fractal(GetTempSprite(data.size), data, startCoords, {this, &Puzzle::Transform}));
         }
 
@@ -259,15 +248,8 @@ namespace sqs {
 
         std::vector<Fractal*> newFractals;
 
-        int targetSize = fractal->GetSize();
-        glm::ivec2 targetIndex = fractal->GetIndex();
-
-
         for(FractalData data: fractalData) {
-            //find start coordinates from fractaldata
-            glm::vec2 startCoords = Fractal::GetCoordsForTarget(data.index, data.size, targetIndex, targetSize, m_Dimensions, glm::vec2(x(), y()));
-            //create fractal at the calculated coordinates
-            //with given elements
+            glm::vec2 startCoords = Fractal::GetCoordsForTarget(data.index, data.size, fractal->GetIndex(), fractal->GetSize(), m_Dimensions, glm::vec2(x(), y()));
             Fractal* newFractal; 
 
             switch(data.size) {
@@ -289,8 +271,7 @@ namespace sqs {
             newFractals.push_back(newFractal);
         }
 
-        std::vector<Fractal*>::iterator iter = GetFractalIterator(fractal);
-        m_Fractals.erase(iter);
+        m_Fractals.erase(GetFractalIterator(fractal));
         delete fractal; 
 
         return newFractals;
@@ -377,8 +358,33 @@ namespace sqs {
     }
 
 
-    void Puzzle::MergeFractals(FractalData data) {
-        m_MergeList.push_back(data);
+    
+    void Puzzle::MergeFractals(std::vector<Fractal*> fractals) {
+        assert(!fractals.empty());
+        //also find index and size while iterating through fractals
+        glm::ivec2 smallestIndex = { 100, 100};
+        glm::ivec2 largestIndex = {-1, -1}; //this value is exclusive
+
+        for(Fractal* f: fractals) {
+            f->SetAnimationEndEvent(AnimationEndEvent::Destroy);
+
+            //find size and index of final merged fractal
+            if(largestIndex.x == -1 || largestIndex.y == -1) {
+                smallestIndex = f->GetIndex();
+                largestIndex = {f->GetIndex().x + f->GetSize(), f->GetIndex().y + f->GetSize()};
+            }else{
+                if(f->GetIndex().x < smallestIndex.x) smallestIndex.x = f->GetIndex().x;
+                if(f->GetIndex().y < smallestIndex.y) smallestIndex.y = f->GetIndex().y;
+                if(f->GetIndex().x + f->GetSize() > largestIndex.x) largestIndex.x = f->GetIndex().x + f->GetSize();
+                if(f->GetIndex().y + f->GetSize() > largestIndex.y) largestIndex.y = f->GetIndex().y + f->GetSize();
+            }
+        }
+
+        int xSize = largestIndex.x - smallestIndex.x;
+        int ySize = largestIndex.y - smallestIndex.y;
+        assert(xSize == ySize);
+
+        m_MergeList.push_back({xSize, smallestIndex}); //xSize == ySize
     }
 
 

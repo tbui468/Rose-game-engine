@@ -292,7 +292,7 @@ namespace sqs {
         fc.BottomRight->MoveTo(BRCoords);
 
         //could put assert into merge fractals to make sure they all form a large fractal of correct dimensions (1,2 or 4)
-        puzzle->MergeFractals({fc.TopLeft->GetSize() * 2, fc.TopLeft->GetIndex()});
+        puzzle->MergeFractals({fc.TopLeft, fc.TopRight, fc.BottomLeft, fc.BottomRight});
         SetAnimationStart();
     }
 
@@ -392,8 +392,8 @@ namespace sqs {
     //    std::cout << mergeListA.size() << std::endl;
      //   std::cout << mergeListB.size() << std::endl;
 
-        if(mergeListA.size() > 0) puzzle->MergeFractals(fractalDataA);
-        if(mergeListB.size() > 0) puzzle->MergeFractals(fractalDataB);
+        if(mergeListA.size() > 0) puzzle->MergeFractals(mergeListA);
+        if(mergeListB.size() > 0) puzzle->MergeFractals(mergeListB);
 
         /////////////////////////////////MoveTo() on all fractals split (and merged) to proper place ////////////////////////////
         for(Fractal* f: mergeListA) {

@@ -47,6 +47,8 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
             Move all code in that rotates/reflects/translates fractals to RotateX(), ReflectY(), etc so that they update g_Data (and custom texture sheet)
             remove elements and puzzle index, etc from Fractal class that we don't use anymore
 
+            MenuLayer::UndoResizeFractal() function is not functioning....
+
             What if I refactored everything so that puzzles held all element data??
               Would that make undo easier??? I could just save the undo stack as a grid
                 But that would cause other problems with undo - would still need to store undo data (because deducing that by comparing current and

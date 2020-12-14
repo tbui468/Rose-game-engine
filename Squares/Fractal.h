@@ -22,6 +22,12 @@ namespace sqs {
       void (Puzzle::*transformCallback)(FractalData, TransformationType);
     };
 
+    enum class AnimationEndEvent {
+        None = 0,
+        Destroy,
+        Recreate
+    };
+
 
     class Fractal: public rose::Entity {
         public:
@@ -36,6 +42,8 @@ namespace sqs {
             virtual rose::Edge EdgeCollision(float pointX, float pointY) const override;
             virtual rose::Corner CornerCollision(float pointX, float pointY) const override;
             virtual void OnAnimationEnd() override;
+            AnimationEndEvent GetAnimationEndEvent() const { return m_AnimationEndEvent; }
+            void SetAnimationEndEvent(AnimationEndEvent event) { m_AnimationEndEvent = event; }
         public:
             static glm::ivec2 GetTextureStart(const glm::ivec2& fractalIndex, int puzzleIndex); //@todo: move to puzzle class, rename to Calculate... or Find....
             static glm::vec2 GetCoordsForTarget(const glm::ivec2& index, int size, const glm::ivec2& targetIndex, int targetSize, 
@@ -50,7 +58,8 @@ namespace sqs {
             inline static const float s_UnitMargin = 16.0f;
             FractalData m_Data {0, {-1, -1}}; //@todo: const this and make it public once SetIndex() is removed
             const CallbackData m_Callback;
-            bool m_ShouldRecreate {false}; //if true, Puzzle class will destroy this instance and recreate it (using data in g_Data) in OnAnimationEnd() call
+            AnimationEndEvent m_AnimationEndEvent {AnimationEndEvent::None};
+
     };
 
 

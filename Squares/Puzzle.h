@@ -41,7 +41,7 @@ namespace sqs {
             std::vector<Fractal*> SplitOverlappingWith(FractalData fractalData);
             std::vector<Fractal*> SplitFractal(Fractal* fractal, const std::vector<FractalData>& fractalData);
             void Transform(FractalData data, TransformationType type); //@todo: make all the specific transformation functions private - only this one is public (const later)
-            void MergeFractals(FractalData data); 
+            void MergeFractals(std::vector<Fractal*> fractals);
             inline void PushTransformation(TransformationData data) const { g_Data.at(m_SetIndex).puzzlesData.at(m_Index).transformationStack.push_back(data); }
             inline void PopTransformation() const { g_Data.at(m_SetIndex).puzzlesData.at(m_Index).transformationStack.pop_back(); }
             inline TransformationData PeekTransformation() const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).transformationStack.back(); }
