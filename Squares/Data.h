@@ -20,15 +20,6 @@ namespace sqs {
         ReflectY
     };
 
-    struct PuzzleData {
-        glm::ivec2 dimensions {-1, -1};
-        std::vector<FractalElement> elements;
-    };
-
-    struct PuzzleSetData {
-        std::vector<PuzzleData> puzzlesData;
-    };
-
     struct FractalData {
         int size {0};
         glm::ivec2 index {-1, -1};
@@ -38,6 +29,18 @@ namespace sqs {
         TransformationType transformation {TransformationType::None};
         FractalData fractalData {0, {-1 ,-1}};
     };
+
+    struct PuzzleData {
+        glm::ivec2 dimensions {-1, -1};
+        std::vector<FractalElement> elements;
+        int32_t maxTransformations {0};
+        std::vector<TransformationData> transformationStack;
+    };
+
+    struct PuzzleSetData {
+        std::vector<PuzzleData> puzzlesData;
+    };
+
 
 
     extern std::vector<PuzzleSetData> g_Data;

@@ -18,14 +18,16 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
                     -solving 8 cubes puzzles for tesseract is very fuzzy (I don't know how I want to do this)
 
     THE BIG THREE:
-        1. ReactJS and/or Angular (MERN/MEAN stacks) - groundwork for stable work if this app doesn't pan out- do this for Xuan and our future
+        1. Learn NodeJS with Typescript - groundwork for stable work if this app doesn't pan out- do this for Xuan and our future
             look at TODO.text in TypescriptTest project for notes on what to do 
 
             Get a good web project that I can put in portfolio by the end of the month of December (nifty website for LASEPS or something would be good)
                 Find some good websites to use as a starting point (consulting, marketing websites)
-                keep it simple and clean - angular has all the stuff I need (probably)
+                keep it simple and clean - angular has all the stuff I need (probably) or even just make it in html, css and TypeScript with Node.js and Express.js
             Polish up the rigid body simulation - for potential c++ gamedev/systems/embedded jobs
             Polish up the custom software 3d rasterizer - same as above
+
+            practice: set up linux server - how to do it??? Practice it by setting it up with different configurations (eg, for node.js, flask, docker, etc)
 
         2. Test on Ubuntu virtual machine  (resume download and / or install vm)
             install unbuntu on virtual machine
@@ -36,15 +38,11 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
 
-
             ///////////////////////////REFACTOR///////////////////////////////////////////////////////
-            first, should the puzzleset or puzzles write to g_Data?
-              Puzzles bc the sets are just a list of puzzles
-            
-
-            Callback function of each fractal should call a function in Puzzle, but that function should manipulate the data inside g_Data 
-              holding an extra copy of each puzzle's data inside the puzzle class is asking for trouble
-              data should only exist in g_Data - all function calls read or write to g_Data
+            Wire all that up so that fractals display correct colors - start with having them display all red or empty to find where that logic can start
+            Move all updatesprite and update texture code to Puzzle class 
+            Move all code in that rotates/reflects/translates fractals to RotateX(), ReflectY(), etc so that they update g_Data (and custom texture sheet)
+            remove elements and puzzle index, etc from Fractal class that we don't use anymore
 
             What if I refactored everything so that puzzles held all element data??
               Would that make undo easier??? I could just save the undo stack as a grid

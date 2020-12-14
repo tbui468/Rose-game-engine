@@ -31,9 +31,9 @@ namespace sqs {
             virtual void MoveBy(const glm::vec2& shift) override;
             virtual void OnAnimationEnd() override;
             virtual void OnAnimationUpdate(float t) override;
-            const glm::ivec2& GetDimensions() const { return m_Dimensions; }
-            int GetWidth() const { return m_Dimensions.x; }
-            int GetHeight() const { return m_Dimensions.y; }
+            const glm::ivec2& GetDimensions() const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).dimensions; }
+            int GetWidth() const { return GetDimensions().x; }
+            int GetHeight() const { return GetDimensions().y; }
         public: 
             static float GetSpacing() { return s_Spacing; }
         public: //fractal utility functions
@@ -46,27 +46,35 @@ namespace sqs {
         public: //fractal transformations
             std::vector<Fractal*> SplitOverlappingWith(FractalData fractalData);
             std::vector<Fractal*> SplitFractal(Fractal* fractal, const std::vector<FractalData>& fractalData);
-            void MergeFractals(FractalData data);
-            void SwapFractals(Fractal* fractalA, Fractal* fractalB);
+            void Transform(FractalData data, TransformationType type); //@todo: make all the specific transformation functions private - only this one is public (const later)
+            void MergeFractals(FractalData data); 
+            inline void PushTransformation(TransformationData data) const { g_Data.at(m_SetIndex).puzzlesData.at(m_Index).transformationStack.push_back(data); }
+            inline void PopTransformation() const { g_Data.at(m_SetIndex).puzzlesData.at(m_Index).transformationStack.pop_back(); }
+            inline TransformationData PeekTransformation() const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).transformationStack.back(); }
+            void UndoLastTransformation();
+            inline int32_t GetMaxTransformations() const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).maxTransformations; }
+            inline size_t GetTransformationCount() const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).transformationStack.size(); }
+            std::vector<FractalElement> GetElements(FractalData data) const;
+        private:
+            void SwapFractals(Fractal* fractalA, Fractal* fractalB); //@todo: const when the transformations no longer modify puzzle and fractal classes
             void RotateFractalCW(Fractal* fractal);
             void RotateFractalCCW(Fractal* fractal);
             void ReflectFractalX(Fractal* fractal);
             void ReflectFractalY(Fractal* fractal);
-            TransformationData PeekLastTransformation() const { return m_TransformationStack.back(); }
-            void UndoLastTransformation();
-            int GetMaxTransformations() const { return m_MaxTransformations; }
-            int GetTransformationCount() const { return m_TransformationStack.size(); }
+            rose::Sprite GetTempSprite(int size) {
+              switch(size) {
+                case 1: return { {0.0f, 0.0f}, {32.0f, 32.0f}, rose::TextureType::Custom }; 
+                case 2: return { {0.0f, 0.0f}, {64.0f, 64.0f}, rose::TextureType::Custom }; 
+                case 4: return { {0.0f, 0.0f}, {128.0f, 128.0f}, rose::TextureType::Custom }; 
+                default: assert(false);
+              }
+            }
         private:
             const int m_Index;
             const int m_SetIndex;
-            glm::ivec2 m_Dimensions;  //cached this for now
             std::vector<Fractal*> m_Fractals;
-            //        FractalCorners m_FractalCorners {nullptr, nullptr, nullptr, nullptr}; //replace this with a list of lists called m_MergeList
-            //std::vector<std::vector<Fractal*>> m_MergeLists; //CreateFromMergeList() should be called in OnAnimationEnd() and then the list cleared
             std::vector<FractalData> m_MergeList; //just put in data of fractal to create at end of merge, iterate through fractals and destroy those contained inside 
             bool m_IsOpen {false};
-            int m_MaxTransformations {0}; //* move to g_Data
-            std::vector<TransformationData> m_TransformationStack; //* move to g_Data
             std::vector<UndoIcon*> m_UndoIcons;
         private:
             inline static const float s_Spacing {240.0f};
