@@ -268,7 +268,7 @@ namespace sqs {
         std::vector<Fractal*> subFractalList = puzzle->SplitFractal(fractal, splitData); 
 
         for(Fractal* f: subFractalList) {
-            glm::vec2 endCoords = Fractal::GetCoords(f->GetIndex(), subSize, puzzle->GetDimensions(), glm::vec2(puzzle->x(), puzzle->y()));
+            glm::vec2 endCoords = Fractal::GetCoords(f->GetIndex(), subSize, puzzle->m_Dimensions, glm::vec2(puzzle->x(), puzzle->y()));
             f->MoveTo(endCoords);
         }
 
@@ -282,13 +282,13 @@ namespace sqs {
         int targetSize = subFSize * 2;
         glm::vec2 puzzlePos = {puzzle->x(), puzzle->y()};
 
-        glm::vec2 TLCoords = Fractal::GetCoordsForTarget(fc.TopLeft->GetIndex(), subFSize, targetIndex, targetSize, puzzle->GetDimensions(), puzzlePos);
+        glm::vec2 TLCoords = Fractal::GetCoordsForTarget(fc.TopLeft->GetIndex(), subFSize, targetIndex, targetSize, puzzle->m_Dimensions, puzzlePos);
         fc.TopLeft->MoveTo(TLCoords);
-        glm::vec2 TRCoords = Fractal::GetCoordsForTarget(fc.TopRight->GetIndex(), subFSize, targetIndex, targetSize, puzzle->GetDimensions(), puzzlePos);
+        glm::vec2 TRCoords = Fractal::GetCoordsForTarget(fc.TopRight->GetIndex(), subFSize, targetIndex, targetSize, puzzle->m_Dimensions, puzzlePos);
         fc.TopRight->MoveTo(TRCoords);
-        glm::vec2 BLCoords = Fractal::GetCoordsForTarget(fc.BottomLeft->GetIndex(), subFSize, targetIndex, targetSize, puzzle->GetDimensions(), puzzlePos);
+        glm::vec2 BLCoords = Fractal::GetCoordsForTarget(fc.BottomLeft->GetIndex(), subFSize, targetIndex, targetSize, puzzle->m_Dimensions, puzzlePos);
         fc.BottomLeft->MoveTo(BLCoords);
-        glm::vec2 BRCoords = Fractal::GetCoordsForTarget(fc.BottomRight->GetIndex(), subFSize, targetIndex, targetSize, puzzle->GetDimensions(), puzzlePos);
+        glm::vec2 BRCoords = Fractal::GetCoordsForTarget(fc.BottomRight->GetIndex(), subFSize, targetIndex, targetSize, puzzle->m_Dimensions, puzzlePos);
         fc.BottomRight->MoveTo(BRCoords);
 
         //could put assert into merge fractals to make sure they all form a large fractal of correct dimensions (1,2 or 4)
@@ -398,19 +398,19 @@ namespace sqs {
         /////////////////////////////////MoveTo() on all fractals split (and merged) to proper place ////////////////////////////
         for(Fractal* f: mergeListA) {
             glm::vec2 coords = Fractal::GetCoordsForTarget(f->GetIndex(), f->GetSize(), fractalDataA.index, fractalDataA.size,
-                    puzzle->GetDimensions(), {puzzle->x(), puzzle->y()});
+                    puzzle->m_Dimensions, {puzzle->x(), puzzle->y()});
             f->MoveTo(coords);
         }
 
         for(Fractal* f: mergeListB) {
             glm::vec2 coords = Fractal::GetCoordsForTarget(f->GetIndex(), f->GetSize(), fractalDataB.index, fractalDataB.size,
-                    puzzle->GetDimensions(), {puzzle->x(), puzzle->y()});
+                    puzzle->m_Dimensions, {puzzle->x(), puzzle->y()});
             f->MoveTo(coords);
         }
 
         //move to using regular coords
         for(Fractal* f: noMergeList) {
-            glm::vec2 coords = Fractal::GetCoords(f->GetIndex(), f->GetSize(), puzzle->GetDimensions(), {puzzle->x(), puzzle->y()});
+            glm::vec2 coords = Fractal::GetCoords(f->GetIndex(), f->GetSize(), puzzle->m_Dimensions, {puzzle->x(), puzzle->y()});
             f->MoveTo(coords);
         }
 
