@@ -17,8 +17,8 @@ namespace sqs {
         Close(); //temp: just to make sure we don't open too many puzzles
         m_DestroyPuzzles = false;
 
-        for(int i = 0; i < g_Data.at(GetIndex()).puzzlesData.size(); ++i) {
-            m_PuzzleList.emplace_back(new Puzzle(i, GetIndex()));
+        for(int i = 0; i < g_Data.at(m_Index).puzzlesData.size(); ++i) {
+            m_PuzzleList.emplace_back(new Puzzle(i, m_Index));
         }
 
 
@@ -47,7 +47,7 @@ namespace sqs {
                 else puzzle->Close();
 
                 //move all puzzles
-                float xPos = (puzzle->GetIndex() - puzzleToOpen->GetIndex()) * Puzzle::GetSpacing();
+                float xPos = (puzzle->m_Index - puzzleToOpen->m_Index) * Puzzle::s_Spacing;
                 puzzle->MoveTo(glm::vec2(xPos, 0.0f));
             }
         }

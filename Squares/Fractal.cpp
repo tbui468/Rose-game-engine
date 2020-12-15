@@ -3,22 +3,17 @@
 namespace sqs {
 
 
-    Fractal::Fractal(const std::vector<FractalElement>& elements, const glm::ivec2& index, const glm::vec2& coords, int puzzleIndex):
-        Fractal(MakeEntityData(elements, index, coords, puzzleIndex), elements, index, puzzleIndex) {}
+    //Fractal::Fractal(rose::Sprite sprite, FractalData data, const glm::vec2& coords, void (Puzzle::*func)(FractalData, TransformationType)):
+    Fractal::Fractal(rose::Sprite sprite, FractalData data, const glm::vec2& coords, CallbackData callback):
+        Entity(sprite, {s_UnitSize * data.size, s_UnitSize * data.size}, {0.0f, 0.0f, s_UnitSize * data.size, s_UnitSize * data.size}, coords),
+        m_Callback(callback), m_Size(data.size), m_Index(data.index) {}
 
 
-    Fractal::Fractal(rose::EntityData e, const std::vector<FractalElement>& elements, const glm::ivec2& index, int puzzleIndex)
-        : Entity(e.sprite, e.size, e.boundingBox, e.position), m_PuzzleIndex(puzzleIndex) {
-            m_Elements = elements;
-            m_Index = index;
-            switch(elements.size()) {
-                case 1: m_Size = 1; break;
-                case 4: m_Size = 2; break;
-                case 16: m_Size = 4; break;
-                default: assert(false); break;
-            }
-        }
 
+    void Fractal::Transform(TransformationType type) { 
+        (m_Callback.puzzle->*m_Callback.transformCallback)({m_Size, m_Index}, type); 
+        SetAnimationEndEvent(AnimationEndEvent::Recreate);
+    }
 
     //return type is read as follows:
     //f1 is Within f2 (f2 is larger)
@@ -49,196 +44,13 @@ namespace sqs {
     }
 
     bool Fractal::Contains(const glm::ivec2& index) const {
-        if(index.x < GetIndex().x) return false;
-        if(index.y < GetIndex().y) return false;
-        if(index.x >= GetIndex().x + GetSize()) return false;
-        if(index.y >= GetIndex().y + GetSize()) return false;
+        if(index.x < m_Index.x) return false;
+        if(index.y < m_Index.y) return false;
+        if(index.x >= m_Index.x + m_Size) return false;
+        if(index.y >= m_Index.y + m_Size) return false;
         return true;
     }
 
-    FractalElement Fractal::GetSubElement(const glm::ivec2& index) const {
-        return GetSubElements(index, 1).front();
-    }
-
-    std::vector<FractalElement> Fractal::GetSubElements(const glm::ivec2& index, int subElementSize) const {
-        std::vector<FractalElement> elements;
-
-        for(int row = index.y; row < index.y + subElementSize; ++row) {
-            for(int col = index.x; col < index.x + subElementSize; ++col) {
-                elements.push_back(m_Elements.at(row * GetSize() + col));
-            }
-        }
-
-        return elements;
-    }
-
-    void Fractal::WriteData(std::vector<PuzzleSetData>& data, int setIndex, int puzzleIndex) const {
-        int width = data.at(setIndex).puzzlesData.at(puzzleIndex).dimensions.x;
-
-        for(int row = 0; row < GetSize(); ++row) {
-            for(int col = 0; col < GetSize(); ++col) {
-                data.at(setIndex).puzzlesData.at(puzzleIndex).elements.at((GetIndex().y + row) * width + GetIndex().x + col) = GetSubElement({col, row});
-            }
-        }
-    }
-
-    void Fractal::RotateBy(float angle) {
-        Entity::RotateBy(angle);
-
-        if(GetSize() == 1) return;
-
-        if(GetSize() == 2) {
-            if(angle < 0) { //clockwise
-                FractalElement topLeft = GetSubElement({0, 1});
-                FractalElement topRight = GetSubElement({0, 0});
-                FractalElement bottomLeft = GetSubElement({1, 1});
-                FractalElement bottomRight = GetSubElement({1, 0});
-                SetElements({topLeft, topRight, bottomLeft, bottomRight});
-            }else{
-                FractalElement topLeft = GetSubElement({1, 0});
-                FractalElement topRight = GetSubElement({1, 1});
-                FractalElement bottomLeft = GetSubElement({0, 0});
-                FractalElement bottomRight = GetSubElement({0, 1});
-                SetElements({topLeft, topRight, bottomLeft, bottomRight});
-            }
-            return;
-        }
-
-        if(GetSize() == 4) {
-            if(angle < 0) { //clockwise
-                FractalElement e00 = GetSubElement({0, 3});
-                FractalElement e10 = GetSubElement({0, 2});
-                FractalElement e20 = GetSubElement({0, 1});
-                FractalElement e30 = GetSubElement({0, 0});
-
-                FractalElement e01 = GetSubElement({1, 3});
-                FractalElement e11 = GetSubElement({1, 2});
-                FractalElement e21 = GetSubElement({1, 1});
-                FractalElement e31 = GetSubElement({1, 0});
-
-                FractalElement e02 = GetSubElement({2, 3});
-                FractalElement e12 = GetSubElement({2, 2});
-                FractalElement e22 = GetSubElement({2, 1});
-                FractalElement e32 = GetSubElement({2, 0});
-
-                FractalElement e03 = GetSubElement({3, 3});
-                FractalElement e13 = GetSubElement({3, 2});
-                FractalElement e23 = GetSubElement({3, 1});
-                FractalElement e33 = GetSubElement({3, 0});
-
-                SetElements({e00, e10, e20, e30,
-                        e01, e11, e21, e31,
-                        e02, e12, e22, e32,
-                        e03, e13, e23, e33});
-            }else{
-                FractalElement e00 = GetSubElement({3, 0});
-                FractalElement e10 = GetSubElement({3, 1});
-                FractalElement e20 = GetSubElement({3, 2});
-                FractalElement e30 = GetSubElement({3, 3});
-
-                FractalElement e01 = GetSubElement({2, 0});
-                FractalElement e11 = GetSubElement({2, 1});
-                FractalElement e21 = GetSubElement({2, 2});
-                FractalElement e31 = GetSubElement({2, 3});
-
-                FractalElement e02 = GetSubElement({1, 0});
-                FractalElement e12 = GetSubElement({1, 1});
-                FractalElement e22 = GetSubElement({1, 2});
-                FractalElement e32 = GetSubElement({1, 3});
-
-                FractalElement e03 = GetSubElement({0, 0});
-                FractalElement e13 = GetSubElement({0, 1});
-                FractalElement e23 = GetSubElement({0, 2});
-                FractalElement e33 = GetSubElement({0, 3});
-
-                SetElements({e00, e10, e20, e30,
-                        e01, e11, e21, e31,
-                        e02, e12, e22, e32,
-                        e03, e13, e23, e33});
-            }
-            return;
-        }
-
-    }
-
-    void Fractal::ScaleTo(const glm::vec2& scale) {
-        Entity::ScaleTo(scale);
-
-        if(GetSize() == 1) return;
-
-        if(GetSize() == 2) {
-            if(scale.y < 0) { //x-axis reflection
-                FractalElement topLeft = GetSubElement({0, 1});
-                FractalElement topRight = GetSubElement({1, 1});
-                FractalElement bottomLeft = GetSubElement({0, 0});
-                FractalElement bottomRight = GetSubElement({1, 0});
-                SetElements({topLeft, topRight, bottomLeft, bottomRight});
-            }else{
-                FractalElement topLeft = GetSubElement({1, 0});
-                FractalElement topRight = GetSubElement({0, 0});
-                FractalElement bottomLeft = GetSubElement({1, 1});
-                FractalElement bottomRight = GetSubElement({0, 1});
-                SetElements({topLeft, topRight, bottomLeft, bottomRight});
-            }
-            return;
-        }
-
-        if(GetSize() == 4) {
-            if(scale.y < 0) { //x-axis reflection
-                FractalElement e00 = GetSubElement({0, 3});
-                FractalElement e10 = GetSubElement({1, 3});
-                FractalElement e20 = GetSubElement({2, 3});
-                FractalElement e30 = GetSubElement({3, 3});
-
-                FractalElement e01 = GetSubElement({0, 2});
-                FractalElement e11 = GetSubElement({1, 2});
-                FractalElement e21 = GetSubElement({2, 2});
-                FractalElement e31 = GetSubElement({3, 2});
-
-                FractalElement e02 = GetSubElement({0, 1});
-                FractalElement e12 = GetSubElement({1, 1});
-                FractalElement e22 = GetSubElement({2, 1});
-                FractalElement e32 = GetSubElement({3, 1});
-
-                FractalElement e03 = GetSubElement({0, 0});
-                FractalElement e13 = GetSubElement({1, 0});
-                FractalElement e23 = GetSubElement({2, 0});
-                FractalElement e33 = GetSubElement({3, 0});
-
-                SetElements({e00, e10, e20, e30,
-                        e01, e11, e21, e31,
-                        e02, e12, e22, e32,
-                        e03, e13, e23, e33});
-            }else{ //y-axis reflection
-                FractalElement e00 = GetSubElement({3, 0});
-                FractalElement e10 = GetSubElement({2, 0});
-                FractalElement e20 = GetSubElement({1, 0});
-                FractalElement e30 = GetSubElement({0, 0});
-
-                FractalElement e01 = GetSubElement({3, 1});
-                FractalElement e11 = GetSubElement({2, 1});
-                FractalElement e21 = GetSubElement({1, 1});
-                FractalElement e31 = GetSubElement({0, 1});
-
-                FractalElement e02 = GetSubElement({3, 2});
-                FractalElement e12 = GetSubElement({2, 2});
-                FractalElement e22 = GetSubElement({1, 2});
-                FractalElement e32 = GetSubElement({0, 2});
-
-                FractalElement e03 = GetSubElement({3, 3});
-                FractalElement e13 = GetSubElement({2, 3});
-                FractalElement e23 = GetSubElement({1, 3});
-                FractalElement e33 = GetSubElement({0, 3});
-
-                SetElements({e00, e10, e20, e30,
-                        e01, e11, e21, e31,
-                        e02, e12, e22, e32,
-                        e03, e13, e23, e33});
-            }
-            return;
-        }
-
-    }
 
     rose::Edge Fractal::EdgeCollision(float pointX, float pointY) const {
         glm::vec2 point = {pointX * rose::g_Scale, pointY * rose::g_Scale};
@@ -283,88 +95,8 @@ namespace sqs {
         m_Scale = {1.0f, 1.0f};
         m_ToScale = {1.0f, 1.0f};
 
-        UpdateTextureData(m_Elements, GetIndex(), m_PuzzleIndex);
-        UpdateSprite();
     }
 
-    rose::EntityData Fractal::MakeEntityData(const std::vector<FractalElement>& elements, const glm::ivec2& index, const glm::vec2& pos, int puzzleIndex) {
-        UpdateTextureData(elements, index, puzzleIndex);
-
-        int size = sqrt(elements.size() + 1);
-        float fWidth = s_UnitSize * size;
-        float fHeight = s_UnitSize * size;
-
-        glm::ivec2 texStart = GetTextureStart(index, puzzleIndex);
-
-        glm::vec2 entitySize = glm::vec2(fWidth, fHeight);
-        glm::vec4 boundingBox = glm::vec4(0.0f, 0.0f, fWidth, fHeight);
-        rose::EntityData e;
-
-        e.sprite = { {texStart.x, texStart.y - (size - 1) * s_UnitSize}, {fWidth, fHeight}, rose::TextureType::Custom };
-        e.size = entitySize;
-        e.boundingBox = boundingBox;
-        e.position = pos;
-
-        return e;
-    }
-
-
-    void Fractal::UpdateSprite() {
-        int size = GetSize();
-        float fWidth = s_UnitSize * size;
-        float fHeight = s_UnitSize * size;
-
-
-        glm::ivec2 texStart = GetTextureStart(GetIndex(), GetPuzzleIndex());
-
-
-        rose::Sprite sprite = { {texStart.x, texStart.y - (size - 1) * s_UnitSize}, {fWidth, fHeight}, rose::TextureType::Custom };
-        Entity::SetSprite(sprite);
-    }
-
-
-    void Fractal::UpdateTextureData(const std::vector<FractalElement>& elements, const glm::ivec2& index, int puzzleNumber) {
-        int size = sqrt(elements.size() + 1);
-
-        float fWidth = s_UnitSize * size;
-        float fHeight = s_UnitSize * size;
-
-        //textures start from bottom left, but starting textures from top left to fit fractal order (left to right, top to bottom)
-        glm::ivec2 texStart = GetTextureStart(index, puzzleNumber);
-
-        std::vector<rose::SubTextureMapping> texMapping;
-
-        for(int row = 0; row < size; ++row) {
-            for(int col = 0; col < size; ++col) {
-                texMapping.push_back({{texStart.x + col * s_UnitSize, texStart.y - row * s_UnitSize}, {0, 0}, {s_UnitSize, s_UnitSize}}); //fractal frame
-
-                //elements are drawn inside fractal frame, so start point is offset by 1 and side length is reduced by 2 in each dimension
-                FractalElement element = elements.at(row * size + col);
-
-                switch(element) {
-                    case 'r':
-                        texMapping.push_back({{texStart.x + col * s_UnitSize + 1, texStart.y - row * s_UnitSize + 1}, 
-                                {s_UnitSize + 1, 1}, {s_UnitSize - 2, s_UnitSize - 2}});
-                        break;
-                    case 'b':
-                        texMapping.push_back({{texStart.x + col * s_UnitSize + 1, texStart.y - row * s_UnitSize + 1}, 
-                                {s_UnitSize + 1, s_UnitSize + 1}, {s_UnitSize - 2, s_UnitSize - 2}});
-                        break;
-                    case 'g':
-                        texMapping.push_back({{texStart.x + col * s_UnitSize + 1, texStart.y - row * s_UnitSize + 1}, 
-                                {s_UnitSize + 1, s_UnitSize * 2 + 1}, {s_UnitSize - 2, s_UnitSize - 2}});
-                        break;
-                }
-            }
-        }
-
-        rose::Application::GetApplication()->SetCustomTexture(texMapping);
-    }
-
-
-    glm::ivec2 Fractal::GetTextureStart(const glm::ivec2& index, int puzzleNumber) {
-        return glm::ivec2(index.x * s_UnitSize + puzzleNumber * 256, 256 - (index.y + 1) * s_UnitSize); 
-    }
 
 
     glm::vec2 Fractal::GetCoordsForTarget(const glm::ivec2& index, int size, const glm::ivec2& targetIndex, int targetSize, 

@@ -21,8 +21,6 @@ namespace sqs {
         public:
             Puzzle(int index, int setIndex);
             virtual ~Puzzle();
-            int GetIndex() const { return m_Index; }
-            int GetSetIndex() const { return m_SetIndex; } 
             bool IsOpen() const { return m_IsOpen; }
             void Open();
             void Close();
@@ -31,11 +29,6 @@ namespace sqs {
             virtual void MoveBy(const glm::vec2& shift) override;
             virtual void OnAnimationEnd() override;
             virtual void OnAnimationUpdate(float t) override;
-            const glm::ivec2& GetDimensions() const { return m_Dimensions; }
-            int GetWidth() const { return m_Dimensions.x; }
-            int GetHeight() const { return m_Dimensions.y; }
-        public: 
-            static float GetSpacing() { return s_Spacing; }
         public: //fractal utility functions
             FractalCorners FindFractalCorners(float mousex, float mousey) const;
             Fractal* GetClosestFractal(float mousex, float mousey) const;
@@ -43,33 +36,39 @@ namespace sqs {
             Fractal* GetFractalWithIndex(const glm::ivec2& index) const;
             const std::vector<Fractal*>& GetFractals() const { return m_Fractals; }
             std::vector<Fractal*>::iterator GetFractalIterator(Fractal* fractal);
+            void UpdateTextureData(FractalData data) const; //should only update custom texture corresponding to the fractal
         public: //fractal transformations
             std::vector<Fractal*> SplitOverlappingWith(FractalData fractalData);
             std::vector<Fractal*> SplitFractal(Fractal* fractal, const std::vector<FractalData>& fractalData);
-            void MergeFractals(FractalData data);
+            void Transform(FractalData data, TransformationType type); //@todo: make all the specific transformation functions private - only this one is public (const later)
+            void MergeFractals(std::vector<Fractal*> fractals);
+            inline void PushTransformation(TransformationData data) const { g_Data.at(m_SetIndex).puzzlesData.at(m_Index).transformationStack.push_back(data); }
+            inline void PopTransformation() const { g_Data.at(m_SetIndex).puzzlesData.at(m_Index).transformationStack.pop_back(); }
+            inline TransformationData PeekTransformation() const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).transformationStack.back(); }
+            void UndoLastTransformation();
+            inline int32_t GetMaxTransformations() const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).maxTransformations; }
+            inline size_t GetTransformationCount() const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).transformationStack.size(); }
+            std::vector<FractalElement> GetElements(FractalData data) const; //@todo: rename to GetFractalElements
+            FractalElement GetElementAt(int col, int row) const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).elements.at(row * m_Dimensions.x + col); }
+            void SetElementAt(int col, int row, FractalElement e) const { g_Data.at(m_SetIndex).puzzlesData.at(m_Index).elements.at(row * m_Dimensions.x + col) = e; }
+        private:
             void SwapFractals(Fractal* fractalA, Fractal* fractalB);
             void RotateFractalCW(Fractal* fractal);
             void RotateFractalCCW(Fractal* fractal);
             void ReflectFractalX(Fractal* fractal);
             void ReflectFractalY(Fractal* fractal);
-            TransformationData PeekLastTransformation() const { return m_TransformationStack.back(); }
-            void UndoLastTransformation();
-            int GetMaxTransformations() const { return m_MaxTransformations; }
-            int GetTransformationCount() const { return m_TransformationStack.size(); }
-        private:
+            static rose::Sprite CalculateSpriteData(FractalData data, int puzzleIndex);
+        public:
             const int m_Index;
+            const glm::ivec2 m_Dimensions;
+            inline static const float s_Spacing {240.0f};
+        private:
             const int m_SetIndex;
-            glm::ivec2 m_Dimensions;  //cached this for now
             std::vector<Fractal*> m_Fractals;
-            //        FractalCorners m_FractalCorners {nullptr, nullptr, nullptr, nullptr}; //replace this with a list of lists called m_MergeList
-            //std::vector<std::vector<Fractal*>> m_MergeLists; //CreateFromMergeList() should be called in OnAnimationEnd() and then the list cleared
             std::vector<FractalData> m_MergeList; //just put in data of fractal to create at end of merge, iterate through fractals and destroy those contained inside 
             bool m_IsOpen {false};
-            int m_MaxTransformations {0};
-            std::vector<TransformationData> m_TransformationStack;
             std::vector<UndoIcon*> m_UndoIcons;
         private:
-            inline static const float s_Spacing {240.0f};
             inline static const float s_InitOffset {360.0f};
             inline static const rose::Sprite s_Sprite {{32, 32}, {32, 32}, rose::TextureType::Default};
             inline static const glm::vec2 s_ObjectSize {32.0f, 32.0f};

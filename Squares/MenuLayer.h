@@ -53,6 +53,11 @@ namespace sqs {
             void FormFractal(Puzzle* puzzle, FractalCorners fc);
             void UndoResizeFractals(Puzzle* puzzle); 
             void UndoLastTransformation(Puzzle* puzzle);
+            void OnTap(Fractal* fractal, float mousex, float mousey);
+            void OnFlickLeft(Fractal* fractal, float mousex, float mousey);
+            void OnFlickRight(Fractal* fractal, float mousex, float mousey);
+            void OnFlickDown(Fractal* fractal, float mousex, float mousey);
+            void OnFlickUp(Fractal* fractal, float mousex, float mousey);
         private:
             //void ReadPuzzleData(const std::string& path, std::vector<PuzzleSetData>* puzzleSetList);
             void ReadPuzzleData(const std::string& path, std::vector<PuzzleSetData>& data);
