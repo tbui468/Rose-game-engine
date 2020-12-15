@@ -21,7 +21,7 @@ namespace sqs {
                 UpdateTextureData({1, {col, row}});
                 if(GetElementAt(col, row) != 'E') {
                     glm::vec2 startCoords = Fractal::GetCoords({col, row}, 1, m_Dimensions, glm::vec2(x(), y()));
-                    m_Fractals.emplace_back(new Fractal(CalculateSpriteData({1, {col, row}}), {1, {col, row}}, startCoords, {this, &Puzzle::Transform}));
+                    m_Fractals.emplace_back(new Fractal(CalculateSpriteData({1, {col, row}}, m_Index), {1, {col, row}}, startCoords, {this, &Puzzle::Transform}));
                 }
             }
         }
@@ -96,7 +96,8 @@ namespace sqs {
                 case AnimationEndEvent::Recreate:
                     iter = m_Fractals.erase(iter);
                     glm::vec2 startCoords = Fractal::GetCoords(f->m_Index, f->m_Size, m_Dimensions, {x(), y()});
-                    iter = m_Fractals.insert(iter, new Fractal(GetTempSprite(f->m_Size), {f->m_Size, f->m_Index}, startCoords, {this, &Puzzle::Transform}));
+                    iter = m_Fractals.insert(iter, new Fractal(CalculateSpriteData({f->m_Size, f->m_Index}, m_Index), 
+                                             {f->m_Size, f->m_Index}, startCoords, {this, &Puzzle::Transform}));
                     delete f;
                     iter++;
                     break;
@@ -114,7 +115,7 @@ namespace sqs {
         for(int i = 0; i < m_MergeList.size(); ++i) {
             FractalData data = m_MergeList.at(i);
             glm::vec2 startCoords = Fractal::GetCoords(data.index, data.size, m_Dimensions, {x(), y()});
-            m_Fractals.emplace_back(new Fractal(GetTempSprite(data.size), data, startCoords, {this, &Puzzle::Transform}));
+            m_Fractals.emplace_back(new Fractal(CalculateSpriteData({data.size, data.index}, m_Index), data, startCoords, {this, &Puzzle::Transform}));
         }
 
         m_MergeList.clear();
@@ -255,13 +256,13 @@ namespace sqs {
 
             switch(data.size) {
                 case 1: 
-                    newFractal = new Fractal(GetTempSprite(data.size), data, startCoords, {this, &Puzzle::Transform});
+                    newFractal = new Fractal(CalculateSpriteData({data.size, data.index}, m_Index), data, startCoords, {this, &Puzzle::Transform});
                     break;
                 case 2: 
-                    newFractal = new Fractal(GetTempSprite(data.size), data, startCoords, {this, &Puzzle::Transform});
+                    newFractal = new Fractal(CalculateSpriteData({data.size, data.index}, m_Index), data, startCoords, {this, &Puzzle::Transform});
                     break;
                 case 4: 
-                    newFractal = new Fractal(GetTempSprite(data.size), data, startCoords, {this, &Puzzle::Transform});
+                    newFractal = new Fractal(CalculateSpriteData({data.size, data.index}, m_Index), data, startCoords, {this, &Puzzle::Transform});
                     break;
                 default:
                     assert(false);
@@ -436,6 +437,8 @@ namespace sqs {
         fractalA->SetAnimationEndEvent(AnimationEndEvent::Recreate);
         fractalB->SetAnimationEndEvent(AnimationEndEvent::Recreate);
 
+
+
         //how to transform A to get back to original position
         glm::ivec2 newIndexB = fractalA->m_Index;
         glm::ivec2 newIndexA = fractalB->m_Index;
@@ -464,6 +467,9 @@ namespace sqs {
             }
         }
 
+        //update texture data based on updated element data
+        UpdateTextureData({fractalA->m_Size, fractalA->m_Index});
+        UpdateTextureData({fractalB->m_Size, fractalB->m_Index});
 
     }
 
@@ -484,6 +490,8 @@ namespace sqs {
             }
         }
 
+        UpdateTextureData({fractal->m_Size, fractal->m_Index});
+
     }
 
 
@@ -503,6 +511,8 @@ namespace sqs {
             }
         }
 
+        UpdateTextureData({fractal->m_Size, fractal->m_Index});
+
     }
 
     void Puzzle::ReflectFractalX(Fractal* fractal) {
@@ -520,6 +530,8 @@ namespace sqs {
                 SetElementAt(fractal->m_Index.x + col, fractal->m_Index.y + row, elements.at(newRow * fractal->m_Size + newCol));
             }
         }
+
+        UpdateTextureData({fractal->m_Size, fractal->m_Index});
     }
 
 
@@ -538,6 +550,8 @@ namespace sqs {
                 SetElementAt(fractal->m_Index.x + col, fractal->m_Index.y + row, elements.at(newRow * fractal->m_Size + newCol));
             }
         }
+
+        UpdateTextureData({fractal->m_Size, fractal->m_Index});
 
     }
 
@@ -573,13 +587,14 @@ namespace sqs {
 
 
     void Puzzle::UpdateTextureData(FractalData data) const {
+        /*
         //@temp: making it all red to test
-        /*//@reference
+        //@reference
           struct SubTextureMapping {
           glm::ivec2 DesTexCoords; //to custom texture
           glm::ivec2 SrcTexCoords; //from default texture
           glm::ivec2 TexDimensions;
-          };*/
+          };
 
           std::vector<rose::SubTextureMapping> texMapping;
           //frame
@@ -589,44 +604,41 @@ namespace sqs {
           texMapping.push_back({{Fractal::s_UnitSize + 1, Fractal::s_UnitSize + 1}, {Fractal::s_UnitSize + 1, Fractal::s_UnitSize * 2 + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
           rose::Application::GetApplication()->SetCustomTexture(texMapping);
 
-          return;
-/*
- 
+          return;*/
 
         //textures start from bottom left, but starting textures from top left to fit fractal order (left to right, top to bottom)
         glm::ivec2 texStart =  glm::ivec2(data.index.x * Fractal::s_UnitSize + m_Index * 256, 256 - (data.index.y + 1) * Fractal::s_UnitSize); 
 
         std::vector<rose::SubTextureMapping> texMapping;
 
-        for(int row = 0; row < data.size; ++row) {
-            for(int col = 0; col < data.size; ++col) {
-                //pushing on fractal frame
-                texMapping.push_back({{texStart.x + col * Fractal::s_UnitSize, texStart.y - row * Fractal::s_UnitSize}, {0, 0}, {Fractal::s_UnitSize, Fractal::s_UnitSize}}); 
+        for(int row = 0; row < data.size; ++row) { for(int col = 0; col < data.size; ++col) {
+            //pushing on fractal frame
+            texMapping.push_back({{texStart.x + col * Fractal::s_UnitSize, texStart.y - row * Fractal::s_UnitSize}, {0, 0}, {Fractal::s_UnitSize, Fractal::s_UnitSize}}); 
 
-                //elements are drawn inside fractal frame, so start point is offset by 1 and side length is reduced by 2 in each dimension
-                switch(GetElementAt(col, row)) {
-                    case 'r':
-                        texMapping.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
-                                {Fractal::s_UnitSize + 1, 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
-                        break;
-                    case 'b':
-                        texMapping.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
-                                {Fractal::s_UnitSize + 1, Fractal::s_UnitSize + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
-                        break;
-                    case 'g':
-                        texMapping.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
-                                {Fractal::s_UnitSize + 1, Fractal::s_UnitSize * 2 + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
-                        break;
-                }
+            //elements are drawn inside fractal frame, so start point is offset by 1 and side length is reduced by 2 in each dimension
+            switch(GetElementAt(col + data.index.x, row + data.index.y)) {
+                case 'r':
+                    texMapping.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
+                            {Fractal::s_UnitSize + 1, 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
+                    break;
+                case 'b':
+                    texMapping.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
+                            {Fractal::s_UnitSize + 1, Fractal::s_UnitSize + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
+                    break;
+                case 'g':
+                    texMapping.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
+                            {Fractal::s_UnitSize + 1, Fractal::s_UnitSize * 2 + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
+                    break;
             }
-        }
+        }}
 
-        rose::Application::GetApplication()->SetCustomTexture(texMapping);*/
+        rose::Application::GetApplication()->SetCustomTexture(texMapping);
     }
 
 
-    rose::Sprite Puzzle::CalculateSpriteData(FractalData data) {
-        glm::vec2 start = {Fractal::s_UnitSize * data.index.x, Fractal::s_UnitSize * data.index.y};
+    rose::Sprite Puzzle::CalculateSpriteData(FractalData data, int puzzleIndex) {
+        glm::ivec2 texStart =  glm::ivec2(data.index.x * Fractal::s_UnitSize + puzzleIndex * 256, 256 - (data.index.y + 1) * Fractal::s_UnitSize); 
+        glm::vec2 start = {texStart.x + Fractal::s_UnitSize * data.index.x, texStart.y - Fractal::s_UnitSize * data.index.y};
         glm::vec2 size = {Fractal::s_UnitSize * data.size , Fractal::s_UnitSize * data.size};
         return {start, size, rose::TextureType::Custom };
     }

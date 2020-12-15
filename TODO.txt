@@ -1,6 +1,5 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-
     PITCH: An application teaching goemetric transformations using puzzles, but the app itself is a puzzle the user must explore to unravel
     GOAL: A vertical slice of the entire game - one complete cube (with other cubes grayed out so you can use them)
 
@@ -18,6 +17,7 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
                     -solving cube faces puzzle is a bit fuzzy (connecting colored line segments wrapped around 6 surfaces of a cube, but requires 3-d motion????)
                     -solving 8 cubes puzzles for tesseract is very fuzzy (I don't know how I want to do this)
 
+
     THE BIG THREE:
         1. Learn NodeJS with Typescript - groundwork for stable work if this app doesn't pan out- do this for Xuan and our future
             look at TODO.text in TypescriptTest project for notes on what to do 
@@ -31,21 +31,27 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
             practice: set up linux server - how to do it??? Practice it by setting it up with different configurations (eg, for node.js, flask, docker, etc)
 
         2.  Install linux server to play with nodejs and typescript - linux server will be good enough
-            It'll pull triple duty - learning linux, learning typescript (and nodejs/javascript) and learning networking/cryptography
+            Get my code from GossipProtocol over to the ubuntu-server (can i do this through ssh???)
+            How to I send data to/from each gossip node???? 
+            Need a nice way to disconnect from protocol.  
+            How does a new gossipNode find a node to connect to???
+
 
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
 
             ///////////////////////////REFACTOR///////////////////////////////////////////////////////
-            Do the recreate/destroy/none EndAnimationEvent stuff inside puzzle
-            Wire all that up so that fractals display correct colors - start with having them display all red or empty to find where that logic can start
-                    all Fractals are reading from custom texture at the moment, but we're not setting it to any parts of the default texture, so gray
-                    set up custom texture (the first 128 x 128) to red, green, blue, empty to test colors
-                    Transforming a puzzle and writing to g_Data should also update the custom texture so that newly created fractals have correct color
-            Move all updatesprite and update texture code to Puzzle class 
-            Move all code in that rotates/reflects/translates fractals to RotateX(), ReflectY(), etc so that they update g_Data (and custom texture sheet)
-            remove elements and puzzle index, etc from Fractal class that we don't use anymore
+            Puzzle::CalculateSpriteData() and Puzzle::UpdateTextureData() are confusing - that's why I can't figure this out
+            what is 256??? Give it a variable name so I remember what it represents.  Write comments if what I'm coding is not obvious from code
 
-            MenuLayer::UndoResizeFractal() function is not functioning....
+            Is the problem Puzzle::CalculateSpriteData()????? It's not taking puzzle index into account 
+                problem is with texStart - both CalculateSpriteData() and UpdateTextureData() use it - should pull out to own function
+                there's some misalignment with where textures are written to, and where they are read from
+
+            Two options:
+                Step through this again - start from the Renderer class and how custom textures are updated there
+                Or start from making 
+
+            MenuLayer::UndoResizeFractal() function is not functioning....crashes sometimes
 
             What if I refactored everything so that puzzles held all element data??
               Would that make undo easier??? I could just save the undo stack as a grid

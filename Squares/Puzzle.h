@@ -57,15 +57,7 @@ namespace sqs {
             void RotateFractalCCW(Fractal* fractal);
             void ReflectFractalX(Fractal* fractal);
             void ReflectFractalY(Fractal* fractal);
-            rose::Sprite GetTempSprite(int size) { //@todo: delete after Fractal instantiation is fully implemented
-              switch(size) {
-                case 1: return { {0.0f, 0.0f}, {32.0f, 32.0f}, rose::TextureType::Custom }; 
-                case 2: return { {0.0f, 0.0f}, {64.0f, 64.0f}, rose::TextureType::Custom }; 
-                case 4: return { {0.0f, 0.0f}, {128.0f, 128.0f}, rose::TextureType::Custom }; 
-                default: assert(false);
-              }
-            }
-            static rose::Sprite CalculateSpriteData(FractalData data);
+            static rose::Sprite CalculateSpriteData(FractalData data, int puzzleIndex);
         public:
             const int m_Index;
             const glm::ivec2 m_Dimensions;
