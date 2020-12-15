@@ -1,5 +1,6 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
+
     PITCH: An application teaching goemetric transformations using puzzles, but the app itself is a puzzle the user must explore to unravel
     GOAL: A vertical slice of the entire game - one complete cube (with other cubes grayed out so you can use them)
 
@@ -29,16 +30,13 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
             practice: set up linux server - how to do it??? Practice it by setting it up with different configurations (eg, for node.js, flask, docker, etc)
 
-        2. Test on Ubuntu virtual machine  (resume download and / or install vm)
-            install unbuntu on virtual machine
-            clone from Squares on Github
-            build and compile/link
-            run
-            need to test this on a regular basis - after version changes
+        2.  Install linux server to play with nodejs and typescript - linux server will be good enough
+            It'll pull triple duty - learning linux, learning typescript (and nodejs/javascript) and learning networking/cryptography
 
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
 
             ///////////////////////////REFACTOR///////////////////////////////////////////////////////
+            Do the recreate/destroy/none EndAnimationEvent stuff inside puzzle
             Wire all that up so that fractals display correct colors - start with having them display all red or empty to find where that logic can start
                     all Fractals are reading from custom texture at the moment, but we're not setting it to any parts of the default texture, so gray
                     set up custom texture (the first 128 x 128) to red, green, blue, empty to test colors

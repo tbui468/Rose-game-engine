@@ -48,7 +48,9 @@ namespace sqs {
             void UndoLastTransformation();
             inline int32_t GetMaxTransformations() const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).maxTransformations; }
             inline size_t GetTransformationCount() const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).transformationStack.size(); }
-            std::vector<FractalElement> GetElements(FractalData data) const;
+            std::vector<FractalElement> GetElements(FractalData data) const; //@todo: rename to GetFractalElements
+            FractalElement GetElementAt(int col, int row) const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).elements.at(row * m_Dimensions.x + col); }
+            void SetElementAt(int col, int row, FractalElement e) const { g_Data.at(m_SetIndex).puzzlesData.at(m_Index).elements.at(row * m_Dimensions.x + col) = e; }
         private:
             void SwapFractals(Fractal* fractalA, Fractal* fractalB);
             void RotateFractalCW(Fractal* fractal);
@@ -63,6 +65,7 @@ namespace sqs {
                 default: assert(false);
               }
             }
+            static rose::Sprite CalculateSpriteData(FractalData data);
         public:
             const int m_Index;
             const glm::ivec2 m_Dimensions;

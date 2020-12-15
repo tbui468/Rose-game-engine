@@ -254,8 +254,8 @@ namespace sqs {
     void MenuLayer::SplitFractal(Puzzle* puzzle, Fractal* fractal) {
 
 
-        int subSize = fractal->GetSize() / 2;
-        glm::ivec2 index = fractal->GetIndex();
+        int subSize = fractal->m_Size / 2;
+        glm::ivec2 index = fractal->m_Index;
 
         std::vector<FractalData> splitData;
         splitData.push_back({subSize, {index.x, index.y}});
@@ -268,7 +268,7 @@ namespace sqs {
         std::vector<Fractal*> subFractalList = puzzle->SplitFractal(fractal, splitData); 
 
         for(Fractal* f: subFractalList) {
-            glm::vec2 endCoords = Fractal::GetCoords(f->GetIndex(), subSize, puzzle->m_Dimensions, glm::vec2(puzzle->x(), puzzle->y()));
+            glm::vec2 endCoords = Fractal::GetCoords(f->m_Index, subSize, puzzle->m_Dimensions, glm::vec2(puzzle->x(), puzzle->y()));
             f->MoveTo(endCoords);
         }
 
@@ -277,18 +277,18 @@ namespace sqs {
 
     void MenuLayer::FormFractal(Puzzle* puzzle, FractalCorners fc) {
 
-        glm::ivec2 targetIndex = fc.TopLeft->GetIndex();
-        int subFSize = fc.TopLeft->GetSize();
+        glm::ivec2 targetIndex = fc.TopLeft->m_Index;
+        int subFSize = fc.TopLeft->m_Size;
         int targetSize = subFSize * 2;
         glm::vec2 puzzlePos = {puzzle->x(), puzzle->y()};
 
-        glm::vec2 TLCoords = Fractal::GetCoordsForTarget(fc.TopLeft->GetIndex(), subFSize, targetIndex, targetSize, puzzle->m_Dimensions, puzzlePos);
+        glm::vec2 TLCoords = Fractal::GetCoordsForTarget(fc.TopLeft->m_Index, subFSize, targetIndex, targetSize, puzzle->m_Dimensions, puzzlePos);
         fc.TopLeft->MoveTo(TLCoords);
-        glm::vec2 TRCoords = Fractal::GetCoordsForTarget(fc.TopRight->GetIndex(), subFSize, targetIndex, targetSize, puzzle->m_Dimensions, puzzlePos);
+        glm::vec2 TRCoords = Fractal::GetCoordsForTarget(fc.TopRight->m_Index, subFSize, targetIndex, targetSize, puzzle->m_Dimensions, puzzlePos);
         fc.TopRight->MoveTo(TRCoords);
-        glm::vec2 BLCoords = Fractal::GetCoordsForTarget(fc.BottomLeft->GetIndex(), subFSize, targetIndex, targetSize, puzzle->m_Dimensions, puzzlePos);
+        glm::vec2 BLCoords = Fractal::GetCoordsForTarget(fc.BottomLeft->m_Index, subFSize, targetIndex, targetSize, puzzle->m_Dimensions, puzzlePos);
         fc.BottomLeft->MoveTo(BLCoords);
-        glm::vec2 BRCoords = Fractal::GetCoordsForTarget(fc.BottomRight->GetIndex(), subFSize, targetIndex, targetSize, puzzle->m_Dimensions, puzzlePos);
+        glm::vec2 BRCoords = Fractal::GetCoordsForTarget(fc.BottomRight->m_Index, subFSize, targetIndex, targetSize, puzzle->m_Dimensions, puzzlePos);
         fc.BottomRight->MoveTo(BRCoords);
 
         //could put assert into merge fractals to make sure they all form a large fractal of correct dimensions (1,2 or 4)
@@ -341,7 +341,7 @@ namespace sqs {
                     break;
             }
 
-            if(fractalB == nullptr || fractalB->GetSize() != td.fractalData.size) {
+            if(fractalB == nullptr || fractalB->m_Size != td.fractalData.size) {
                 splitB = puzzle->SplitOverlappingWith(fractalDataB);  //need to call this on the swap fractal before merge is called
                 resized = true;
             }
@@ -352,7 +352,7 @@ namespace sqs {
         Fractal* fractalA = puzzle->GetFractalWithIndex(td.fractalData.index); 
         std::vector<Fractal*> splitA;
 
-        if(fractalA == nullptr || fractalA->GetSize() != td.fractalData.size) {
+        if(fractalA == nullptr || fractalA->m_Size != td.fractalData.size) {
             splitA = puzzle->SplitOverlappingWith(td.fractalData);  //need to call this on the swap fractal before merge is called
             resized = true;
         }
@@ -372,11 +372,11 @@ namespace sqs {
             for(int row = 0; row < td.fractalData.size; ++row) {
                 for(int col = 0; col < td.fractalData.size; ++col) {
                     if(f->Contains({col + fractalDataA.index.x, row + fractalDataA.index.y}) && 
-                       !(f->GetSize() == fractalDataA.size && f->GetIndex() == fractalDataA.index)) {
+                       !(f->m_Size == fractalDataA.size && f->m_Index == fractalDataA.index)) {
                           mergeListA.push_back(f);
                           contains = true;
                     }else if(fractalB && f->Contains({col + fractalDataB.index.x, row + fractalDataB.index.y}) &&
-                             !(f->GetSize() == fractalDataB.size && f->GetIndex() == fractalDataB.index)) {
+                             !(f->m_Size == fractalDataB.size && f->m_Index == fractalDataB.index)) {
                           mergeListB.push_back(f);
                           contains = true;
                     }
@@ -397,20 +397,20 @@ namespace sqs {
 
         /////////////////////////////////MoveTo() on all fractals split (and merged) to proper place ////////////////////////////
         for(Fractal* f: mergeListA) {
-            glm::vec2 coords = Fractal::GetCoordsForTarget(f->GetIndex(), f->GetSize(), fractalDataA.index, fractalDataA.size,
+            glm::vec2 coords = Fractal::GetCoordsForTarget(f->m_Index, f->m_Size, fractalDataA.index, fractalDataA.size,
                     puzzle->m_Dimensions, {puzzle->x(), puzzle->y()});
             f->MoveTo(coords);
         }
 
         for(Fractal* f: mergeListB) {
-            glm::vec2 coords = Fractal::GetCoordsForTarget(f->GetIndex(), f->GetSize(), fractalDataB.index, fractalDataB.size,
+            glm::vec2 coords = Fractal::GetCoordsForTarget(f->m_Index, f->m_Size, fractalDataB.index, fractalDataB.size,
                     puzzle->m_Dimensions, {puzzle->x(), puzzle->y()});
             f->MoveTo(coords);
         }
 
         //move to using regular coords
         for(Fractal* f: noMergeList) {
-            glm::vec2 coords = Fractal::GetCoords(f->GetIndex(), f->GetSize(), puzzle->m_Dimensions, {puzzle->x(), puzzle->y()});
+            glm::vec2 coords = Fractal::GetCoords(f->m_Index, f->m_Size, puzzle->m_Dimensions, {puzzle->x(), puzzle->y()});
             f->MoveTo(coords);
         }
 
@@ -524,7 +524,7 @@ namespace sqs {
             //check for collisions with fractals
             for(Fractal* fractal: puzzle->GetFractals()) {
 
-                if(input == InputType::PinchOut && fractal->GetSize() != 1 && fractal->PointCollision(mouse.x, mouse.y)) {
+                if(input == InputType::PinchOut && fractal->m_Size != 1 && fractal->PointCollision(mouse.x, mouse.y)) {
 
                     SplitFractal(puzzle, fractal);
                     break;
@@ -532,19 +532,19 @@ namespace sqs {
 
                 //check for transformations here
                 if(puzzle->GetTransformationCount() < puzzle->GetMaxTransformations()) {
-                    glm::ivec2 index = fractal->GetIndex();
+                    glm::ivec2 index = fractal->m_Index;
                     Fractal* otherFractal;
                     switch(input) {
                         case InputType::Tap: 
                             if(fractal->EdgeCollision(mouse.x, mouse.y) == rose::Edge::Left || fractal->EdgeCollision(mouse.x, mouse.y) == rose::Edge::Right) {
-                                if(fractal->GetSize() > 1) { 
+                                if(fractal->m_Size > 1) { 
                                     fractal->Transform(TransformationType::ReflectY);
                                     WritePuzzleData(m_UserDataPath, g_Data);
                                     SetAnimationStart();
                                     break;
                                 }
                             }else if(fractal->EdgeCollision(mouse.x, mouse.y) == rose::Edge::Top || fractal->EdgeCollision(mouse.x, mouse.y) == rose::Edge::Bottom) {
-                                if(fractal->GetSize() > 1) { 
+                                if(fractal->m_Size > 1) { 
                                     fractal->Transform(TransformationType::ReflectX);
                                     WritePuzzleData(m_UserDataPath, g_Data);
                                     SetAnimationStart();
@@ -554,21 +554,21 @@ namespace sqs {
                             break;
                         case InputType::FlickLeft:
                             if(fractal->PointCollision(m_DownMouseCoords.x, m_DownMouseCoords.y)) {
-                                otherFractal = puzzle->GetFractalWithIndex(glm::ivec2(index.x - fractal->GetSize(), index.y)); 
-                                if(otherFractal && fractal->GetSize() == otherFractal->GetSize()) { 
+                                otherFractal = puzzle->GetFractalWithIndex(glm::ivec2(index.x - fractal->m_Size, index.y)); 
+                                if(otherFractal && fractal->m_Size == otherFractal->m_Size) { 
                                     fractal->Transform(TransformationType::TranslateNegX);
                                     WritePuzzleData(m_UserDataPath, g_Data);
                                     SetAnimationStart();
                                     break;
                                 }
                             }
-                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopRight && fractal->GetSize() > 1) {
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopRight && fractal->m_Size > 1) {
                                 fractal->Transform(TransformationType::RotateCCW);
                                 WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();
                                 break;
                             }
-                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomRight && fractal->GetSize() > 1) {
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomRight && fractal->m_Size > 1) {
                                 fractal->Transform(TransformationType::RotateCW);
                                 WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();
@@ -577,21 +577,21 @@ namespace sqs {
                             break;
                         case InputType::FlickRight:
                             if(fractal->PointCollision(m_DownMouseCoords.x, m_DownMouseCoords.y)) {
-                                otherFractal = puzzle->GetFractalWithIndex(glm::ivec2(index.x + fractal->GetSize(), index.y)); 
-                                if(otherFractal && fractal->GetSize() == otherFractal->GetSize()) { 
+                                otherFractal = puzzle->GetFractalWithIndex(glm::ivec2(index.x + fractal->m_Size, index.y)); 
+                                if(otherFractal && fractal->m_Size == otherFractal->m_Size) { 
                                     fractal->Transform(TransformationType::TranslatePosX);
                                     WritePuzzleData(m_UserDataPath, g_Data);
                                     SetAnimationStart();
                                     break;
                                 }
                             }
-                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopLeft && fractal->GetSize() > 1) {
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopLeft && fractal->m_Size > 1) {
                                 fractal->Transform(TransformationType::RotateCW);
                                 WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();
                                 break;
                             }
-                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomLeft && fractal->GetSize() > 1) {
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomLeft && fractal->m_Size > 1) {
                                 fractal->Transform(TransformationType::RotateCCW);
                                 WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();
@@ -600,21 +600,21 @@ namespace sqs {
                             break;
                         case InputType::FlickDown:
                             if(fractal->PointCollision(m_DownMouseCoords.x, m_DownMouseCoords.y)) {
-                                otherFractal = puzzle->GetFractalWithIndex(glm::ivec2(index.x, index.y + fractal->GetSize())); 
-                                if(otherFractal && fractal->GetSize() == otherFractal->GetSize()) { 
+                                otherFractal = puzzle->GetFractalWithIndex(glm::ivec2(index.x, index.y + fractal->m_Size)); 
+                                if(otherFractal && fractal->m_Size == otherFractal->m_Size) { 
                                     fractal->Transform(TransformationType::TranslatePosY);
                                     WritePuzzleData(m_UserDataPath, g_Data);
                                     SetAnimationStart();
                                     break;
                                 }
                             }
-                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopLeft && fractal->GetSize() > 1) {
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopLeft && fractal->m_Size > 1) {
                                 fractal->Transform(TransformationType::RotateCCW);
                                 WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();
                                 break;
                             }
-                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopRight && fractal->GetSize() > 1) {
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::TopRight && fractal->m_Size > 1) {
                                 fractal->Transform(TransformationType::RotateCW);
                                 WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();
@@ -623,21 +623,21 @@ namespace sqs {
                             break;
                         case InputType::FlickUp:
                             if(fractal->PointCollision(m_DownMouseCoords.x, m_DownMouseCoords.y)) {
-                                otherFractal = puzzle->GetFractalWithIndex(glm::ivec2(index.x, index.y - fractal->GetSize())); 
-                                if(otherFractal && fractal->GetSize() == otherFractal->GetSize()) { 
+                                otherFractal = puzzle->GetFractalWithIndex(glm::ivec2(index.x, index.y - fractal->m_Size)); 
+                                if(otherFractal && fractal->m_Size == otherFractal->m_Size) { 
                                     fractal->Transform(TransformationType::TranslateNegY);
                                     WritePuzzleData(m_UserDataPath, g_Data);
                                     SetAnimationStart();
                                     break;
                                 }
                             }
-                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomLeft && fractal->GetSize() > 1) {
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomLeft && fractal->m_Size > 1) {
                                 fractal->Transform(TransformationType::RotateCW);
                                 WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();
                                 break;
                             }
-                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomRight && fractal->GetSize() > 1) {
+                            if(fractal->CornerCollision(m_DownMouseCoords.x, m_DownMouseCoords.y) == rose::Corner::BottomRight && fractal->m_Size > 1) {
                                 fractal->Transform(TransformationType::RotateCCW);
                                 WritePuzzleData(m_UserDataPath, g_Data);
                                 SetAnimationStart();

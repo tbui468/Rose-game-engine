@@ -6,12 +6,12 @@ namespace sqs {
     //Fractal::Fractal(rose::Sprite sprite, FractalData data, const glm::vec2& coords, void (Puzzle::*func)(FractalData, TransformationType)):
     Fractal::Fractal(rose::Sprite sprite, FractalData data, const glm::vec2& coords, CallbackData callback):
         Entity(sprite, {s_UnitSize * data.size, s_UnitSize * data.size}, {0.0f, 0.0f, s_UnitSize * data.size, s_UnitSize * data.size}, coords),
-        m_Callback(callback), m_Data(data) {}
+        m_Callback(callback), m_Size(data.size), m_Index(data.index) {}
 
 
 
     void Fractal::Transform(TransformationType type) { 
-        (m_Callback.puzzle->*m_Callback.transformCallback)(m_Data, type); 
+        (m_Callback.puzzle->*m_Callback.transformCallback)({m_Size, m_Index}, type); 
         SetAnimationEndEvent(AnimationEndEvent::Recreate);
     }
 
@@ -44,10 +44,10 @@ namespace sqs {
     }
 
     bool Fractal::Contains(const glm::ivec2& index) const {
-        if(index.x < GetIndex().x) return false;
-        if(index.y < GetIndex().y) return false;
-        if(index.x >= GetIndex().x + GetSize()) return false;
-        if(index.y >= GetIndex().y + GetSize()) return false;
+        if(index.x < m_Index.x) return false;
+        if(index.y < m_Index.y) return false;
+        if(index.x >= m_Index.x + m_Size) return false;
+        if(index.y >= m_Index.y + m_Size) return false;
         return true;
     }
 
@@ -95,31 +95,8 @@ namespace sqs {
         m_Scale = {1.0f, 1.0f};
         m_ToScale = {1.0f, 1.0f};
 
-        //UpdateTextureData(m_Elements, GetIndex(), m_PuzzleIndex); //@todo: move this function to puzzle class
-        //        UpdateTextureData(m_Elements, GetIndex(), 0); //temp puzzle index of 0
-        //       UpdateSprite(); //@todo: this shouldn't be necessary - when OnAnimationEnd() is called, transformed fractals should be destroyed and a new fractal created
     }
 
-
-    void Fractal::UpdateSprite() { //@todo: move to puzzle
-        int size = GetSize();
-        float fWidth = s_UnitSize * size;
-        float fHeight = s_UnitSize * size;
-
-
-        //glm::ivec2 texStart = GetTextureStart(GetIndex(), GetPuzzleIndex()); //putting in temp puzzle index of 0
-        glm::ivec2 texStart = GetTextureStart(GetIndex(), 0);
-
-
-        rose::Sprite sprite = { {texStart.x, texStart.y - (size - 1) * s_UnitSize}, {fWidth, fHeight}, rose::TextureType::Custom };
-        Entity::SetSprite(sprite); //@todo: shouldn't need this anymore - will destroy and recreate fractal when animation is over, and will initialize with new sprite
-    }
-
-
-
-    glm::ivec2 Fractal::GetTextureStart(const glm::ivec2& index, int puzzleNumber) {
-        return glm::ivec2(index.x * s_UnitSize + puzzleNumber * 256, 256 - (index.y + 1) * s_UnitSize); 
-    }
 
 
     glm::vec2 Fractal::GetCoordsForTarget(const glm::ivec2& index, int size, const glm::ivec2& targetIndex, int targetSize, 
