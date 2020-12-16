@@ -36,7 +36,7 @@ namespace sqs {
             Fractal* GetFractalWithIndex(const glm::ivec2& index) const;
             const std::vector<Fractal*>& GetFractals() const { return m_Fractals; }
             std::vector<Fractal*>::iterator GetFractalIterator(Fractal* fractal);
-            void UpdateTextureData(FractalData data) const; //should only update custom texture corresponding to the fractal
+            void UpdateTextureData(FractalData data); //should only update custom texture corresponding to the fractal
         public: //fractal transformations
             std::vector<Fractal*> SplitOverlappingWith(FractalData fractalData);
             std::vector<Fractal*> SplitFractal(Fractal* fractal, const std::vector<FractalData>& fractalData);
@@ -58,6 +58,7 @@ namespace sqs {
             void ReflectFractalX(Fractal* fractal);
             void ReflectFractalY(Fractal* fractal);
             static rose::Sprite CalculateSpriteData(FractalData data, int puzzleIndex);
+            static glm::vec2 CalculateTextureStart(FractalData fData, int puzzleIndex);
         public:
             const int m_Index;
             const glm::ivec2 m_Dimensions;
@@ -68,6 +69,7 @@ namespace sqs {
             std::vector<FractalData> m_MergeList; //just put in data of fractal to create at end of merge, iterate through fractals and destroy those contained inside 
             bool m_IsOpen {false};
             std::vector<UndoIcon*> m_UndoIcons;
+            std::vector<rose::SubTextureMapping> m_TextureMap;
         private:
             inline static const float s_InitOffset {360.0f};
             inline static const rose::Sprite s_Sprite {{32, 32}, {32, 32}, rose::TextureType::Default};

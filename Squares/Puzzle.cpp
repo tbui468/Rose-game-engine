@@ -120,6 +120,10 @@ namespace sqs {
 
         m_MergeList.clear();
 
+
+        rose::Application::GetApplication()->SetCustomTexture(m_TextureMap);
+        m_TextureMap.clear();
+
     }
 
     void Puzzle::OnAnimationUpdate(float t) {
@@ -586,61 +590,49 @@ namespace sqs {
     }
 
 
-    void Puzzle::UpdateTextureData(FractalData data) const {
-        /*
-        //@temp: making it all red to test
-        //@reference
-          struct SubTextureMapping {
-          glm::ivec2 DesTexCoords; //to custom texture
-          glm::ivec2 SrcTexCoords; //from default texture
-          glm::ivec2 TexDimensions;
-          };
-
-          std::vector<rose::SubTextureMapping> texMapping;
-          //frame
-          texMapping.push_back({{0, 0}, {0, 0}, {Fractal::s_UnitSize, Fractal::s_UnitSize}}); 
-          texMapping.push_back({{1, 1}, {Fractal::s_UnitSize + 1, 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
-          texMapping.push_back({{Fractal::s_UnitSize, Fractal::s_UnitSize}, {0, 0}, {Fractal::s_UnitSize, Fractal::s_UnitSize}}); 
-          texMapping.push_back({{Fractal::s_UnitSize + 1, Fractal::s_UnitSize + 1}, {Fractal::s_UnitSize + 1, Fractal::s_UnitSize * 2 + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
-          rose::Application::GetApplication()->SetCustomTexture(texMapping);
-
-          return;*/
-
+    //pushes texture data to m_TextureMap.  The actual updating of texture on GPU side is called in Puzzle::OnAnimationEnd()
+    void Puzzle::UpdateTextureData(FractalData data) {
         //textures start from bottom left, but starting textures from top left to fit fractal order (left to right, top to bottom)
-        glm::ivec2 texStart =  glm::ivec2(data.index.x * Fractal::s_UnitSize + m_Index * 256, 256 - (data.index.y + 1) * Fractal::s_UnitSize); 
+        glm::ivec2 texStart =  CalculateTextureStart(data, m_Index);
 
-        std::vector<rose::SubTextureMapping> texMapping;
+        for(int row = 0; row < data.size; ++row) {  //when data.size is > 1, problems occur.  Why???
+            for(int col = 0; col < data.size; ++col) {
+                //pushing on fractal frame
+                m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize, texStart.y - row * Fractal::s_UnitSize},
+                                     {0, 0}, {Fractal::s_UnitSize, Fractal::s_UnitSize}}); 
 
-        for(int row = 0; row < data.size; ++row) { for(int col = 0; col < data.size; ++col) {
-            //pushing on fractal frame
-            texMapping.push_back({{texStart.x + col * Fractal::s_UnitSize, texStart.y - row * Fractal::s_UnitSize}, {0, 0}, {Fractal::s_UnitSize, Fractal::s_UnitSize}}); 
-
-            //elements are drawn inside fractal frame, so start point is offset by 1 and side length is reduced by 2 in each dimension
-            switch(GetElementAt(col + data.index.x, row + data.index.y)) {
-                case 'r':
-                    texMapping.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
-                            {Fractal::s_UnitSize + 1, 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
-                    break;
-                case 'b':
-                    texMapping.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
-                            {Fractal::s_UnitSize + 1, Fractal::s_UnitSize + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
-                    break;
-                case 'g':
-                    texMapping.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
-                            {Fractal::s_UnitSize + 1, Fractal::s_UnitSize * 2 + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
-                    break;
+                //elements are drawn inside fractal frame, so start point is offset by 1 and side length is reduced by 2 in each dimension
+                switch(GetElementAt(data.index.x + col, data.index.y + row)) {
+                    case 'r':
+                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
+                                {Fractal::s_UnitSize + 1, 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
+                        break;
+                    case 'b':
+                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
+                                {Fractal::s_UnitSize + 1, Fractal::s_UnitSize + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
+                        break;
+                    case 'g':
+                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
+                                {Fractal::s_UnitSize + 1, Fractal::s_UnitSize * 2 + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
+                        break;
+                    default:
+                        break;
+                }
             }
-        }}
+        }
 
-        rose::Application::GetApplication()->SetCustomTexture(texMapping);
     }
 
 
     rose::Sprite Puzzle::CalculateSpriteData(FractalData data, int puzzleIndex) {
-        glm::ivec2 texStart =  glm::ivec2(data.index.x * Fractal::s_UnitSize + puzzleIndex * 256, 256 - (data.index.y + 1) * Fractal::s_UnitSize); 
-        glm::vec2 start = {texStart.x + Fractal::s_UnitSize * data.index.x, texStart.y - Fractal::s_UnitSize * data.index.y};
+        glm::vec2 start = CalculateTextureStart(data, puzzleIndex);
         glm::vec2 size = {Fractal::s_UnitSize * data.size , Fractal::s_UnitSize * data.size};
         return {start, size, rose::TextureType::Custom };
+    }
+
+
+    glm::vec2 Puzzle::CalculateTextureStart(FractalData data, int puzzleIndex) {
+        return glm::ivec2(data.index.x * Fractal::s_UnitSize + puzzleIndex * 256, 256 - (data.index.y + 1) * Fractal::s_UnitSize); 
     }
 
 

@@ -3,8 +3,8 @@
 namespace sqs {
 
     static PuzzleData p00 {{1, 1}, {'r'}, 3}; 
-    static PuzzleData p01 {{2, 2}, {'r', 'g', 
-                                    'b', 'e'}, 3};
+    static PuzzleData p01 {{2, 2}, {'r', 'r', 
+                                    'r', 'r'}, 3};
     static PuzzleData p02 {{4, 4}, {'e', 'g', 'r', 'r',
                                     'e', 'e', 'e', 'r',
                                     'e', 'r', 'g', 'r',

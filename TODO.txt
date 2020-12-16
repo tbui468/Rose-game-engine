@@ -40,16 +40,10 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
 
             ///////////////////////////REFACTOR///////////////////////////////////////////////////////
-            Puzzle::CalculateSpriteData() and Puzzle::UpdateTextureData() are confusing - that's why I can't figure this out
-            what is 256??? Give it a variable name so I remember what it represents.  Write comments if what I'm coding is not obvious from code
-
-            Is the problem Puzzle::CalculateSpriteData()????? It's not taking puzzle index into account 
-                problem is with texStart - both CalculateSpriteData() and UpdateTextureData() use it - should pull out to own function
-                there's some misalignment with where textures are written to, and where they are read from
-
-            Two options:
-                Step through this again - start from the Renderer class and how custom textures are updated there
-                Or start from making 
+            Problem seems to be with sprite data being updated immediately on transformation
+                since Fractals read this data on every draw call, everything is colored wrong
+                need to avoid changing fractal textures until OnAnimationEnd().  
+                    so instead of update textures immediately, save the texMapping and apply it all at the very end
 
             MenuLayer::UndoResizeFractal() function is not functioning....crashes sometimes
 
