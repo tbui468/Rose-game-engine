@@ -1,5 +1,25 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
+    consumer <- all people to different extents - netflix, steam, 
+    critic <- most people interested in blockchain are here - robinhood, coinbase, 
+    creator <- how can a blockchain encourage more of this? Is it possible to have a cryptocurrency only for one purpose - for creators and not investors?
+                is there a way (time, money, health, social status) to incentivise creation with the blockchain and disincentivise investing for material wealth?
+
+                How about a cryptocurrency for knowledge?  Think of Wikipedia or Brilliant.
+                A person writes a really good article/lesson and people vote for it by giving the currency.
+                That person can then use that currency to vote for articles/lessons he likes OR distribute to 
+                    fields of knowledge he finds valuable.
+                How could I then keep the currency tied to the distribution of knowledge, and not to monetary value?
+                Proof of work functions because it promises slightly more money for spending money (on electricity) to mine
+                How can you penalize time if you try to break the blockchain??  
+                How about decaying the currency to zero after a time period.  So a person has to spend it within a time period
+                of it being produced.  That would get rid of the investor problem.  But then what would incentivize miners (or proof of stake holders)
+                to keep the blockchain up and running honestly?  
+
+    the consumer pursues pleasure
+    the critic pursues wealth
+    the creator pursues self-actualization/expression/the core of the human experience
+
     PITCH: An application teaching goemetric transformations using puzzles, but the app itself is a puzzle the user must explore to unravel
     GOAL: A vertical slice of the entire game - one complete cube (with other cubes grayed out so you can use them)
 
@@ -40,10 +60,17 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
 
             ///////////////////////////REFACTOR///////////////////////////////////////////////////////
-            Problem seems to be with sprite data being updated immediately on transformation
-                since Fractals read this data on every draw call, everything is colored wrong
-                need to avoid changing fractal textures until OnAnimationEnd().  
-                    so instead of update textures immediately, save the texMapping and apply it all at the very end
+            First transformation causes texture to flip vertically at end of animation
+                what's different with how fractals are initialized and when they are transformed later????
+
+                ordering of elements is wrong somewhere 
+                is the confusion over this a fundamental problem with my structure?  Elment access and row/col confusion 
+                will happen again later if I don't fix the system now
+
+                Get that notebook out and pick ONE coordinate system to use - go through and see how it all fits together
+                
+            Transformations causes textures to flip out (but translations seem okay - except for the splitting/merging problem mentioned above)
+                if the above flipping of texture y-axis fixes that texture bug, bug with reflection/rotation will be easier to isolate
 
             MenuLayer::UndoResizeFractal() function is not functioning....crashes sometimes
 

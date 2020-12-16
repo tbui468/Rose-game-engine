@@ -369,28 +369,25 @@ namespace sqs {
 
         for(Fractal* f: allSplitFractals) {
             bool contains = false;
-            for(int row = 0; row < td.fractalData.size; ++row) {
-                for(int col = 0; col < td.fractalData.size; ++col) {
-                    if(f->Contains({col + fractalDataA.index.x, row + fractalDataA.index.y}) && 
-                       !(f->m_Size == fractalDataA.size && f->m_Index == fractalDataA.index)) {
-                          mergeListA.push_back(f);
-                          contains = true;
-                    }else if(fractalB && f->Contains({col + fractalDataB.index.x, row + fractalDataB.index.y}) &&
-                             !(f->m_Size == fractalDataB.size && f->m_Index == fractalDataB.index)) {
-                          mergeListB.push_back(f);
-                          contains = true;
-                    }
-                    if(contains) break;
+            for(int row = 0; row < td.fractalData.size; ++row) { for(int col = 0; col < td.fractalData.size; ++col) { //start nested loop for col/row
+                if(f->Contains({col + fractalDataA.index.x, row + fractalDataA.index.y}) && 
+                        !(f->m_Size == fractalDataA.size && f->m_Index == fractalDataA.index)) {
+                    mergeListA.push_back(f);
+                    contains = true;
+                }else if(fractalB && f->Contains({col + fractalDataB.index.x, row + fractalDataB.index.y}) &&
+                        !(f->m_Size == fractalDataB.size && f->m_Index == fractalDataB.index)) {
+                    mergeListB.push_back(f);
+                    contains = true;
                 }
                 if(contains) break;
-            }
+            } if(contains) break;} //end of nested loops for col/row
             if(!contains) noMergeList.push_back(f);
         }
 
 
         //something past here crashes I think
-    //    std::cout << mergeListA.size() << std::endl;
-     //   std::cout << mergeListB.size() << std::endl;
+        //    std::cout << mergeListA.size() << std::endl;
+        //   std::cout << mergeListB.size() << std::endl;
 
         if(mergeListA.size() > 0) puzzle->MergeFractals(mergeListA);
         if(mergeListB.size() > 0) puzzle->MergeFractals(mergeListB);

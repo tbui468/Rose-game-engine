@@ -12,7 +12,6 @@ namespace sqs {
 
     void Fractal::Transform(TransformationType type) { 
         (m_Callback.puzzle->*m_Callback.transformCallback)({m_Size, m_Index}, type); 
-        SetAnimationEndEvent(AnimationEndEvent::Recreate);
     }
 
     //return type is read as follows:

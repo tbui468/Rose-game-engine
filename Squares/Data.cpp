@@ -5,7 +5,7 @@ namespace sqs {
     static PuzzleData p00 {{1, 1}, {'r'}, 3}; 
     static PuzzleData p01 {{2, 2}, {'r', 'r', 
                                     'r', 'r'}, 3};
-    static PuzzleData p02 {{4, 4}, {'e', 'g', 'r', 'r',
+    static PuzzleData p02 {{4, 4}, {'g', 'g', 'g', 'g',
                                     'e', 'e', 'e', 'r',
                                     'e', 'r', 'g', 'r',
                                     'b', 'e', 'g', 'b'}, 5};

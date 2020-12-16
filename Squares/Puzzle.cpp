@@ -25,6 +25,10 @@ namespace sqs {
                 }
             }
         }
+
+        rose::Application::GetApplication()->SetCustomTexture(m_TextureMap);
+        m_TextureMap.clear();
+
     }
 
 
@@ -119,7 +123,6 @@ namespace sqs {
         }
 
         m_MergeList.clear();
-
 
         rose::Application::GetApplication()->SetCustomTexture(m_TextureMap);
         m_TextureMap.clear();
@@ -598,21 +601,21 @@ namespace sqs {
         for(int row = 0; row < data.size; ++row) {  //when data.size is > 1, problems occur.  Why???
             for(int col = 0; col < data.size; ++col) {
                 //pushing on fractal frame
-                m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize, texStart.y - row * Fractal::s_UnitSize},
+                m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize, texStart.y + row * Fractal::s_UnitSize},
                                      {0, 0}, {Fractal::s_UnitSize, Fractal::s_UnitSize}}); 
 
                 //elements are drawn inside fractal frame, so start point is offset by 1 and side length is reduced by 2 in each dimension
                 switch(GetElementAt(data.index.x + col, data.index.y + row)) {
                     case 'r':
-                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
+                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y + row * Fractal::s_UnitSize + 1}, 
                                 {Fractal::s_UnitSize + 1, 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
                         break;
                     case 'b':
-                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
+                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y + row * Fractal::s_UnitSize + 1}, 
                                 {Fractal::s_UnitSize + 1, Fractal::s_UnitSize + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
                         break;
                     case 'g':
-                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
+                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y + row * Fractal::s_UnitSize + 1}, 
                                 {Fractal::s_UnitSize + 1, Fractal::s_UnitSize * 2 + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
                         break;
                     default:
@@ -632,7 +635,8 @@ namespace sqs {
 
 
     glm::vec2 Puzzle::CalculateTextureStart(FractalData data, int puzzleIndex) {
-        return glm::ivec2(data.index.x * Fractal::s_UnitSize + puzzleIndex * 256, 256 - (data.index.y + 1) * Fractal::s_UnitSize); 
+        //return glm::ivec2(data.index.x * Fractal::s_UnitSize + puzzleIndex * 256, 256 - Fractal::s_UnitSize * (data.index.y + data.size));
+        return glm::ivec2(data.index.x * Fractal::s_UnitSize + puzzleIndex * 256, Fractal::s_UnitSize * data.index.y);
     }
 
 
