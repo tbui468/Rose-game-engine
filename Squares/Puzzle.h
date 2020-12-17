@@ -49,6 +49,7 @@ namespace sqs {
             inline int32_t GetMaxTransformations() const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).maxTransformations; }
             inline size_t GetTransformationCount() const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).transformationStack.size(); }
             std::vector<FractalElement> GetElements(FractalData data) const; //@todo: rename to GetFractalElements
+            const std::vector<FractalElement>& GetAllElements() const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).elements; }
             FractalElement GetElementAt(int col, int row) const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).elements.at(row * m_Dimensions.x + col); }
             void SetElementAt(int col, int row, FractalElement e) const { g_Data.at(m_SetIndex).puzzlesData.at(m_Index).elements.at(row * m_Dimensions.x + col) = e; }
         private:

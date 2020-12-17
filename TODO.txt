@@ -63,11 +63,7 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
             First transformation causes texture to flip vertically at end of animation
                 what's different with how fractals are initialized and when they are transformed later????
 
-                ordering of elements is wrong somewhere 
-                is the confusion over this a fundamental problem with my structure?  Elment access and row/col confusion 
-                will happen again later if I don't fix the system now
-
-                Get that notebook out and pick ONE coordinate system to use - go through and see how it all fits together
+                seems like the problem is calculate texture start can't be used to calculate sprite data
                 
             Transformations causes textures to flip out (but translations seem okay - except for the splitting/merging problem mentioned above)
                 if the above flipping of texture y-axis fixes that texture bug, bug with reflection/rotation will be easier to isolate

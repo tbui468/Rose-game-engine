@@ -312,7 +312,6 @@ namespace sqs {
             }
         }
 
-
         return closestF;
     }
 
@@ -433,6 +432,14 @@ namespace sqs {
                 assert(false); //should always be a valid transformation
                 break;
         }
+
+        //test - this works as intended
+        int row = 0;
+        for(const FractalElement& e: GetAllElements()) {
+            std::cout << e << ", ";
+            if((row + 1) % m_Dimensions.x == 0) std::cout << std::endl;
+            ++row;
+        }
     }
 
     //@todo: split into TranslateLeft, TranslateDown, etc
@@ -491,8 +498,8 @@ namespace sqs {
         //to rotate ccw - swap col/row and flip over y (eg, reverse iteration over cols)
         for(int row = 0; row < fractal->m_Size; ++row) {
             for(int col = 0; col < fractal->m_Size; ++col) {
-                int newCol = fractal->m_Size - 1 - row;
-                int newRow = col;
+                int newCol = row;
+                int newRow = fractal->m_Size - 1 - col;
                 SetElementAt(fractal->m_Index.x + col, fractal->m_Index.y + row, elements.at(newRow * fractal->m_Size + newCol));
             }
         }
@@ -512,8 +519,8 @@ namespace sqs {
         //to rotate ccw - swap col/row and flip over x (eg, reverse iteration over rows)
         for(int row = 0; row < fractal->m_Size; ++row) {
             for(int col = 0; col < fractal->m_Size; ++col) {
-                int newCol = row;
-                int newRow = fractal->m_Size - 1 - col;
+                int newCol = fractal->m_Size - 1 - row;
+                int newRow = col;
                 SetElementAt(fractal->m_Index.x + col, fractal->m_Index.y + row, elements.at(newRow * fractal->m_Size + newCol));
             }
         }
@@ -521,6 +528,7 @@ namespace sqs {
         UpdateTextureData({fractal->m_Size, fractal->m_Index});
 
     }
+
 
     void Puzzle::ReflectFractalX(Fractal* fractal) {
         fractal->ScaleTo({1.0f, -1.0f});
@@ -601,21 +609,21 @@ namespace sqs {
         for(int row = 0; row < data.size; ++row) {  //when data.size is > 1, problems occur.  Why???
             for(int col = 0; col < data.size; ++col) {
                 //pushing on fractal frame
-                m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize, texStart.y + row * Fractal::s_UnitSize},
+                m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize, texStart.y - row * Fractal::s_UnitSize},
                                      {0, 0}, {Fractal::s_UnitSize, Fractal::s_UnitSize}}); 
 
                 //elements are drawn inside fractal frame, so start point is offset by 1 and side length is reduced by 2 in each dimension
                 switch(GetElementAt(data.index.x + col, data.index.y + row)) {
                     case 'r':
-                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y + row * Fractal::s_UnitSize + 1}, 
+                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
                                 {Fractal::s_UnitSize + 1, 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
                         break;
                     case 'b':
-                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y + row * Fractal::s_UnitSize + 1}, 
+                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
                                 {Fractal::s_UnitSize + 1, Fractal::s_UnitSize + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
                         break;
                     case 'g':
-                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y + row * Fractal::s_UnitSize + 1}, 
+                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
                                 {Fractal::s_UnitSize + 1, Fractal::s_UnitSize * 2 + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
                         break;
                     default:
@@ -628,15 +636,16 @@ namespace sqs {
 
 
     rose::Sprite Puzzle::CalculateSpriteData(FractalData data, int puzzleIndex) {
-        glm::vec2 start = CalculateTextureStart(data, puzzleIndex);
+        //can't use CalculateTextureStart() here for 'start' since textures coords are flipped in the y-axis
+        glm::vec2 start = glm::ivec2(data.index.x * Fractal::s_UnitSize + puzzleIndex * 256, 256 - Fractal::s_UnitSize * (data.index.y + data.size));
         glm::vec2 size = {Fractal::s_UnitSize * data.size , Fractal::s_UnitSize * data.size};
-        return {start, size, rose::TextureType::Custom };
+        return { start, size, rose::TextureType::Custom };
     }
 
 
     glm::vec2 Puzzle::CalculateTextureStart(FractalData data, int puzzleIndex) {
         //return glm::ivec2(data.index.x * Fractal::s_UnitSize + puzzleIndex * 256, 256 - Fractal::s_UnitSize * (data.index.y + data.size));
-        return glm::ivec2(data.index.x * Fractal::s_UnitSize + puzzleIndex * 256, Fractal::s_UnitSize * data.index.y);
+        return glm::ivec2(data.index.x * Fractal::s_UnitSize + puzzleIndex * 256, 256 - Fractal::s_UnitSize * (data.index.y + 1));
     }
 
 
