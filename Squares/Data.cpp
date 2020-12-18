@@ -5,10 +5,10 @@ namespace sqs {
     static PuzzleData p00 {{1, 1}, {'r'}, 3}; 
     static PuzzleData p01 {{2, 2}, {'r', 'g', 
                                     'b', 'e'}, 3};
-    static PuzzleData p02 {{4, 4}, {'g', 'g', 'g', 'g',
-                                    'e', 'e', 'e', 'r',
-                                    'e', 'r', 'g', 'r',
-                                    'b', 'e', 'g', 'b'}, 5};
+    static PuzzleData p02 {{6, 4}, {'E', 'g', 'g', 'g', 'g', 'g',
+                                    'E', 'e', 'e', 'e', 'r', 'E',
+                                    'g', 'e', 'r', 'g', 'r', 'E',
+                                    'E', 'b', 'e', 'g', 'b', 'E'}, 5};
     static PuzzleData p03 {{4, 3}, {'e', 'g', 'r', 'r',
                                     'e', 'E', 'E', 'r',
                                     'b', 'E', 'g', 'b'}, 5};

@@ -56,15 +56,10 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
 
-            found a bug/problem with calling split twice
-                code assumes target size is twice size of fractals (when splitting)
-                BUT this is not true when we have a 4x4 that needs to be split into 1x1s - the target size is set to 2x2 when it should be 4x4
-
-                How about SplitFractals has an overload with a list of FractalData that it has to satisfy???
-
-            ////////////////////////////////////////////////////////////////////////////////////
-
             Implement non-moveable colored blocks (which are the endpoints user has to connect using transformations)
+                non-moveable colored blocks will be marked with uppercase letters ('R' for red, 'B' for blue, etc)
+
+                easier to have a dedicated sprite for them (rather than using something like alpha to make the color different)
 
             Implement completing puzzles by connecting colored blocks with non-moveable colored blocks
 

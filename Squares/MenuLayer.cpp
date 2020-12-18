@@ -287,7 +287,6 @@ namespace sqs {
 
 
     void MenuLayer::UndoResizeFractals(Puzzle* puzzle) {
-        std::cout << "Inside undoresize fractals" << std::endl;
         assert(puzzle->GetTransformationCount() != 0);
         TransformationData td = puzzle->PeekTransformation();
 
@@ -323,7 +322,6 @@ namespace sqs {
         if(isTranslation) targetData.push_back(targetDataB);
 
 
-        std::cout << "before two rounds of splittin" << std::endl;
 
         bool resized = false;
 
@@ -331,17 +329,7 @@ namespace sqs {
         //if a 2x2 fits perfectly inside one of the targetData, won't be split again
         std::vector<Fractal*> toSplitListRound1 = puzzle->FindFractalsPartialIntersectionWith(targetData, puzzle->GetFractals());
         std::vector<Fractal*> splitList = puzzle->SplitFractals(toSplitListRound1, targetData);
-        /*
-        if(!toSplitListRound1.empty()) resized = true;
-        std::vector<Fractal*> splitListRound1 = puzzle->SplitFractals(toSplitListRound1);
-
-        std::vector<Fractal*> toSplitListRound2 = puzzle->FindFractalsPartialIntersectionWith(targetData, splitListRound1);
-        if(!toSplitListRound2.empty()) resized = true;
-        std::vector<Fractal*> splitListRound2 = puzzle->SplitFractals(toSplitListRound2);*/
-
-
-
-        std::cout << "after two rounds of splittin" << std::endl;
+        if(!splitList.empty()) resized = true;
 
 
         //move to using regular coords for ALL (the two calls below to mergeFractalLists A and B will overwrite this)
@@ -351,11 +339,16 @@ namespace sqs {
         }
 
 
-        std::cout << "after moving all fractals" << std::endl;
 
         //merge fractals for FractalData A
         std::vector<Fractal*> mergeListA = puzzle->FindFractalsInsideOf(targetDataA, puzzle->GetFractals());
-        if(mergeListA.size() > 0) {
+        //testingin
+        std::cout << "MergeListA" << std::endl;
+        for(Fractal* f: mergeListA) {
+            std::cout << "Index: " << f->m_Index.x << ", " << f->m_Index.y << " Size: " << f->m_Size << std::endl;
+        }
+
+        if(mergeListA.size() > 1) {
             puzzle->MergeFractals(mergeListA);
             resized = true;
         }
@@ -365,12 +358,17 @@ namespace sqs {
             f->MoveTo(coords);
         }
 
-        std::cout << "after moving mergeListA" << std::endl;
 
         //merge fractals for FractalData B if tranformation was a translation
         if(isTranslation) {
             std::vector<Fractal*> mergeListB = puzzle->FindFractalsInsideOf(targetDataB, puzzle->GetFractals());
-            if(mergeListB.size() > 0) {
+
+            std::cout << "MergeListB" << std::endl;
+            for(Fractal* f: mergeListB) {
+                std::cout << "Index: " << f->m_Index.x << ", " << f->m_Index.y << " Size: " << f->m_Size << std::endl;
+            }
+
+            if(mergeListB.size() > 1) {
                 puzzle->MergeFractals(mergeListB);
                 resized = true;
             }
@@ -381,7 +379,6 @@ namespace sqs {
             }
         }
 
-        std::cout << "after moving mergeListB (optional)" << std::endl;
 
         if(resized) SetAnimationStart(); //how will this be decided?
 
