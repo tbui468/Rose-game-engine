@@ -1,27 +1,24 @@
 REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
-    consumer <- all people to different extents - netflix, steam, 
-    critic <- most people interested in blockchain are here - robinhood, coinbase, 
-    creator <- how can a blockchain encourage more of this? Is it possible to have a cryptocurrency only for one purpose - for creators and not investors?
-                is there a way (time, money, health, social status) to incentivise creation with the blockchain and disincentivise investing for material wealth?
+    Idea: create a class that teaches the basics of blockchains using my typescript example to business owners
+            have people who understand it better than me critique it and fix any problems I have,
+                and then point in their direction for business connections (and collect a commission for it???)
 
-                How about a cryptocurrency for knowledge?  Think of Wikipedia or Brilliant.
-                A person writes a really good article/lesson and people vote for it by giving the currency.
-                That person can then use that currency to vote for articles/lessons he likes OR distribute to 
-                    fields of knowledge he finds valuable.
-                How could I then keep the currency tied to the distribution of knowledge, and not to monetary value?
-                Proof of work functions because it promises slightly more money for spending money (on electricity) to mine
-                How can you penalize time if you try to break the blockchain??  
-                How about decaying the currency to zero after a time period.  So a person has to spend it within a time period
-                of it being produced.  That would get rid of the investor problem.  But then what would incentivize miners (or proof of stake holders)
-                to keep the blockchain up and running honestly?  
-
-    the consumer pursues pleasure
-    the critic pursues wealth
-    the creator pursues self-actualization/expression/the core of the human experience
+            Give the source out to people who want it - but essentially run it inside a class for two hours + 1 break
 
     PITCH: An application teaching goemetric transformations using puzzles, but the app itself is a puzzle the user must explore to unravel
     GOAL: A vertical slice of the entire game - one complete cube (with other cubes grayed out so you can use them)
+            48 puzzles - 8 sets.  First 3 must be done in order.  Last 5 can be done in any order
+                1. 1x1 fractals, up to two colors, 3 transformations
+                2. 2x2 fractals, up to two colors, 3 transformations
+                3. 4x4 fractals, up to two colors, 3 transformations
+                4. 4x4 fractals, up to three colors, 5 transformations 
+                5. 4x4 fractals, up to three colors, 5 transformations 
+                6. 4x4 fractals, up to three colors, 5 transformations 
+                7. 4x4 fractals, up to four colors, 7 transformations
+                8. 4x4 fractals, up to four colors, 7 transformations
+
+                4x4 is maximum playable grid (endpoints can be extra blocks on the longer screen dimension)
 
             look at notebook for design notes
                 the puzzle interaction needs to be clarified and fleshed out ( main problem is I don't like solving puzzles in 3 dimensions)
@@ -59,46 +56,11 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
 
-            ///////////////////////////REFACTOR///////////////////////////////////////////////////////
-            First transformation causes texture to flip vertically at end of animation
-                what's different with how fractals are initialized and when they are transformed later????
+            found a bug/problem with calling split twice
+                code assumes target size is twice size of fractals (when splitting)
+                BUT this is not true when we have a 4x4 that needs to be split into 1x1s - the target size is set to 2x2 when it should be 4x4
 
-                seems like the problem is calculate texture start can't be used to calculate sprite data
-                
-            Transformations causes textures to flip out (but translations seem okay - except for the splitting/merging problem mentioned above)
-                if the above flipping of texture y-axis fixes that texture bug, bug with reflection/rotation will be easier to isolate
-
-            MenuLayer::UndoResizeFractal() function is not functioning....crashes sometimes
-
-            What if I refactored everything so that puzzles held all element data??
-              Would that make undo easier??? I could just save the undo stack as a grid
-                But that would cause other problems with undo - would still need to store undo data (because deducing that by comparing current and
-                previous elements would be a different type of hell).  So undo will still best be saved as UndoData
-
-              If a fractal animation is set, always destroy/recreate it OnAnimationEnd() to avoid saving states
-              setting a fractal animation will change the elements and textures in puzzle immediately, (but this won't affect current fractals)
-              OnAnimationEnd will recreate the fractals with the new data that was transformed (new data is only sprite since elements is held in puzzle now)
-
-              How would my current problem be different if I refactored the elements to puzzle?
-                right now, I'm calling split fractals, merge fractals and then animate when resizing is needed for the undo pipeline 
-                this wouldn't really change much besides how I look up which fractals to split/merge (since now it can be done in puzzles)
-                but then would still need to iterate over fractals
-
-
-              //////////////shelve this for the time being/////////////////////////////////
-            ///////////////////////UNDO BUG///////////////////////////////////////////////////
-            Bug recreated!
-              Merge center left 4 into a 2x2.  Merge center right 4 into a 2x2.  Swap the two 2x2s
-              Merge all into a 4x4
-              Push undo for application to crash.  
-              Also crashes if I do top middle, and bottom middle 2x2s 
-
-            MenuLayer::UndoResizeFractals is too big and confusing - is there any way to break these up into smaller functions? Or are they too dependent?
-
-              I suspect bug is related to splitting after check fractalB, and then trying to split again when checking fractalA afterwards
-
-
-              Consider grabbing a notebook and writing out some pseudocode to cover all the cases
+                How about SplitFractals has an overload with a list of FractalData that it has to satisfy???
 
             ////////////////////////////////////////////////////////////////////////////////////
 
@@ -106,8 +68,13 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
             Implement completing puzzles by connecting colored blocks with non-moveable colored blocks
 
-            How will this connect to the puzzlesets????
-
+            Create the layer menu system - 8 cubes - each cube unfolds into 6 puzzles - each puzzle consists of variable number of fractals to transform
+                first screen starts with a puzzle (user can manipulate fractals)
+                clearing that puzzle makes a 'go back' button appear for user to move to puzzle select screen
+                once player clears all 6 puzzles (and then transforms the puzzles correctly), a 'go back' button appears that goes to the cube selection screen
+                anytime during tutorial, player can press 'escape' to open a submenu for options/quitting
+                what happens when the player clears the 8 cubes???  All 8 cubes transform into Dahl cross, and warp so the player sees the 4 dimenional tesseract
+                roll credits
 
 
 Set build (x86 or x64) (or should this be a build option???)

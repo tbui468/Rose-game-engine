@@ -38,8 +38,10 @@ namespace sqs {
             std::vector<Fractal*>::iterator GetFractalIterator(Fractal* fractal);
             void UpdateTextureData(FractalData data); //should only update custom texture corresponding to the fractal
         public: //fractal transformations
-            std::vector<Fractal*> SplitOverlappingWith(FractalData fractalData);
-            std::vector<Fractal*> SplitFractal(Fractal* fractal, const std::vector<FractalData>& fractalData);
+            std::vector<Fractal*> FindFractalsPartialIntersectionWith(const std::vector<FractalData>& dataList, const std::vector<Fractal*>& fractals) const;
+            std::vector<Fractal*> FindFractalsInsideOf(FractalData data, const std::vector<Fractal*>& fractals) const;
+            std::vector<Fractal*> SplitFractals(const std::vector<Fractal*>& fractals);
+            std::vector<Fractal*> SplitFractals(const std::vector<Fractal*>& fractals, const std::vector<FractalData>& dataList);
             void Transform(FractalData data, TransformationType type); //@todo: make all the specific transformation functions private - only this one is public (const later)
             void MergeFractals(std::vector<Fractal*> fractals);
             inline void PushTransformation(TransformationData data) const { g_Data.at(m_SetIndex).puzzlesData.at(m_Index).transformationStack.push_back(data); }
@@ -59,7 +61,6 @@ namespace sqs {
             void ReflectFractalX(Fractal* fractal);
             void ReflectFractalY(Fractal* fractal);
             static rose::Sprite CalculateSpriteData(FractalData data, int puzzleIndex);
-            static glm::vec2 CalculateTextureStart(FractalData fData, int puzzleIndex);
         public:
             const int m_Index;
             const glm::ivec2 m_Dimensions;

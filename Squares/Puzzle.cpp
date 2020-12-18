@@ -168,123 +168,131 @@ namespace sqs {
     }
 
 
-    std::vector<Fractal*> Puzzle::SplitOverlappingWith(FractalData fractalData) {
+    std::vector<Fractal*> Puzzle::FindFractalsInsideOf(FractalData data, const std::vector<Fractal*>& fractals) const {
+        std::vector<Fractal*> properSubsetFractals;
 
-        //finding all fractals that overlap the given fractal data
+        for(Fractal* f: fractals) {
+            OverlapType type = Fractal::FindOverlapType({f->m_Size, f->m_Index}, data);
+            if(type == OverlapType::Within || type == OverlapType::Equal) {
+                properSubsetFractals.push_back(f);
+            }
+        }
+
+        return properSubsetFractals;
+    }
+
+    std::vector<Fractal*> Puzzle::FindFractalsPartialIntersectionWith(const std::vector<FractalData>& dataList, const std::vector<Fractal*>& fractals) const {
         std::vector<Fractal*> overlappingFractals;
-        std::vector<Fractal*> allSplitFractals;
 
-        for(Fractal* f: m_Fractals) {
-
-            OverlapType type = Fractal::FindOverlapType({f->m_Size, f->m_Index}, fractalData);
-
-            std::cout << "Fractal index: " << f->m_Index.x << ", " << f->m_Index.y << std::endl;
-            std::cout << "Overlap type: ";
-
-            switch(type) {
-                case OverlapType::None:
-                    std::cout << "None" << std::endl;
-                    break;
-                case OverlapType::Equal:
-                    std::cout << "Equal" << std::endl;
-                    allSplitFractals.push_back(f);
-                    return allSplitFractals;
-                    break;
-                case OverlapType::Within:
-                    std::cout << "Within" << std::endl;
-                    allSplitFractals.push_back(f);
-                    break;
-                case OverlapType::Enclose:
-                    std::cout << "Enclose" << std::endl;
+        for(Fractal* f: fractals) {
+            for(FractalData fData: dataList) {
+                OverlapType type = Fractal::FindOverlapType({f->m_Size, f->m_Index}, fData);
+                if(type == OverlapType::Partial || type == OverlapType::Enclose) {
                     overlappingFractals.push_back(f);
-                    break;
-                case OverlapType::Partial:
-                    std::cout << "Partial" << std::endl;
-                    overlappingFractals.push_back(f);
-                    break;
+                    break; //don't want to add it again if already overlapping with one target fractal data
+                }
             }
         }
 
-        std::cout << std::endl;
-
-
-        //all fractals with no intersections are already filtered out above
-        for(Fractal* f: overlappingFractals) {
-            std::vector<FractalData> fData;
-
-            int size = f->m_Size;
-            glm::ivec2 index = f->m_Index;
-
-            switch(size) {
-                case 1:
-                    fData.push_back({1, f->m_Index}); 
-                    break;
-                case 2:
-                    fData.push_back({1, index}); 
-                    fData.push_back({1, {index.x + 1, index.y}}); 
-                    fData.push_back({1, {index.x, index.y + 1}}); 
-                    fData.push_back({1, {index.x + 1, index.y + 1}}); 
-                    break;
-                case 4:
-                    FractalData fdArr[4];
-                    fdArr[0] = {2, index};
-                    fdArr[1] = {2, {index.x + 2, index.y}};
-                    fdArr[2] = {2, {index.x, index.y + 2}};
-                    fdArr[3] = {2, {index.x + 2, index.y + 2}};
-                    for(int i = 0; i < 4; ++i) {
-                        OverlapType type = Fractal::FindOverlapType(fdArr[i], fractalData);
-                        if(type == OverlapType::None || type == OverlapType::Equal || type == OverlapType::Within) { //2x2 fractal doesn't need to be split anymore
-                            fData.push_back(fdArr[i]);
-                        }else{ //need to split 2x2 further into 1x1s
-                            glm::ivec2 fdIndex = fdArr[i].index; 
-                            fData.push_back({1, fdIndex}); 
-                            fData.push_back({1, {fdIndex.x + 1, fdIndex.y}}); 
-                            fData.push_back({1, {fdIndex.x, fdIndex.y + 1}}); 
-                            fData.push_back({1, {fdIndex.x + 1, fdIndex.y + 1}}); 
-                        }
-                    }
-                    break;
-            }
-
-            for(Fractal* f: SplitFractal(f, fData)) allSplitFractals.push_back(f);
-        }
-
-        return allSplitFractals;
+        return overlappingFractals;
     }
 
 
-    std::vector<Fractal*> Puzzle::SplitFractal(Fractal* fractal, const std::vector<FractalData>& fractalData) {
 
-        std::vector<Fractal*> newFractals;
+    std::vector<Fractal*> Puzzle::SplitFractals(const std::vector<Fractal*>& fractals) {
 
-        for(FractalData data: fractalData) {
-            glm::vec2 startCoords = Fractal::GetCoordsForTarget(data.index, data.size, fractal->m_Index, fractal->m_Size, m_Dimensions, glm::vec2(x(), y()));
-            Fractal* newFractal; 
+        std::vector<Fractal*> splitFractals;
 
-            switch(data.size) {
-                case 1: 
-                    newFractal = new Fractal(CalculateSpriteData({data.size, data.index}, m_Index), data, startCoords, {this, &Puzzle::Transform});
+        for(Fractal* f: fractals) {
+            if(f->m_Size > 1) {
+
+                //split f into quarters of half size in each dimension
+                for(int yIndex = f->m_Index.y; yIndex < f->m_Index.y + f->m_Size; yIndex += f->m_Size/2) {
+                    for(int xIndex = f->m_Index.x; xIndex < f->m_Index.x + f->m_Size; xIndex += f->m_Size/2) {
+                        glm::vec2 startCoords = Fractal::GetCoordsForTarget({xIndex, yIndex}, f->m_Size/2, f->m_Index, f->m_Size, m_Dimensions, {x(), y()});
+                        FractalData data = {f->m_Size/2, {xIndex, yIndex}};
+                        Fractal* newFractal = new Fractal(CalculateSpriteData(data, m_Index), data, startCoords, {this, &Puzzle::Transform});
+                        m_Fractals.push_back(newFractal);
+                        splitFractals.push_back(newFractal);
+                    }
+                }
+
+                m_Fractals.erase(GetFractalIterator(f));
+                delete f;
+            }
+        }
+
+        return splitFractals;
+    }
+
+
+    std::vector<Fractal*> Puzzle::SplitFractals(const std::vector<Fractal*>& fractals, const std::vector<FractalData>& dataList) {
+
+        std::vector<Fractal*> splitFractals;
+
+        for(Fractal* f: fractals) {
+            switch(f->m_Size) {
+                case 1:
+                    //don't need to split 1x1 fractal
                     break;
-                case 2: 
-                    newFractal = new Fractal(CalculateSpriteData({data.size, data.index}, m_Index), data, startCoords, {this, &Puzzle::Transform});
+                case 2:
+                    //split f into quarters of size 1
+                    for(int yIndex = f->m_Index.y; yIndex < f->m_Index.y + 2; yIndex += 1) {
+                        for(int xIndex = f->m_Index.x; xIndex < f->m_Index.x + 2; xIndex += 1) {
+                            glm::vec2 startCoords = Fractal::GetCoordsForTarget({xIndex, yIndex}, 1, f->m_Index, 2, m_Dimensions, {x(), y()});
+                            FractalData data = {1, {xIndex, yIndex}};
+                            Fractal* newFractal = new Fractal(CalculateSpriteData(data, m_Index), data, startCoords, {this, &Puzzle::Transform});
+                            m_Fractals.push_back(newFractal);
+                            splitFractals.push_back(newFractal);
+                        }
+                    }
+
+                    m_Fractals.erase(GetFractalIterator(f));
+                    delete f;
                     break;
-                case 4: 
-                    newFractal = new Fractal(CalculateSpriteData({data.size, data.index}, m_Index), data, startCoords, {this, &Puzzle::Transform});
+                case 4:
+                    //split f into quarters of size 2, and possibly splitting those 2x2s into 1x1s (some or all of the 2x2s)
+                    for(int yIndex = f->m_Index.y; yIndex < f->m_Index.y + 4; yIndex += 2) {
+                        for(int xIndex = f->m_Index.x; xIndex < f->m_Index.x + 4; xIndex += 2) {
+                            //check if the 2x2 needs further splitting using dataList
+                            bool splitAgain = false;
+                            for(FractalData fData: dataList) {
+                                if(Fractal::FindOverlapType({2, {xIndex, yIndex}}, fData) == OverlapType::Partial) {
+                                    splitAgain = true;
+                                    break;
+                                }
+                            }
+
+                            if(!splitAgain) {
+                                glm::vec2 startCoords = Fractal::GetCoordsForTarget({xIndex, yIndex}, 2, f->m_Index, 4, m_Dimensions, {x(), y()});
+                                FractalData data = {2, {xIndex, yIndex}};
+                                Fractal* newFractal = new Fractal(CalculateSpriteData(data, m_Index), data, startCoords, {this, &Puzzle::Transform});
+                                m_Fractals.push_back(newFractal);
+                                splitFractals.push_back(newFractal);
+                            }else{
+                                for(int yIndexSub = yIndex; yIndexSub < yIndex + 2; ++yIndexSub) {
+                                    for(int xIndexSub = xIndex; xIndexSub < xIndex + 2; ++xIndexSub) {
+                                        glm::vec2 startCoords = Fractal::GetCoordsForTarget({xIndexSub, yIndexSub}, 1, f->m_Index, 4, m_Dimensions, {x(), y()});
+                                        FractalData data = {1, {xIndexSub, yIndexSub}};
+                                        Fractal* newFractal = new Fractal(CalculateSpriteData(data, m_Index), data, startCoords, {this, &Puzzle::Transform});
+                                        m_Fractals.push_back(newFractal);
+                                        splitFractals.push_back(newFractal);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    m_Fractals.erase(GetFractalIterator(f));
+                    delete f;
                     break;
                 default:
                     assert(false);
-                    break;
+                    break; 
             }
-
-            m_Fractals.push_back(newFractal);
-            newFractals.push_back(newFractal);
         }
 
-        m_Fractals.erase(GetFractalIterator(fractal));
-        delete fractal; 
-
-        return newFractals;
-
+        return splitFractals;
     }
 
 
@@ -433,13 +441,6 @@ namespace sqs {
                 break;
         }
 
-        //test - this works as intended
-        int row = 0;
-        for(const FractalElement& e: GetAllElements()) {
-            std::cout << e << ", ";
-            if((row + 1) % m_Dimensions.x == 0) std::cout << std::endl;
-            ++row;
-        }
     }
 
     //@todo: split into TranslateLeft, TranslateDown, etc
@@ -458,11 +459,11 @@ namespace sqs {
         glm::ivec2 newIndexA = fractalB->m_Index;
 
         if(newIndexA.y == newIndexB.y) { //horizontal transformation
-            if(newIndexA.x < newIndexB.x) PushTransformation({TransformationType::TranslatePosX, {fractalA->m_Size, fractalA->m_Index}});
-            else PushTransformation({TransformationType::TranslateNegX, {fractalA->m_Size, fractalA->m_Index}});
+            if(newIndexA.x < newIndexB.x) PushTransformation({TransformationType::TranslatePosX, {fractalB->m_Size, fractalB->m_Index}});
+            else PushTransformation({TransformationType::TranslateNegX, {fractalB->m_Size, fractalB->m_Index}});
         }else{ //vertical transformation
-            if(newIndexA.y < newIndexB.y) PushTransformation({TransformationType::TranslatePosY, {fractalA->m_Size, fractalA->m_Index}});
-            else PushTransformation({TransformationType::TranslateNegY, {fractalA->m_Size, fractalA->m_Index}});
+            if(newIndexA.y < newIndexB.y) PushTransformation({TransformationType::TranslatePosY, {fractalB->m_Size, fractalB->m_Index}});
+            else PushTransformation({TransformationType::TranslateNegY, {fractalB->m_Size, fractalB->m_Index}});
         }
 
 
@@ -577,8 +578,7 @@ namespace sqs {
 
         Fractal* f = GetFractalWithIndex(tData.fractalData.index);
 
-        //@todo: should only undo transformation after making sure fractal sizes are matching/correct
-        if(tData.fractalData.size != f->m_Size) return;
+        assert(tData.fractalData.size == f->m_Size);
 
         Transform(tData.fractalData, tData.transformation);
 
@@ -604,13 +604,13 @@ namespace sqs {
     //pushes texture data to m_TextureMap.  The actual updating of texture on GPU side is called in Puzzle::OnAnimationEnd()
     void Puzzle::UpdateTextureData(FractalData data) {
         //textures start from bottom left, but starting textures from top left to fit fractal order (left to right, top to bottom)
-        glm::ivec2 texStart =  CalculateTextureStart(data, m_Index);
+        glm::ivec2 texStart =  {data.index.x * Fractal::s_UnitSize + m_Index * 256, 256 - Fractal::s_UnitSize * (data.index.y + 1)};
 
         for(int row = 0; row < data.size; ++row) {  //when data.size is > 1, problems occur.  Why???
             for(int col = 0; col < data.size; ++col) {
                 //pushing on fractal frame
                 m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize, texStart.y - row * Fractal::s_UnitSize},
-                                     {0, 0}, {Fractal::s_UnitSize, Fractal::s_UnitSize}}); 
+                        {0, 0}, {Fractal::s_UnitSize, Fractal::s_UnitSize}}); 
 
                 //elements are drawn inside fractal frame, so start point is offset by 1 and side length is reduced by 2 in each dimension
                 switch(GetElementAt(data.index.x + col, data.index.y + row)) {
@@ -636,17 +636,12 @@ namespace sqs {
 
 
     rose::Sprite Puzzle::CalculateSpriteData(FractalData data, int puzzleIndex) {
-        //can't use CalculateTextureStart() here for 'start' since textures coords are flipped in the y-axis
         glm::vec2 start = glm::ivec2(data.index.x * Fractal::s_UnitSize + puzzleIndex * 256, 256 - Fractal::s_UnitSize * (data.index.y + data.size));
         glm::vec2 size = {Fractal::s_UnitSize * data.size , Fractal::s_UnitSize * data.size};
         return { start, size, rose::TextureType::Custom };
     }
 
 
-    glm::vec2 Puzzle::CalculateTextureStart(FractalData data, int puzzleIndex) {
-        //return glm::ivec2(data.index.x * Fractal::s_UnitSize + puzzleIndex * 256, 256 - Fractal::s_UnitSize * (data.index.y + data.size));
-        return glm::ivec2(data.index.x * Fractal::s_UnitSize + puzzleIndex * 256, 256 - Fractal::s_UnitSize * (data.index.y + 1));
-    }
 
 
 }

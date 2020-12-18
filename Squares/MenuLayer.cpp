@@ -252,23 +252,12 @@ namespace sqs {
     }
 
     void MenuLayer::SplitFractal(Puzzle* puzzle, Fractal* fractal) {
-
-
-        int subSize = fractal->m_Size / 2;
-        glm::ivec2 index = fractal->m_Index;
-
-        std::vector<FractalData> splitData;
-        splitData.push_back({subSize, {index.x, index.y}});
-        splitData.push_back({subSize, {index.x + subSize, index.y}});
-        splitData.push_back({subSize, {index.x, index.y + subSize}});
-        splitData.push_back({subSize, {index.x + subSize, index.y + subSize}});
-
-        //can Puzzle::SplitFractal(splitData) just take in the split data and then find the fractal data from it?
-        //could put an assert inside split to make sure that all the subfractals form a large fractal of correct dimenions (1, 2, or 4)
-        std::vector<Fractal*> subFractalList = puzzle->SplitFractal(fractal, splitData); 
+        std::vector<Fractal*> fractalList;
+        fractalList.push_back(fractal);
+        std::vector<Fractal*> subFractalList = puzzle->SplitFractals(fractalList); 
 
         for(Fractal* f: subFractalList) {
-            glm::vec2 endCoords = Fractal::GetCoords(f->m_Index, subSize, puzzle->m_Dimensions, glm::vec2(puzzle->x(), puzzle->y()));
+            glm::vec2 endCoords = Fractal::GetCoords(f->m_Index, f->m_Size, puzzle->m_Dimensions, glm::vec2(puzzle->x(), puzzle->y()));
             f->MoveTo(endCoords);
         }
 
@@ -298,121 +287,104 @@ namespace sqs {
 
 
     void MenuLayer::UndoResizeFractals(Puzzle* puzzle) {
-        bool resized = false; //set this to true if any splits/merges are necessary
+        std::cout << "Inside undoresize fractals" << std::endl;
         assert(puzzle->GetTransformationCount() != 0);
         TransformationData td = puzzle->PeekTransformation();
 
-        std::vector<Fractal*> splitB;
-
-        FractalData fractalDataA;
-        fractalDataA.size = td.fractalData.size;
-        fractalDataA.index = td.fractalData.index;
-        FractalData fractalDataB;
-        fractalDataB.size = td.fractalData.size;
-        fractalDataB.index = td.fractalData.index;
 
         bool isTranslation = td.transformation == TransformationType::TranslatePosX || td.transformation == TransformationType::TranslateNegX ||
                              td.transformation == TransformationType::TranslatePosY || td.transformation == TransformationType::TranslateNegY;
 
-        Fractal* fractalB = nullptr;
+        FractalData targetDataA = td.fractalData;
+        FractalData targetDataB;
 
         if(isTranslation) {
-
-            //check if swapped fractal exists
             switch(td.transformation) {
                 case TransformationType::TranslatePosX:
-                    fractalB = puzzle->GetFractalWithIndex(glm::ivec2(td.fractalData.index.x + td.fractalData.size, td.fractalData.index.y));
-                    fractalDataB.index = {td.fractalData.index.x + td.fractalData.size, td.fractalData.index.y};
+                    targetDataB = {td.fractalData.size, {td.fractalData.index.x + td.fractalData.size, td.fractalData.index.y}};
                     break;
                 case TransformationType::TranslateNegX:
-                    fractalB = puzzle->GetFractalWithIndex(glm::ivec2(td.fractalData.index.x - td.fractalData.size, td.fractalData.index.y));
-                    fractalDataB.index = {td.fractalData.index.x - td.fractalData.size, td.fractalData.index.y};
+                    targetDataB = {td.fractalData.size, {td.fractalData.index.x - td.fractalData.size, td.fractalData.index.y}};
                     break;
                 case TransformationType::TranslatePosY:
-                    fractalB = puzzle->GetFractalWithIndex(glm::ivec2(td.fractalData.index.x, td.fractalData.index.y + td.fractalData.size));
-                    fractalDataB.index = {td.fractalData.index.x, td.fractalData.index.y + td.fractalData.size};
+                    targetDataB = {td.fractalData.size, {td.fractalData.index.x, td.fractalData.index.y + td.fractalData.size}};
                     break;
                 case TransformationType::TranslateNegY:
-                    fractalB = puzzle->GetFractalWithIndex(glm::ivec2(td.fractalData.index.x, td.fractalData.index.y - td.fractalData.size));
-                    fractalDataB.index = {td.fractalData.index.x, td.fractalData.index.y - td.fractalData.size};
+                    targetDataB = {td.fractalData.size, {td.fractalData.index.x, td.fractalData.index.y - td.fractalData.size}};
                     break;
                 default:
-                    //no swap fractal exists, so do nothing
+                    assert(false);
                     break;
             }
-
-            if(fractalB == nullptr || fractalB->m_Size != td.fractalData.size) {
-                splitB = puzzle->SplitOverlappingWith(fractalDataB);  //need to call this on the swap fractal before merge is called
-                resized = true;
-            }
-
         }
 
-
-        Fractal* fractalA = puzzle->GetFractalWithIndex(td.fractalData.index); 
-        std::vector<Fractal*> splitA;
-
-        if(fractalA == nullptr || fractalA->m_Size != td.fractalData.size) {
-            splitA = puzzle->SplitOverlappingWith(td.fractalData);  //need to call this on the swap fractal before merge is called
-            resized = true;
-        }
-
-        std::vector<Fractal*> allSplitFractals;
-        allSplitFractals.reserve(splitA.size() + splitB.size());
-        allSplitFractals.insert(allSplitFractals.end(), splitA.begin(), splitA.end());
-        allSplitFractals.insert(allSplitFractals.end(), splitB.begin(), splitB.end());
-
-        //////////////////////////////seperate 1x1 fractals into merge/nomerge lists//////////////////
-        std::vector<Fractal*> mergeListA;
-        std::vector<Fractal*> mergeListB;
-        std::vector<Fractal*> noMergeList;
-
-        for(Fractal* f: allSplitFractals) {
-            bool contains = false;
-            for(int row = 0; row < td.fractalData.size; ++row) { for(int col = 0; col < td.fractalData.size; ++col) { //start nested loop for col/row
-                if(f->Contains({col + fractalDataA.index.x, row + fractalDataA.index.y}) && 
-                        !(f->m_Size == fractalDataA.size && f->m_Index == fractalDataA.index)) {
-                    mergeListA.push_back(f);
-                    contains = true;
-                }else if(fractalB && f->Contains({col + fractalDataB.index.x, row + fractalDataB.index.y}) &&
-                        !(f->m_Size == fractalDataB.size && f->m_Index == fractalDataB.index)) {
-                    mergeListB.push_back(f);
-                    contains = true;
-                }
-                if(contains) break;
-            } if(contains) break;} //end of nested loops for col/row
-            if(!contains) noMergeList.push_back(f);
-        }
+        std::vector<FractalData> targetData;
+        targetData.push_back(targetDataA);
+        if(isTranslation) targetData.push_back(targetDataB);
 
 
-        //something past here crashes I think
-        //    std::cout << mergeListA.size() << std::endl;
-        //   std::cout << mergeListB.size() << std::endl;
+        std::cout << "before two rounds of splittin" << std::endl;
 
-        if(mergeListA.size() > 0) puzzle->MergeFractals(mergeListA);
-        if(mergeListB.size() > 0) puzzle->MergeFractals(mergeListB);
+        bool resized = false;
 
-        /////////////////////////////////MoveTo() on all fractals split (and merged) to proper place ////////////////////////////
-        for(Fractal* f: mergeListA) {
-            glm::vec2 coords = Fractal::GetCoordsForTarget(f->m_Index, f->m_Size, fractalDataA.index, fractalDataA.size,
-                    puzzle->m_Dimensions, {puzzle->x(), puzzle->y()});
-            f->MoveTo(coords);
-        }
+        //calling split twice so that since largest Fractal (4x4) may need to quarterings to get to 1x1
+        //if a 2x2 fits perfectly inside one of the targetData, won't be split again
+        std::vector<Fractal*> toSplitListRound1 = puzzle->FindFractalsPartialIntersectionWith(targetData, puzzle->GetFractals());
+        std::vector<Fractal*> splitList = puzzle->SplitFractals(toSplitListRound1, targetData);
+        /*
+        if(!toSplitListRound1.empty()) resized = true;
+        std::vector<Fractal*> splitListRound1 = puzzle->SplitFractals(toSplitListRound1);
 
-        for(Fractal* f: mergeListB) {
-            glm::vec2 coords = Fractal::GetCoordsForTarget(f->m_Index, f->m_Size, fractalDataB.index, fractalDataB.size,
-                    puzzle->m_Dimensions, {puzzle->x(), puzzle->y()});
-            f->MoveTo(coords);
-        }
+        std::vector<Fractal*> toSplitListRound2 = puzzle->FindFractalsPartialIntersectionWith(targetData, splitListRound1);
+        if(!toSplitListRound2.empty()) resized = true;
+        std::vector<Fractal*> splitListRound2 = puzzle->SplitFractals(toSplitListRound2);*/
 
-        //move to using regular coords
-        for(Fractal* f: noMergeList) {
+
+
+        std::cout << "after two rounds of splittin" << std::endl;
+
+
+        //move to using regular coords for ALL (the two calls below to mergeFractalLists A and B will overwrite this)
+        for(Fractal* f: puzzle->GetFractals()) {
             glm::vec2 coords = Fractal::GetCoords(f->m_Index, f->m_Size, puzzle->m_Dimensions, {puzzle->x(), puzzle->y()});
             f->MoveTo(coords);
         }
 
 
-        if(resized) SetAnimationStart();
+        std::cout << "after moving all fractals" << std::endl;
+
+        //merge fractals for FractalData A
+        std::vector<Fractal*> mergeListA = puzzle->FindFractalsInsideOf(targetDataA, puzzle->GetFractals());
+        if(mergeListA.size() > 0) {
+            puzzle->MergeFractals(mergeListA);
+            resized = true;
+        }
+        for(Fractal* f: mergeListA) {
+            glm::vec2 coords = Fractal::GetCoordsForTarget(f->m_Index, f->m_Size, targetDataA.index, targetDataA.size,
+                    puzzle->m_Dimensions, {puzzle->x(), puzzle->y()});
+            f->MoveTo(coords);
+        }
+
+        std::cout << "after moving mergeListA" << std::endl;
+
+        //merge fractals for FractalData B if tranformation was a translation
+        if(isTranslation) {
+            std::vector<Fractal*> mergeListB = puzzle->FindFractalsInsideOf(targetDataB, puzzle->GetFractals());
+            if(mergeListB.size() > 0) {
+                puzzle->MergeFractals(mergeListB);
+                resized = true;
+            }
+            for(Fractal* f: mergeListB) {
+                glm::vec2 coords = Fractal::GetCoordsForTarget(f->m_Index, f->m_Size, targetDataB.index, targetDataB.size,
+                        puzzle->m_Dimensions, {puzzle->x(), puzzle->y()});
+                f->MoveTo(coords);
+            }
+        }
+
+        std::cout << "after moving mergeListB (optional)" << std::endl;
+
+        if(resized) SetAnimationStart(); //how will this be decided?
+
         AddCommand({CommandType::UndoLastTransformation, nullptr, puzzle, nullptr});
     }
 
