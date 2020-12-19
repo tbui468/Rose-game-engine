@@ -3,13 +3,13 @@
 namespace sqs {
 
     static PuzzleData p00 {{1, 1}, {'r'}, 3}; 
-    static PuzzleData p01 {{2, 2}, {'r', 'g', 
+    static PuzzleData p01 {{2, 2}, {'r', 'R', 
                                     'b', 'e'}, 3};
-    static PuzzleData p02 {{6, 4}, {'E', 'g', 'g', 'g', 'g', 'g',
+    static PuzzleData p02 {{6, 4}, {'E', 'g', 'g', 'g', 'g', 'G',
                                     'E', 'e', 'e', 'e', 'r', 'E',
-                                    'g', 'e', 'r', 'g', 'r', 'E',
-                                    'E', 'b', 'e', 'g', 'b', 'E'}, 5};
-    static PuzzleData p03 {{4, 3}, {'e', 'g', 'r', 'r',
+                                    'G', 'r', 'g', 'G', 'g', 'E',
+                                    'E', 'g', 'e', 'g', 'r', 'E'}, 10};
+    static PuzzleData p03 {{4, 3}, {'B', 'g', 'r', 'r',
                                     'e', 'E', 'E', 'r',
                                     'b', 'E', 'g', 'b'}, 5};
 

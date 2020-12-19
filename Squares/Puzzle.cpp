@@ -323,6 +323,8 @@ namespace sqs {
         return closestF;
     }
 
+    //find the four fractals surrounding the give mouse position (used to merge into a larger fractal of twice the size)
+    //one or all of the four will be a nullptr if sizes are mismatched or are anchor fractals
     FractalCorners Puzzle::FindFractalCorners(float mousex, float mousey) const {
         FractalCorners fc;
 
@@ -365,10 +367,10 @@ namespace sqs {
             }
         }
 
-        if(topLeft && topLeft->m_Size == size) fc.TopLeft = topLeft;
-        if(topRight && topRight->m_Size == size) fc.TopRight = topRight;
-        if(bottomLeft && bottomLeft->m_Size == size) fc.BottomLeft = bottomLeft;
-        if(bottomRight && bottomRight->m_Size == size) fc.BottomRight = bottomRight;
+        if(topLeft && topLeft->m_Size == size && !IsAnchor(topLeft)) fc.TopLeft = topLeft;
+        if(topRight && topRight->m_Size == size && !IsAnchor(topRight)) fc.TopRight = topRight;
+        if(bottomLeft && bottomLeft->m_Size == size && !IsAnchor(bottomLeft)) fc.BottomLeft = bottomLeft;
+        if(bottomRight && bottomRight->m_Size == size && !IsAnchor(bottomRight)) fc.BottomRight = bottomRight;
 
         return fc;
     }
@@ -601,6 +603,21 @@ namespace sqs {
     }
 
 
+    bool Puzzle::IsAnchor(Fractal* fractal) const {
+        std::vector<FractalElement> elements = GetElements({fractal->m_Size, fractal->m_Index});
+        for(FractalElement e: elements) {
+            switch(e) {
+                case 'R': return true; break; 
+                case 'G': return true; break; 
+                case 'B': return true; break; 
+                default: break;
+            }
+        }
+
+        return false;
+    }
+
+
     //pushes texture data to m_TextureMap.  The actual updating of texture on GPU side is called in Puzzle::OnAnimationEnd()
     void Puzzle::UpdateTextureData(FractalData data) {
         //textures start from bottom left, but starting textures from top left to fit fractal order (left to right, top to bottom)
@@ -608,23 +625,34 @@ namespace sqs {
 
         for(int row = 0; row < data.size; ++row) {  //when data.size is > 1, problems occur.  Why???
             for(int col = 0; col < data.size; ++col) {
+                glm::vec2 subFractalTexCoords = {texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}; //smaller than frame 
+                glm::vec2 colorTexSize = {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2};
                 //pushing on fractal frame
-                m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize, texStart.y - row * Fractal::s_UnitSize},
-                        {0, 0}, {Fractal::s_UnitSize, Fractal::s_UnitSize}}); 
+                m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize, texStart.y - row * Fractal::s_UnitSize}, 
+                                       {0, 0}, {Fractal::s_UnitSize, Fractal::s_UnitSize}}); 
 
                 //elements are drawn inside fractal frame, so start point is offset by 1 and side length is reduced by 2 in each dimension
                 switch(GetElementAt(data.index.x + col, data.index.y + row)) {
                     case 'r':
-                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
-                                {Fractal::s_UnitSize + 1, 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
+                        m_TextureMap.push_back({subFractalTexCoords, {0 + 1, Fractal::s_UnitSize + 1}, colorTexSize});
                         break;
                     case 'b':
-                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
-                                {Fractal::s_UnitSize + 1, Fractal::s_UnitSize + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
+                        m_TextureMap.push_back({subFractalTexCoords, {0 + 1, Fractal::s_UnitSize * 2 + 1}, colorTexSize});
                         break;
                     case 'g':
-                        m_TextureMap.push_back({{texStart.x + col * Fractal::s_UnitSize + 1, texStart.y - row * Fractal::s_UnitSize + 1}, 
-                                {Fractal::s_UnitSize + 1, Fractal::s_UnitSize * 2 + 1}, {Fractal::s_UnitSize - 2, Fractal::s_UnitSize - 2}});
+                        m_TextureMap.push_back({subFractalTexCoords, {0 + 1, Fractal::s_UnitSize * 3 + 1}, colorTexSize});
+                        break;
+                    case 'R':
+                        m_TextureMap.push_back({subFractalTexCoords, {Fractal::s_UnitSize + 1, Fractal::s_UnitSize + 1}, colorTexSize});
+                        break;
+                    case 'B':
+                        m_TextureMap.push_back({subFractalTexCoords, {Fractal::s_UnitSize + 1, Fractal::s_UnitSize * 2 + 1}, colorTexSize});
+                        break;
+                    case 'G':
+                        m_TextureMap.push_back({subFractalTexCoords, {Fractal::s_UnitSize + 1, Fractal::s_UnitSize * 3 + 1}, colorTexSize});
+                        break;
+                    case 'e':
+                        //leave central area empty
                         break;
                     default:
                         break;
@@ -642,6 +670,61 @@ namespace sqs {
     }
 
 
+    bool Puzzle::IsCleared() const {
+        return ColorsConnected('R') && ColorsConnected('G') && ColorsConnected('B');
+    }
+
+    //perform a depth-first search on the given color to check connectedness
+    //anchor color is uppercase, and will check if all upcase chars are connected by lowercase chars of the same letter
+    bool Puzzle::ColorsConnected(char anchorColor) const {
+        std::vector<glm::ivec2> anchorIndices;
+        std::vector<DFSMark> visited {false};
+        for(int row = 0; row < m_Dimensions.y; ++row) {
+            for(int col = 0; col < m_Dimensions.x; ++col) {
+                FractalElement e = GetElementAt(col, row);
+                if(e == anchorColor) {
+                    anchorIndices.push_back({col, row});
+                }
+                if(e == anchorColor || e == (char)tolower(anchorColor)) {
+                    visited.push_back(DFSMark::Unvisited);
+                }else{
+                    visited.push_back(DFSMark::Disconnected);
+                }
+            }
+        }
+
+        if(anchorIndices.empty()) return true; 
+
+
+        glm::ivec2 startIndex = anchorIndices.at(0);
+
+        DFS(startIndex, visited);
+
+        for(glm::ivec2 index: anchorIndices) {
+            if(visited.at(index.y * m_Dimensions.x + index.x) == DFSMark::Unvisited) return false;
+        }
+
+        return true;
+    }
+
+
+    //check if index is inside puzzle dimensions
+    bool Puzzle::InsideGrid(glm::ivec2 index) const {
+        if(index.x < 0) return false;
+        if(index.y < 0) return false;
+        if(index.x >= m_Dimensions.x) return false;
+        if(index.y >= m_Dimensions.y) return false;
+        return true;
+    }
+
+    void Puzzle::DFS(const glm::ivec2 index, std::vector<DFSMark>& visited) const {
+        visited.at(index.y * m_Dimensions.x + index.x) = DFSMark::Visited;
+
+        if(InsideGrid({index.x + 1, index.y}) && visited.at(index.y * m_Dimensions.x + index.x + 1) == DFSMark::Unvisited) DFS({index.x + 1, index.y}, visited);
+        if(InsideGrid({index.x - 1, index.y}) && visited.at(index.y * m_Dimensions.x + index.x - 1) == DFSMark::Unvisited) DFS({index.x - 1, index.y}, visited);
+        if(InsideGrid({index.x, index.y + 1}) && visited.at((index.y + 1) * m_Dimensions.x + index.x) == DFSMark::Unvisited) DFS({index.x, index.y + 1}, visited);
+        if(InsideGrid({index.x, index.y - 1}) && visited.at((index.y - 1) * m_Dimensions.x + index.x) == DFSMark::Unvisited) DFS({index.x, index.y - 1}, visited);
+    }
 
 
 }

@@ -9,13 +9,20 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
     PITCH: An application teaching goemetric transformations using puzzles, but the app itself is a puzzle the user must explore to unravel
     GOAL: A vertical slice of the entire game - one complete cube (with other cubes grayed out so you can use them)
             48 puzzles - 8 sets.  First 3 must be done in order.  Last 5 can be done in any order
-                1. 1x1 fractals, up to two colors, 3 transformations
-                2. 2x2 fractals, up to two colors, 3 transformations
-                3. 4x4 fractals, up to two colors, 3 transformations
-                4. 4x4 fractals, up to three colors, 5 transformations 
+
+                puzzles are 4x4 max size.  Anchor points are guides, but sometimes they don't exist so player has to figure it out themselves
+                Each cube has a red line puzzle that the player must connect to form the final tesseract - no limit on moves here (8 cubes layed out)
+                    lay them out
+                On clearing the tesseract, camera zooms out to show that the tesseract is one in an infinitely large number of other tesseracts (while animating them)
+                roll credits
+                
+                1. 1x1 fractals, up to two colors, 3 transformations - anchors on all puzzles (first puzzle can only be exited when anchors connected)
+                2. 1x1 fractals, up to two colors, 3 transformations - anchors on most puzzles
+                3. 2x2 fractals, up to two colors, 3 transformations
+                4. 2x2 fractals, up to two colors, up to 3 anchors to connect, 3 transformations (anchors all must be connected to puzzle to be complete)
                 5. 4x4 fractals, up to three colors, 5 transformations 
                 6. 4x4 fractals, up to three colors, 5 transformations 
-                7. 4x4 fractals, up to four colors, 7 transformations
+                7. 4x4 fractals, up to three colors, 5 transformations 
                 8. 4x4 fractals, up to four colors, 7 transformations
 
                 4x4 is maximum playable grid (endpoints can be extra blocks on the longer screen dimension)
@@ -37,39 +44,19 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
 
     THE BIG THREE:
         1. Learn NodeJS with Typescript - groundwork for stable work if this app doesn't pan out- do this for Xuan and our future
-            look at TODO.text in TypescriptTest project for notes on what to do 
+            Learn to set up a basic website using Nodejs
 
-            Get a good web project that I can put in portfolio by the end of the month of December (nifty website for LASEPS or something would be good)
-                Find some good websites to use as a starting point (consulting, marketing websites)
-                keep it simple and clean - angular has all the stuff I need (probably) or even just make it in html, css and TypeScript with Node.js and Express.js
-            Polish up the rigid body simulation - for potential c++ gamedev/systems/embedded jobs
-            Polish up the custom software 3d rasterizer - same as above
-
-            practice: set up linux server - how to do it??? Practice it by setting it up with different configurations (eg, for node.js, flask, docker, etc)
-
-        2.  Install linux server to play with nodejs and typescript - linux server will be good enough
-            Get my code from GossipProtocol over to the ubuntu-server (can i do this through ssh???)
-            How to I send data to/from each gossip node???? 
-            Need a nice way to disconnect from protocol.  
-            How does a new gossipNode find a node to connect to???
-
+        2. Get and c++ SDL2 'hello world' application compiled and running on android - use my phone or virtual android to test
+            googling will be my friend here
+            keep in mind that more libraries will need to be linked
+            OpenGL implementation on phones will have different hardware limitations (GPU)
 
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
 
-            Implement non-moveable colored blocks (which are the endpoints user has to connect using transformations)
-                non-moveable colored blocks will be marked with uppercase letters ('R' for red, 'B' for blue, etc)
+            Remove ability to scroll through puzzles (remove puzzle icon bar), and replace with click to select + zoom in
+            a button appears in upper right that allows user to return to puzzle selection screen
 
-                easier to have a dedicated sprite for them (rather than using something like alpha to make the color different)
-
-            Implement completing puzzles by connecting colored blocks with non-moveable colored blocks
-
-            Create the layer menu system - 8 cubes - each cube unfolds into 6 puzzles - each puzzle consists of variable number of fractals to transform
-                first screen starts with a puzzle (user can manipulate fractals)
-                clearing that puzzle makes a 'go back' button appear for user to move to puzzle select screen
-                once player clears all 6 puzzles (and then transforms the puzzles correctly), a 'go back' button appears that goes to the cube selection screen
-                anytime during tutorial, player can press 'escape' to open a submenu for options/quitting
-                what happens when the player clears the 8 cubes???  All 8 cubes transform into Dahl cross, and warp so the player sees the 4 dimenional tesseract
-                roll credits
+            When on puzzle selection screen, a close button in upper right allows user to go to puzzleset (cube) selection screen
 
 
 Set build (x86 or x64) (or should this be a build option???)

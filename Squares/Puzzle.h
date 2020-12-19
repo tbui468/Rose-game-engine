@@ -17,6 +17,12 @@ namespace sqs {
         Fractal* BottomRight {nullptr};
     };
 
+    enum DFSMark {
+        Unvisited = 0,
+        Visited,
+        Disconnected
+    };
+
     class Puzzle: public rose::Entity {
         public:
             Puzzle(int index, int setIndex);
@@ -54,7 +60,12 @@ namespace sqs {
             const std::vector<FractalElement>& GetAllElements() const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).elements; }
             FractalElement GetElementAt(int col, int row) const { return g_Data.at(m_SetIndex).puzzlesData.at(m_Index).elements.at(row * m_Dimensions.x + col); }
             void SetElementAt(int col, int row, FractalElement e) const { g_Data.at(m_SetIndex).puzzlesData.at(m_Index).elements.at(row * m_Dimensions.x + col) = e; }
+            bool IsAnchor(Fractal* fractal) const;
+            bool IsCleared() const;
+            bool ColorsConnected(char anchorColor) const;
         private:
+            void DFS(const glm::ivec2 index, std::vector<DFSMark>& visited) const;
+            bool InsideGrid(glm::ivec2 index) const;
             void SwapFractals(Fractal* fractalA, Fractal* fractalB);
             void RotateFractalCW(Fractal* fractal);
             void RotateFractalCCW(Fractal* fractal);
