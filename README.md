@@ -1,4 +1,4 @@
-# Squares
+# Rose-game-engine
 
 Rose game engine is written using C++ and OpenGL.
 
@@ -10,7 +10,7 @@ Only tested on Windows with Visual Studio 16 2019.
 
 Install cmake. Install Visual Studio 16 2019.
 
-cd rigid-body-simulation<br>
+cd Rose-game-engine<br>
 mkdir build<br>
 cd build<br>
 cmake ..<br>
