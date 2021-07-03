@@ -17,10 +17,10 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
                 roll credits
                 
                 1. 1x1 fractals, up to two colors, 3 transformations - anchors on all puzzles (first puzzle can only be exited when anchors connected)
-                2. 1x1 fractals, up to two colors, 3 transformations - anchors on most puzzles
-                3. 2x2 fractals, up to two colors, 3 transformations
+                2. 1x1 fractals, up to two colors, 3 transformations - anchors on most puzzles (example, don't put them on the last puzzle)
+                3. 2x2 fractals, up to two colors, 3 transformations - 
                 4. 2x2 fractals, up to two colors, up to 3 anchors to connect, 3 transformations (anchors all must be connected to puzzle to be complete)
-                5. 4x4 fractals, up to three colors, 5 transformations 
+                5. 4x4 fractals, up to three colors, 5 transformations  
                 6. 4x4 fractals, up to three colors, 5 transformations 
                 7. 4x4 fractals, up to three colors, 5 transformations 
                 8. 4x4 fractals, up to four colors, 7 transformations
@@ -46,17 +46,42 @@ REMEMBER: GET IT UP AND RUNNING ASAP (details and optimizations can come later)
         1. Learn NodeJS with Typescript - groundwork for stable work if this app doesn't pan out- do this for Xuan and our future
             Learn to set up a basic website using Nodejs
 
+
         2. Get and c++ SDL2 'hello world' application compiled and running on android - use my phone or virtual android to test
             googling will be my friend here
             keep in mind that more libraries will need to be linked
             OpenGL implementation on phones will have different hardware limitations (GPU)
 
+        2. Sign up for Google developer console
+           Get cpp-sample-apps build and working with android studio
+           try it at the command line
+           how can i get my app working on it???
+           This might be a good opportunity to build a quick vertical slice 
+
+
         3. Core Puzzle Features - transformations/splitting/forming and puzzle clear/puzzleset clear (do this in the morning)
 
-            Remove ability to scroll through puzzles (remove puzzle icon bar), and replace with click to select + zoom in
-            a button appears in upper right that allows user to return to puzzle selection screen
+            Making a class called PuzzleFractal: public Fractal
+                what's different?
+                    sprite size will be larger at 4 times Fractal::s_UnitSize, 
+                    but the actual object size will be ~ 2 times as large
+                    other sprite data will need to be change to accomodate the new size
+                    player can click on PuzzleFractal to open the puzzle (fractals are unclickable)
+
+            Make the puzzle screen (6 puzzles user can transform or click on to enter) (will require reworking of camera)
+
+            remove puzzlesets from main screen and replace with jsut one puzzleset 
+                this puzzleset should display all six of the current puzzles in the set
+
+            Remove ability to scroll through puzzles (remove puzzle icon bar), and replace with click to select + zoom in (and clicking adjacent puzzles)
+                User can also click on adjacent puzzles on screen (semi transparent) to have the camera scroll to them
+                a button appears in upper right that allows user to return to puzzle selection screen
 
             When on puzzle selection screen, a close button in upper right allows user to go to puzzleset (cube) selection screen
+
+            Check clear status for cube
+
+            Get one complete puzzleset (cube) complete - will be easier to whip out the notebook to design this one
 
 
 Set build (x86 or x64) (or should this be a build option???)

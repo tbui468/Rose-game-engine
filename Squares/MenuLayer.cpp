@@ -71,8 +71,12 @@ namespace sqs {
 
 
         float topEdge = 135.0f;
-
+/*
         for(int i = 0; i < g_Data.size(); ++i) {
+            m_PuzzleSets.emplace_back(new PuzzleSet(i, glm::vec2(-32.0f + 32.0f * i, topEdge + 32.0f)));
+        }*/
+
+        for(int i = 0; i < 1; ++i) {
             m_PuzzleSets.emplace_back(new PuzzleSet(i, glm::vec2(-32.0f + 32.0f * i, topEdge + 32.0f)));
         }
 
